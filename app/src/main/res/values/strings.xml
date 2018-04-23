@@ -1,0 +1,23 @@
+<resources>
+    <string name="app_name">iQueues</string>
+    <string name="action_settings">Settings</string>
+    <!-- -login screen view strings -->
+    <string name="new_user">משתמש חדש לחץ כאן להירשם</string>
+    <string name="existing_user">משתמש קיים לחץ כאן להתחבר</string>
+    <string name="loginBtn">התחברות</string>
+    <!-- registration screen view strings+user info -->
+    <string name="name"> שם פרטי</string>
+    <string name="lastName"> שם משפחה</string>
+    <string name="company"> בחר חברת מוניות</string>
+    <string name="phone"> מספר פלאפון</string>
+    <string name="signup"> להרשמה</string>
+    <string name="mail"> אימייל</string>
+    <string name="pword"> בחר סיסמה</string>
+    <string-array name="companies">
+        <item>רחביה</item>
+        <item>בקעה</item>
+        <item>בית הכרם</item>
+        <item>הפסגה</item>
+        <item>עץ הזית</item>
+    </string-array>
+</resources>
