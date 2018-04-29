@@ -1,16 +1,20 @@
-package com.iqueues;
+package com.iQueues;
 
 public class Queue {
 
     private String date;
     private String time;
-    private String isQueue;
+    private boolean isQueue;
+    private String noQueue;
 
 
-    public Queue(String date, String time, String isQueue) {
+    public Queue() {}
+
+    public Queue(String date, String time, boolean isQueue) {
         this.date = date;
         this.time = time;
         this.isQueue = isQueue;
+
     }
 
     public String getDate() {
@@ -29,11 +33,19 @@ public class Queue {
         this.time = time;
     }
 
-    public String isQueue() {
+    public boolean isQueue() {
         return isQueue;
     }
 
-    public void setQueue(String queue) {
+    public void setQueue(boolean queue) {
         isQueue = queue;
+    }
+
+    public String getNoQueue() {
+        return noQueue;
+    }
+
+    public void setNoQueue(String noQueue) {
+        this.noQueue = noQueue;
     }
 }

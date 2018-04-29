@@ -3,7 +3,7 @@ apply plugin: 'com.android.application'
 android {
     compileSdkVersion 27
     defaultConfig {
-        applicationId "com.iqueues1"
+        applicationId "com.iQueues"
         minSdkVersion 19
         targetSdkVersion 27
         versionCode 1
@@ -32,3 +32,5 @@ dependencies {
     implementation 'com.google.firebase:firebase-auth:15.0.0'
 
 }
+
+apply plugin: 'com.google.gms.google-services'

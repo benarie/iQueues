@@ -1,4 +1,4 @@
-package com.iqueues;
+package com.iQueues;
 
 import android.app.Fragment;
 import android.content.Context;

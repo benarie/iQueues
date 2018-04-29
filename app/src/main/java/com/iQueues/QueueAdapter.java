@@ -1,4 +1,4 @@
-package com.iqueues;
+package com.iQueues;
 
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
@@ -52,7 +52,7 @@ public class QueueAdapter extends RecyclerView.Adapter<QueueAdapter.QueueViewHol
         Queue queue = queues.get(position);
         holder.dateTv.setText(queue.getDate());
         holder.timeTv.setText(queue.getTime());
-        holder.noQueueTv.setText(queue.isQueue());
+        holder.noQueueTv.setText(queue.getNoQueue());
     }
 
     @Override

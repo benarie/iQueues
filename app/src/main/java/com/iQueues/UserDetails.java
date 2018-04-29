@@ -1,4 +1,4 @@
-package com.iqueues;
+package com.iQueues;
 
 
 public class UserDetails {
@@ -13,6 +13,11 @@ public class UserDetails {
         this.phone_number = phone_number;
         this.hat_number = hat_number;
         this.companyName = companyName;
+    }
+
+    public  UserDetails(){
+
+
     }
 
     public String getfull_Name() {

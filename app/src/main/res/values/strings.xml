@@ -1,18 +1,18 @@
 <resources>
     <string name="app_name">iQueues</string>
-    <string name="action_settings">Settings</string>
+    <string name="action_settings" translatable="false">Settings</string>
     <!-- -login screen view strings -->
-    <string name="new_user">משתמש חדש לחץ כאן להירשם</string>
-    <string name="existing_user">משתמש קיים לחץ כאן להתחבר</string>
-    <string name="loginBtn">התחברות</string>
+    <string name="new_user" translatable="false">משתמש חדש לחץ כאן להירשם</string>
+    <string name="existing_user" translatable="false">משתמש קיים לחץ כאן להתחבר</string>
+    <string name="loginBtn" translatable="false">התחברות</string>
     <!-- registration screen view strings+user info -->
-    <string name="name"> שם פרטי</string>
-    <string name="lastName"> שם משפחה</string>
-    <string name="company"> בחר חברת מוניות</string>
-    <string name="phone"> מספר פלאפון</string>
-    <string name="signup"> להרשמה</string>
-    <string name="mail"> אימייל</string>
-    <string name="pword"> בחר סיסמה</string>
+    <string name="name" translatable="false"> שם פרטי</string>
+    <string name="lastName" translatable="false"> שם משפחה</string>
+    <string name="company" translatable="false"> בחר חברת מוניות</string>
+    <string name="phone" translatable="false"> מספר פלאפון</string>
+    <string name="signup" translatable="false"> להרשמה</string>
+    <string name="mail" translatable="false"> אימייל</string>
+    <string name="pword" translatable="false"> בחר סיסמה</string>
     <string-array name="companies">
         <item>רחביה</item>
         <item>בקעה</item>

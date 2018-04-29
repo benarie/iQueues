@@ -1,4 +1,4 @@
-package com.iqueues;
+package com.iQueues;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -44,9 +44,10 @@ public class DriverMainScreen extends AppCompatActivity {
         String date = "בתאריך: " + dayOfWeek + "/" + month + "/" + year;
         String time = "בשעה: " + hourOfDay + ":" + minutes;
         String noQueue = "אין לך תור כרגע";
+        boolean isQueue = false;
 
         ArrayList<Queue> queue_per_day = new ArrayList<>();
-        queue_per_day.add(new Queue(date, time, noQueue));
+        queue_per_day.add(new Queue(date, time, isQueue));
 
         RecyclerView recyclerView = findViewById(R.id.recycler);
         recyclerView.setHasFixedSize(true);
@@ -61,3 +62,29 @@ public class DriverMainScreen extends AppCompatActivity {
 
     }
 }
+
+
+/*               progressDialog = new ProgressDialog(SignInProcess.this);
+                    progressDialog.setMessage("loading" + user.getDisplayName() + "queue, please wait");
+                    progressDialog.show();
+
+                    queueRef.child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            queues.clear();
+                            if (dataSnapshot.exists()) {
+                                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                                    queue = snapshot.getValue(Queue.class);
+                                    queues.add(queue);
+                                }
+                                adapter.notifyDataSetChanged();
+                            }
+                            //progressDialog.dismiss();
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+
+                        }
+                    });*/

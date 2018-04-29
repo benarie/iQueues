@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.iqueues">
+    package="com.iQueues">
 
     <uses-permission android:name="android.permission.INTERNET" />
 
@@ -12,7 +12,7 @@
         android:theme="@style/AppTheme">
 
         <activity
-            android:name="com.iqueues.SignInProcess"
+            android:name="com.iQueues.SignInProcess"
             android:label="@string/app_name"
             android:theme="@style/AppTheme">
             <intent-filter>
@@ -21,8 +21,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="com.iqueues.SignUpProcess" />
-        <activity android:name="com.iqueues.DriverMainScreen" />
+
+        <activity android:name="com.iQueues.SignUpProcess" />
+        <activity android:name="com.iQueues.DriverMainScreen" />
     </application>
 
 </manifest>
