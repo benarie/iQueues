@@ -2,18 +2,15 @@ package com.iQueues;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.support.annotation.NonNull;
-import android.support.design.widget.Snackbar;
-import android.support.v7.app.AppCompatActivity;
+import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.text.TextUtils;
-import android.util.Log;
+import android.support.annotation.NonNull;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -68,8 +65,8 @@ public class SignUpProcess extends AppCompatActivity {
                 final List<String> companies = new ArrayList<>();
 
                 for (DataSnapshot companiesSnapshot : dataSnapshot.getChildren()) {
-                    String companiesTaxi = companiesSnapshot.child("taxiCompanies").getValue(String.class);
-                    companies.add(companiesTaxi);
+                    String taxiCompanies = companiesSnapshot.child("taxiCompanies").getValue(String.class);
+                    companies.add(taxiCompanies);
                 }
 
                 taxiCompaniesTv = findViewById(R.id.taxi_companies);
@@ -95,8 +92,10 @@ public class SignUpProcess extends AppCompatActivity {
 
                 if (uEmail.isEmpty() || uPword.isEmpty()) {//if the email or password are empty, you can't be registered
                     Toast.makeText(SignUpProcess.this, "email or password fields are empty", Toast.LENGTH_SHORT).show();
+                    return;
                 } else if (uPword.length() < 6) {
                     Toast.makeText(SignUpProcess.this, "The password need to be over 6 digit", Toast.LENGTH_SHORT).show();
+
                 }
                 progressDialog = new ProgressDialog(SignUpProcess.this);
                 progressDialog.setMessage("registering user please wait.");
@@ -129,8 +128,8 @@ public class SignUpProcess extends AppCompatActivity {
 
                         } else {
                             // If sign in fails, display a message to the user.
-                            Toast.makeText(SignUpProcess.this, "registration failed,please try again", Toast.LENGTH_SHORT).show();
                             progressDialog.dismiss();
+                            Toast.makeText(SignUpProcess.this, "registration failed,please try again", Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
@@ -149,6 +148,7 @@ public class SignUpProcess extends AppCompatActivity {
                             @Override
                             public void onComplete(@NonNull Task<Void> task) {
                                 if (task.isSuccessful()) {
+
                                     Toast.makeText(SignUpProcess.this, uFullName + " Welcome!!!", Toast.LENGTH_SHORT).show();
                                 }
                             }

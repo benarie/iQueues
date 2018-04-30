@@ -10,6 +10,10 @@ public class Queue {
 
     public Queue() {}
 
+    public Queue(String noQueue) {
+        this.noQueue = noQueue;
+    }
+
     public Queue(String date, String time, boolean isQueue) {
         this.date = date;
         this.time = time;

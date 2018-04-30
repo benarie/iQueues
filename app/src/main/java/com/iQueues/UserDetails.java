@@ -6,13 +6,13 @@ public class UserDetails {
     private String full_Name;
     private String phone_number;
     private String hat_number;
-    private String companyName;
+    private String company_name;
 
     public UserDetails(String full_Name, String phone_number, String hat_number, String companyName) {
         this.full_Name = full_Name;
         this.phone_number = phone_number;
         this.hat_number = hat_number;
-        this.companyName = companyName;
+        this.company_name = companyName;
     }
 
     public  UserDetails(){
@@ -40,12 +40,12 @@ public class UserDetails {
         return hat_number;
     }
 
-    public String getCompanyName() {
-        return companyName;
+    public String getCompany_name() {
+        return company_name;
     }
 
-    public void setCompanyName(String companyName) {
-        this.companyName = companyName;
+    public void setCompany_name(String companyName) {
+        this.company_name = companyName;
     }
 }
 

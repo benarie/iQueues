@@ -1,14 +1,38 @@
 package com.iQueues;
 
-import android.support.v7.app.AppCompatActivity;
+import android.app.Fragment;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
+
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 
-public class DriverMainScreen extends AppCompatActivity {
+public class DriverMainScreen extends AppCompatActivity implements InsertQueueFragment.OnQueueFragmentListener {
+
+    private String date, time;
+    String noQueue = "אין לך תור כרגע";
+    boolean isQueue = false;
+    TextView nameTv;
+    Button insertQueueBtn;
+    final String DATE_FRAGMENT_TAG = "date_fragment";
+
+    private FirebaseAuth auth = FirebaseAuth.getInstance();
+    private FirebaseAuth.AuthStateListener authStateListener;
+
+
+    private FirebaseDatabase database = FirebaseDatabase.getInstance();
+    private DatabaseReference userRrf = database.getReference("users");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,20 +58,19 @@ public class DriverMainScreen extends AppCompatActivity {
         time_per_day.add("15:30 - 16:00");
         time_per_day.add("16:30 - 17:00");*/
 
-        Calendar calendar = Calendar.getInstance();
-        int hourOfDay = calendar.get(Calendar.HOUR_OF_DAY);
-        int minutes = calendar.get(Calendar.MINUTE);
-        int year = calendar.get(Calendar.YEAR);
-        int month = calendar.get(Calendar.MONTH);
-        int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
+        nameTv = findViewById(R.id.name_text_output);
 
-        String date = "בתאריך: " + dayOfWeek + "/" + month + "/" + year;
-        String time = "בשעה: " + hourOfDay + ":" + minutes;
-        String noQueue = "אין לך תור כרגע";
-        boolean isQueue = false;
+        FirebaseUser user = auth.getCurrentUser();
+        if (user != null) {
+
+            nameTv.setText(user.getDisplayName());
+        } else {
+            nameTv.setText("שלום");
+        }
+
 
         ArrayList<Queue> queue_per_day = new ArrayList<>();
-        queue_per_day.add(new Queue(date, time, isQueue));
+        queue_per_day.add(new Queue(noQueue));
 
         RecyclerView recyclerView = findViewById(R.id.recycler);
         recyclerView.setHasFixedSize(true);
@@ -60,8 +83,36 @@ public class DriverMainScreen extends AppCompatActivity {
         recyclerView.setAdapter(adapter);
 
 
+        insertQueueBtn = findViewById(R.id.insert_queue_btn);
+        insertQueueBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FragmentManager manager = getFragmentManager();
+                FragmentTransaction transaction = manager.beginTransaction();
+                transaction.add(R.id.fragment_container, new InsertQueueFragment(), DATE_FRAGMENT_TAG);
+                transaction.commit();
+            }
+        });
+
+
+    }
+
+    @Override
+    public void onDateBtnClicked(String date) {
+
+        Fragment fragment = getFragmentManager().findFragmentByTag(DATE_FRAGMENT_TAG);
+        getFragmentManager().beginTransaction().remove(fragment).commit();
+    }
+
+    @Override
+    public void onDeleteBtnClicked() {
+
+        Fragment fragment = getFragmentManager().findFragmentByTag(DATE_FRAGMENT_TAG);
+        getFragmentManager().beginTransaction().remove(fragment).commit();
     }
 }
+
+
 
 
 /*               progressDialog = new ProgressDialog(SignInProcess.this);

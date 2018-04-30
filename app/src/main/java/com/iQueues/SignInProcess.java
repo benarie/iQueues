@@ -35,9 +35,6 @@ public class SignInProcess extends AppCompatActivity {
     private FirebaseAuth auth = FirebaseAuth.getInstance();
     private FirebaseAuth.AuthStateListener authStateListener;
 
-    private FirebaseDatabase database = FirebaseDatabase.getInstance();
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,9 +42,6 @@ public class SignInProcess extends AppCompatActivity {
 
         loginEmail = findViewById(R.id.login_email);
         loginPword = findViewById(R.id.login_Pword);
-
-
-
 
 
         Button logInBtn = findViewById(R.id.login_btn);
@@ -62,10 +56,11 @@ public class SignInProcess extends AppCompatActivity {
                 progressDialog.setMessage("login");
                 progressDialog.show();
 
-                if (email.isEmpty() || pWord.isEmpty()) {
+                if (email.isEmpty()  || pWord.isEmpty()) {
 
                     Toast.makeText(SignInProcess.this, "email or password fields are empty", Toast.LENGTH_SHORT).show();
                     progressDialog.dismiss();
+                    return;
                 }
 
                 auth.signInWithEmailAndPassword(email, pWord).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
@@ -109,7 +104,7 @@ public class SignInProcess extends AppCompatActivity {
 
                 FirebaseUser user = firebaseAuth.getCurrentUser();
                 if (user != null) {
-                    //user is already signin.
+                    //user is already sign in.
 
                     boolean emailVerified = user.isEmailVerified();
 
