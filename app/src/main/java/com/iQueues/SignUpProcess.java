@@ -42,7 +42,6 @@ public class SignUpProcess extends AppCompatActivity {
 
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
     private DatabaseReference userRef = database.getReference("users");
-    private DatabaseReference queueRef = database.getReference("queue");
     private DatabaseReference companiesRef = database.getReference();
 
 
@@ -115,9 +114,6 @@ public class SignUpProcess extends AppCompatActivity {
                             //creates an object which contains all above strings.
                             UserDetails userInfo = new UserDetails(uFullName, uPhone, uHat, uCompany);
                             userRef.child(auth.getCurrentUser().getUid()).setValue(userInfo);
-
-                            Queue queue = new Queue();
-                            queueRef.child(auth.getCurrentUser().getUid()).setValue(queue);
 
                             // Sign in success, update UI with the signed-in user's information
                             Toast.makeText(SignUpProcess.this, "registration successful", Toast.LENGTH_SHORT).show();

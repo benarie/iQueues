@@ -5,14 +5,9 @@ public class Queue {
     private String date;
     private String time;
     private boolean isQueue;
-    private String noQueue;
 
 
     public Queue() {}
-
-    public Queue(String noQueue) {
-        this.noQueue = noQueue;
-    }
 
     public Queue(String date, String time, boolean isQueue) {
         this.date = date;
@@ -41,15 +36,8 @@ public class Queue {
         return isQueue;
     }
 
-    public void setQueue(boolean queue) {
+    public void setIsQueue(boolean queue) {
         isQueue = queue;
     }
 
-    public String getNoQueue() {
-        return noQueue;
-    }
-
-    public void setNoQueue(String noQueue) {
-        this.noQueue = noQueue;
-    }
 }

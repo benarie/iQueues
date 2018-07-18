@@ -3,30 +3,25 @@ package com.iQueues;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
-import android.nfc.Tag;
 import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.constraint.solver.widgets.WidgetContainer;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.CalendarView;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import java.util.Calendar;
+public class DateFragment extends Fragment {
 
-public class InsertQueueFragment extends Fragment {
-
-    String date;
+    private String picDate;
     String TAG = "date_tag";
 
     public interface OnQueueFragmentListener {
 
-        void onDateBtnClicked(String date);
+        void onConfirmBtnClicked(String date);
 
         void onDeleteBtnClicked();
     }
@@ -46,12 +41,6 @@ public class InsertQueueFragment extends Fragment {
         }
     }
 
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-    }
-
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
@@ -62,16 +51,23 @@ public class InsertQueueFragment extends Fragment {
         calendarView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
             @Override
             public void onSelectedDayChange(@NonNull CalendarView view, int year, int month, int dayOfMonth) {
-                date = dayOfMonth + "/" + month + "/" + year;
-                Log.d(TAG, date);
+
+                    picDate = dayOfMonth + "/" + month + "/" + year;
+                    Log.d(TAG, picDate);
+
             }
         });
+
 
         TextView okDateBtn = viewGroup.findViewById(R.id.ok_date_btn);
         okDateBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                callBack.onDateBtnClicked(date);
+                if (picDate != null) {
+                    callBack.onConfirmBtnClicked(picDate);
+                } else {
+                    Toast.makeText(calendarView.getContext(), "you need select date before pressed on confirm button", Toast.LENGTH_SHORT).show();
+                }
             }
         });
 

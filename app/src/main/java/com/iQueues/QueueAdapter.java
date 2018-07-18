@@ -52,7 +52,8 @@ public class QueueAdapter extends RecyclerView.Adapter<QueueAdapter.QueueViewHol
         Queue queue = queues.get(position);
         holder.dateTv.setText(queue.getDate());
         holder.timeTv.setText(queue.getTime());
-        holder.noQueueTv.setText(queue.getNoQueue());
+        holder.noQueueTv.setText("אין לך תור כרגע");
+
     }
 
     @Override
