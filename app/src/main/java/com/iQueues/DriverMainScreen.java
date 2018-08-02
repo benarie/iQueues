@@ -4,6 +4,7 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -20,11 +21,14 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 public class DriverMainScreen extends AppCompatActivity implements DateFragment.OnQueueFragmentListener, TimeListFragment.OnTimeListFragmentListener {
 
     TextView nameTv;
+    TextView timeTv;
     Button insertQueueBtn;
 
     final String DATE_FRAGMENT_TAG = "date_fragment";
@@ -50,9 +54,13 @@ public class DriverMainScreen extends AppCompatActivity implements DateFragment.
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_driver_main);
 
+
+        //
+        timeTv = findViewById(R.id.time_text_output);
+        checkTime(); // check time in day
+
         nameTv = findViewById(R.id.name_text_output);
         getUserDetails(); // get name
-
 
         ArrayList<Queue> queue_per_day = new ArrayList<>();
         queue_per_day.add(new Queue());
@@ -180,9 +188,22 @@ public class DriverMainScreen extends AppCompatActivity implements DateFragment.
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-
+                throw databaseError.toException();
             }
         });
+    }
+
+    public void checkTime(){
+
+        int hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
+        if (hour >= 0 && hour <= 12)
+            timeTv.setText("בוקר טוב");
+        else if(hour > 12 && hour <= 17)
+            timeTv.setText("צהריים טובים");
+        else if (hour > 17 && hour <= 20)
+            timeTv.setText("ערב טוב");
+        else if (hour > 20 && hour <23)
+            timeTv.setText("לילה טוב");
     }
 
 }

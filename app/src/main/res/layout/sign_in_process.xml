@@ -21,6 +21,7 @@
         android:layout_marginTop="100dp"
         android:ems="10"
         android:hint="אימייל"
+        android:text="baryeh@gmail.com"
         android:inputType="textEmailAddress" />
 
     <EditText
@@ -31,6 +32,7 @@
         android:layout_marginTop="10dp"
         android:layout_marginBottom="10dp"
         android:hint="הכנס סיסמה"
+        android:text="123456"
         android:ems="10"
         android:textAlignment="gravity"
         android:gravity="end"
