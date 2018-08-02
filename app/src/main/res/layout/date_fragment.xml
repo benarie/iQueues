@@ -21,8 +21,10 @@
     <CalendarView
         android:id="@+id/calendar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/date_text_view" />
+        android:layout_height="420dp"
+        android:layout_alignParentStart="true"
+        android:layout_centerVertical="true"
+        android:layout_below="@+id/date_text_view"/>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -38,8 +40,8 @@
             android:textSize="20sp" />
 
         <Space
-            android:layout_width="50dp"
-            android:layout_height="1dp" />
+            android:layout_width="10dp"
+            android:layout_height="0dp" />
 
 
         <TextView

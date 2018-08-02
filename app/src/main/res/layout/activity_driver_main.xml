@@ -36,15 +36,28 @@
         android:text="שם"
         android:textSize="25sp" />
 
+    <TextView
+        android:id="@+id/time_text_output"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_gravity="center"
+        android:layout_marginBottom="5dp"
+        android:layout_marginTop="10dp"
+        android:layout_below="@+id/name_text_output"
+        android:text="זמן"
+        android:textSize="25sp" />
+
 
     <TextView
         android:id="@+id/next_text_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/name_text_output"
+
         android:layout_centerHorizontal="true"
         android:layout_gravity="center"
         android:layout_margin="@dimen/margin"
+        android:layout_below="@+id/time_text_output"
         android:text="התור הבא שלך"
         android:textSize="25sp" />
 

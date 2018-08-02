@@ -46,7 +46,7 @@
         android:background="@drawable/mybtn"
         android:backgroundTint="@android:color/holo_blue_light"
         android:text="@string/loginBtn"
-        android:textSize="17dp"
+        android:textSize="17sp"
         android:textStyle="bold"
 
         app:layout_constraintTop_toBottomOf="@+id/login_Pword" />

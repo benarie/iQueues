@@ -14,6 +14,8 @@ import android.widget.CalendarView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.Calendar;
+
 public class DateFragment extends Fragment {
 
     private String picDate;
@@ -48,12 +50,14 @@ public class DateFragment extends Fragment {
         ViewGroup viewGroup = (ViewGroup) inflater.inflate(R.layout.date_fragment, container, false);
 
         final CalendarView calendarView = viewGroup.findViewById(R.id.calendar);
+
+        calendarView.setMinDate(System.currentTimeMillis() - 1000);
+
         calendarView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
             @Override
             public void onSelectedDayChange(@NonNull CalendarView view, int year, int month, int dayOfMonth) {
-
-                    picDate = dayOfMonth + "/" + month + "/" + year;
-                    Log.d(TAG, picDate);
+                picDate = dayOfMonth + "/" + month + "/" + year;
+                Log.d(TAG, picDate);
 
             }
         });

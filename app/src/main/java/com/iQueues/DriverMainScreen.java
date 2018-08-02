@@ -30,12 +30,14 @@ public class DriverMainScreen extends AppCompatActivity implements DateFragment.
     final String DATE_FRAGMENT_TAG = "date_fragment";
     final String TIME_LIST_FRAGMENT_TAG = "time_list_fragment";
 
+
     private FirebaseAuth auth = FirebaseAuth.getInstance();
     private FirebaseAuth.AuthStateListener authStateListener;
 
 
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
     private DatabaseReference queueRef = database.getReference("queue");
+    private DatabaseReference userRef = database.getReference("users");
 
     FirebaseUser user = auth.getCurrentUser();
 
@@ -47,6 +49,10 @@ public class DriverMainScreen extends AppCompatActivity implements DateFragment.
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_driver_main);
+
+        nameTv = findViewById(R.id.name_text_output);
+        getUserDetails(); // get name
+
 
         ArrayList<Queue> queue_per_day = new ArrayList<>();
         queue_per_day.add(new Queue());
@@ -97,22 +103,8 @@ public class DriverMainScreen extends AppCompatActivity implements DateFragment.
             }
         });
 
-
-        nameTv = findViewById(R.id.name_text_output);
-        if (user != null)
-
-        {
-
-            nameTv.setText("שלום" + "\n" + user.getDisplayName());
-        }
-
-
-        insertQueueBtn =
-
-                findViewById(R.id.insert_queue_btn);
-        insertQueueBtn.setOnClickListener(new View.OnClickListener()
-
-        {
+        insertQueueBtn = findViewById(R.id.insert_queue_btn);
+        insertQueueBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
@@ -175,20 +167,23 @@ public class DriverMainScreen extends AppCompatActivity implements DateFragment.
 
     }
 
-/*    @Override
-    protected void onStart() {
-        super.onStart();
+    public void getUserDetails() {
 
-        auth.addAuthStateListener(authStateListener);
+        userRef.orderByChild("full_Name").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    String name = snapshot.child("full_Name").getValue(String.class);
+                    nameTv.setText(name);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-
-        auth.removeAuthStateListener(authStateListener);
-    }*/
-
 
 }
 
