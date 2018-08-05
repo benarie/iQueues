@@ -20,6 +20,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -30,6 +32,7 @@ public class DriverMainScreen extends AppCompatActivity implements DateFragment.
     TextView nameTv;
     TextView timeTv;
     Button insertQueueBtn;
+    Boolean isActive = false;
 
     final String DATE_FRAGMENT_TAG = "date_fragment";
     final String TIME_LIST_FRAGMENT_TAG = "time_list_fragment";
@@ -54,8 +57,6 @@ public class DriverMainScreen extends AppCompatActivity implements DateFragment.
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_driver_main);
 
-
-        //
         timeTv = findViewById(R.id.time_text_output);
         checkTime(); // check time in day
 
@@ -75,18 +76,22 @@ public class DriverMainScreen extends AppCompatActivity implements DateFragment.
         final QueueAdapter adapter = new QueueAdapter(queue_per_day);
         recyclerView.setAdapter(adapter);
 
+        //READ DATA FROM FIREBASE
         queueRef.child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
-
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                // check the crush "Can't convert object of type java.lang.String to type com.iQueues.Queue"
                 queues.clear();
                 if (dataSnapshot.exists()) {
-                    Queue queue = dataSnapshot.getValue(Queue.class);
-                    queues.add(queue);
+                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                        Queue queue = snapshot.getValue(Queue.class);
+                        queues.add(queue);
 
+                        if (queue == null){
 
-
+                        }
+                    }
+                    adapter.notifyDataSetChanged();
+                }
                  /*   adapter.getItemId(R.id.no_queue_text_view);
                     recyclerView.setVisibility(View.INVISIBLE);
                     adapter.getItemId(R.id.date_text_view);
@@ -96,26 +101,25 @@ public class DriverMainScreen extends AppCompatActivity implements DateFragment.
 
                     recyclerView.setAdapter(adapter);*/
 
-                } else {
 
-                    Queue queue = new Queue();
-                    queueRef.child(auth.getCurrentUser().getUid()).setValue(queue);
-                }
+                   /* queue = new Queue();
+                    queueRef.child(auth.getCurrentUser().getUid()).setValue(queue);*/
 
-                adapter.notifyDataSetChanged();
             }
-
             @Override
             public void onCancelled(DatabaseError databaseError) {
 
             }
+
         });
+
 
         insertQueueBtn = findViewById(R.id.insert_queue_btn);
         insertQueueBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
+                //
                 FragmentManager manager = getFragmentManager();
                 FragmentTransaction transaction = manager.beginTransaction();
                 transaction.add(R.id.fragment_container, new DateFragment(), DATE_FRAGMENT_TAG);
@@ -169,11 +173,12 @@ public class DriverMainScreen extends AppCompatActivity implements DateFragment.
         getFragmentManager().beginTransaction().remove(fragment).commit();
 
         queue.setTime(time);
-        queue.setIsQueue(true);
+        queue.setStatus(true);
 
         queueRef.child(auth.getCurrentUser().getUid()).setValue(queue);
 
     }
+
 
     public void getUserDetails() {
 
@@ -193,18 +198,44 @@ public class DriverMainScreen extends AppCompatActivity implements DateFragment.
         });
     }
 
-    public void checkTime(){
+    public void checkTime() {
 
         int hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
+
         if (hour >= 0 && hour <= 12)
             timeTv.setText("בוקר טוב");
-        else if(hour > 12 && hour <= 17)
+        else if (hour > 12 && hour <= 17)
             timeTv.setText("צהריים טובים");
         else if (hour > 17 && hour <= 20)
             timeTv.setText("ערב טוב");
-        else if (hour > 20 && hour <23)
+        else if (hour > 20 && hour < 23)
             timeTv.setText("לילה טוב");
     }
+
+/*    public void checkStatus() {
+
+        queueRef.orderByChild("status").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+
+                    String status = snapshot.child("status").getValue(String.class);
+
+                    if (status.equals("true")) {
+                        isActive = true;
+                    } else
+                        isActive = false;
+                }
+            }
+
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+    }*/
 
 }
 

@@ -8,10 +8,7 @@
     android:layout_marginStart="10dp"
     android:layout_marginTop="10dp"
     android:orientation="vertical">
-
-
-
-
+    
     <EditText
         android:id="@+id/login_email"
         android:layout_width="280dp"
@@ -21,7 +18,7 @@
         android:layout_marginTop="100dp"
         android:ems="10"
         android:hint="אימייל"
-        android:text="baryeh@gmail.com"
+        android:text="baryeha@gmail.com"
         android:inputType="textEmailAddress" />
 
     <EditText

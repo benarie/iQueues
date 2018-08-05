@@ -4,16 +4,17 @@ public class Queue {
 
     private String date;
     private String time;
-    private boolean isQueue;
+    private boolean status = false;
+
 
 
     public Queue() {}
 
-    public Queue(String date, String time, boolean isQueue) {
+
+    public Queue(String date, String time, boolean status) {
         this.date = date;
         this.time = time;
-        this.isQueue = isQueue;
-
+        this.status = status;
     }
 
     public String getDate() {
@@ -32,12 +33,11 @@ public class Queue {
         this.time = time;
     }
 
-    public boolean isQueue() {
-        return isQueue;
+    public boolean getStatus() {
+        return status;
     }
 
-    public void setIsQueue(boolean queue) {
-        isQueue = queue;
+    public void setStatus(boolean status) {
+        this.status = status;
     }
-
 }
