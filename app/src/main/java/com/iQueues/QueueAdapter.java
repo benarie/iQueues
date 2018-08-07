@@ -50,9 +50,19 @@ public class QueueAdapter extends RecyclerView.Adapter<QueueAdapter.QueueViewHol
     public void onBindViewHolder(@NonNull QueueViewHolder holder, int position) {
 
         Queue queue = queues.get(position);
-        holder.dateTv.setText(queue.getDate());
-        holder.timeTv.setText(queue.getTime());
-        holder.noQueueTv.setText("אין לך תור כרגע");
+
+      /*  if(queue.getStatus().equalsIgnoreCase("true")) {
+            holder.dateTv.setText(queue.getDate());
+            holder.timeTv.setText(queue.getTime());
+            holder.timeTv.setVisibility(View.VISIBLE);
+            holder.dateTv.setVisibility(View.VISIBLE);
+            holder.noQueueTv.setVisibility(View.GONE);
+        } else {
+            holder.timeTv.setVisibility(View.GONE);
+            holder.dateTv.setVisibility(View.GONE);
+            holder.noQueueTv.setVisibility(View.VISIBLE);
+            holder.noQueueTv.setText("אין לך תור כרגע");
+        }*/
 
     }
 

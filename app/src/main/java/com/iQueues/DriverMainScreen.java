@@ -6,6 +6,7 @@ import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -31,8 +32,14 @@ public class DriverMainScreen extends AppCompatActivity implements DateFragment.
 
     TextView nameTv;
     TextView timeTv;
+    TextView dateTv;
+    TextView baseTv;
     Button insertQueueBtn;
-    Boolean isActive = false;
+    Button deleteQueueBtn;
+    Button editedQueueBtn;
+    Button targetBtn;
+    CardView cardView;
+
 
     final String DATE_FRAGMENT_TAG = "date_fragment";
     final String TIME_LIST_FRAGMENT_TAG = "time_list_fragment";
@@ -48,8 +55,6 @@ public class DriverMainScreen extends AppCompatActivity implements DateFragment.
 
     FirebaseUser user = auth.getCurrentUser();
 
-    List<Queue> queues = new ArrayList<>();
-
     Queue queue = new Queue();
 
     @Override
@@ -63,63 +68,74 @@ public class DriverMainScreen extends AppCompatActivity implements DateFragment.
         nameTv = findViewById(R.id.name_text_output);
         getUserDetails(); // get name
 
-        ArrayList<Queue> queue_per_day = new ArrayList<>();
-        queue_per_day.add(new Queue());
+        final ArrayList<Queue> queue_cell = new ArrayList<>();
+        queue_cell.add(new Queue());
 
-        final RecyclerView recyclerView = findViewById(R.id.recycler);
-        recyclerView.setHasFixedSize(true);
+        dateTv = findViewById(R.id.date_text_view);
+        timeTv = findViewById(R.id.time_text_view);
+        baseTv = findViewById(R.id.no_queue_text_view);
 
-        LinearLayoutManager llm = new LinearLayoutManager(DriverMainScreen.this);
-        llm.setOrientation(LinearLayoutManager.VERTICAL);
-        recyclerView.setLayoutManager(llm);
-
-        final QueueAdapter adapter = new QueueAdapter(queue_per_day);
-        recyclerView.setAdapter(adapter);
+        editedQueueBtn = findViewById(R.id.edited_btn);
+        deleteQueueBtn = findViewById(R.id.delete_btn);
+        insertQueueBtn = findViewById(R.id.insert_queue_btn);
+        targetBtn = findViewById(R.id.target_btn);
+        cardView = findViewById(R.id.card);
 
         //READ DATA FROM FIREBASE
         queueRef.child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                queues.clear();
+                queue_cell.clear();
                 if (dataSnapshot.exists()) {
-                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                        Queue queue = snapshot.getValue(Queue.class);
-                        queues.add(queue);
+                    Queue queue = dataSnapshot.getValue(Queue.class);
 
-                        if (queue == null){
+                    queue_cell.add(queue);
 
-                        }
+                    if (queue.getStatus() != null && queue.getStatus().equalsIgnoreCase("false")) {
+
+                        baseTv.setVisibility(View.GONE);
+                        dateTv.setVisibility(View.VISIBLE);
+                        timeTv.setVisibility(View.VISIBLE);
+                        dateTv.setText(queue.getDate());
+                        timeTv.setText(queue.getTime());
+
+                        insertQueueBtn.setVisibility(View.GONE);
+                        editedQueueBtn.setVisibility(View.VISIBLE);
+                        deleteQueueBtn.setVisibility(View.VISIBLE);
+                        targetBtn.setVisibility(View.VISIBLE);
+                    } else {
+
+                        baseTv.setVisibility(View.VISIBLE);
+                        dateTv.setVisibility(View.GONE);
+                        timeTv.setVisibility(View.GONE);
+                        baseTv.setText("אין לך תור כרגע");
+
+                        insertQueueBtn.setVisibility(View.VISIBLE);
+                        editedQueueBtn.setVisibility(View.GONE);
+                        deleteQueueBtn.setVisibility(View.GONE);
+                        targetBtn.setVisibility(View.GONE);
+
                     }
-                    adapter.notifyDataSetChanged();
+
+
                 }
-                 /*   adapter.getItemId(R.id.no_queue_text_view);
-                    recyclerView.setVisibility(View.INVISIBLE);
-                    adapter.getItemId(R.id.date_text_view);
-                    recyclerView.setVisibility(View.VISIBLE);
-                    adapter.getItemId(R.id.time_text_view);
-                    recyclerView.setVisibility(View.VISIBLE);
-
-                    recyclerView.setAdapter(adapter);*/
-
-
-                   /* queue = new Queue();
-                    queueRef.child(auth.getCurrentUser().getUid()).setValue(queue);*/
 
             }
+
             @Override
             public void onCancelled(DatabaseError databaseError) {
-
             }
 
         });
 
 
-        insertQueueBtn = findViewById(R.id.insert_queue_btn);
+
+
         insertQueueBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                //
+
                 FragmentManager manager = getFragmentManager();
                 FragmentTransaction transaction = manager.beginTransaction();
                 transaction.add(R.id.fragment_container, new DateFragment(), DATE_FRAGMENT_TAG);
@@ -153,6 +169,7 @@ public class DriverMainScreen extends AppCompatActivity implements DateFragment.
         Fragment fragment = getFragmentManager().findFragmentByTag(DATE_FRAGMENT_TAG);
         getFragmentManager().beginTransaction().remove(fragment).commit();
 
+
         queue.setDate(date);
 
     }
@@ -173,7 +190,7 @@ public class DriverMainScreen extends AppCompatActivity implements DateFragment.
         getFragmentManager().beginTransaction().remove(fragment).commit();
 
         queue.setTime(time);
-        queue.setStatus(true);
+        queue.setStatus("true");
 
         queueRef.child(auth.getCurrentUser().getUid()).setValue(queue);
 
@@ -211,36 +228,21 @@ public class DriverMainScreen extends AppCompatActivity implements DateFragment.
         else if (hour > 20 && hour < 23)
             timeTv.setText("לילה טוב");
     }
-
-/*    public void checkStatus() {
-
-        queueRef.orderByChild("status").addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-
-                    String status = snapshot.child("status").getValue(String.class);
-
-                    if (status.equals("true")) {
-                        isActive = true;
-                    } else
-                        isActive = false;
-                }
-            }
-
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-
-    }*/
-
 }
 
+// use in recycler view
+
+    /*final RecyclerView recyclerView = findViewById(R.id.recycler);
+        recyclerView.setHasFixedSize(true);
+
+        LinearLayoutManager llm = new LinearLayoutManager(DriverMainScreen.this);
+        llm.setOrientation(LinearLayoutManager.VERTICAL);
+        recyclerView.setLayoutManager(llm);
+
+        final QueueAdapter adapter = new QueueAdapter(queue_cell);
+        recyclerView.setAdapter(adapter);
 
 
-
+        adapter.notifyDataSetChanged();*/
 
 
