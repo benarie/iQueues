@@ -4,7 +4,7 @@ public class Queue {
 
     private String date;
     private String time;
-    private String status = "false";
+    private String status;
 
     public Queue() {
         //default cons.

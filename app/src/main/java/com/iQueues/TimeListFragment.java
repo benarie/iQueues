@@ -3,6 +3,7 @@ package com.iQueues;
 import android.app.Activity;
 import android.app.ListFragment;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,11 +11,14 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 
 public class TimeListFragment extends ListFragment {
 
-    String[] time_per_day = {"08:00 - 08:30", "08:30 - 09:00",
+    String[] timePerDay = {"08:00 - 08:30", "08:30 - 09:00",
             "09:00 - 09:30", "09:30 - 10:00",
             "10:00 - 10:30", "10:00 - 10:30",
             "10:30 - 11:00", "11:00 - 11:30",
@@ -43,12 +47,17 @@ public class TimeListFragment extends ListFragment {
         }
     }
 
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
+        //get the list from activity
+      //  ArrayList<String> timeByDateList = getArguments().getStringArrayList("ArrayList");
+
         View v = inflater.inflate(R.layout.time_fragment, container, false);
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1, time_per_day);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1, timePerDay);
         setListAdapter(adapter);
+
         return v;
     }
 
@@ -56,7 +65,10 @@ public class TimeListFragment extends ListFragment {
     public void onListItemClick(ListView l, View v, int position, long id) {
         super.onListItemClick(l, v, position, id);
 
-        callback.onListItemClicked(time_per_day[position]);
+        callback.onListItemClicked(timePerDay[position]);
 
+        Intent intent = new Intent(getActivity(),DriverMainScreen.class);
+        startActivity(intent);
     }
+
 }

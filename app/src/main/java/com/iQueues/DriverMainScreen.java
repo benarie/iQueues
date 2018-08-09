@@ -4,11 +4,9 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
-import android.provider.ContactsContract;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -21,12 +19,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
 
 public class DriverMainScreen extends AppCompatActivity implements DateFragment.OnQueueFragmentListener, TimeListFragment.OnTimeListFragmentListener {
 
@@ -54,6 +48,8 @@ public class DriverMainScreen extends AppCompatActivity implements DateFragment.
     private DatabaseReference userRef = database.getReference("users");
 
     FirebaseUser user = auth.getCurrentUser();
+
+    public ArrayList<String> timeByDateList = new ArrayList<>();
 
     Queue queue = new Queue();
 
@@ -87,11 +83,10 @@ public class DriverMainScreen extends AppCompatActivity implements DateFragment.
             public void onDataChange(DataSnapshot dataSnapshot) {
                 queue_cell.clear();
                 if (dataSnapshot.exists()) {
-                    Queue queue = dataSnapshot.getValue(Queue.class);
-
+                    queue = dataSnapshot.getValue(Queue.class);
                     queue_cell.add(queue);
 
-                    if (queue.getStatus() != null && queue.getStatus().equalsIgnoreCase("false")) {
+                    if (queue.getStatus().equalsIgnoreCase("true")) {
 
                         baseTv.setVisibility(View.GONE);
                         dateTv.setVisibility(View.VISIBLE);
@@ -103,6 +98,7 @@ public class DriverMainScreen extends AppCompatActivity implements DateFragment.
                         editedQueueBtn.setVisibility(View.VISIBLE);
                         deleteQueueBtn.setVisibility(View.VISIBLE);
                         targetBtn.setVisibility(View.VISIBLE);
+
                     } else {
 
                         baseTv.setVisibility(View.VISIBLE);
@@ -117,8 +113,7 @@ public class DriverMainScreen extends AppCompatActivity implements DateFragment.
 
                     }
 
-
-                }
+                } else baseTv.setText("אין לך תור כרגע");
 
             }
 
@@ -128,22 +123,18 @@ public class DriverMainScreen extends AppCompatActivity implements DateFragment.
 
         });
 
-
-
-
         insertQueueBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-
                 FragmentManager manager = getFragmentManager();
                 FragmentTransaction transaction = manager.beginTransaction();
                 transaction.add(R.id.fragment_container, new DateFragment(), DATE_FRAGMENT_TAG);
+
                 transaction.addToBackStack(null).commit();
 
             }
         });
-
 
     }
 
@@ -163,12 +154,19 @@ public class DriverMainScreen extends AppCompatActivity implements DateFragment.
     @Override
     public void onConfirmBtnClicked(String date) {
 
+
+        //send list to the timeListFragment
+        Bundle args = new Bundle();
+        args.putStringArrayList("ArrayList", timeByDateList);
+        TimeListFragment timeListFragment = new TimeListFragment();
+        timeListFragment.setArguments(args);
+
+        //replace between fragments
         getFragmentManager().beginTransaction().replace(R.id.fragment_container, new TimeListFragment(), TIME_LIST_FRAGMENT_TAG)
                 .addToBackStack(null).commit();
 
         Fragment fragment = getFragmentManager().findFragmentByTag(DATE_FRAGMENT_TAG);
         getFragmentManager().beginTransaction().remove(fragment).commit();
-
 
         queue.setDate(date);
 
@@ -192,10 +190,9 @@ public class DriverMainScreen extends AppCompatActivity implements DateFragment.
         queue.setTime(time);
         queue.setStatus("true");
 
-        queueRef.child(auth.getCurrentUser().getUid()).setValue(queue);
+        queueRef.child(auth.getCurrentUser().getUid()).push().setValue(queue);
 
     }
-
 
     public void getUserDetails() {
 
@@ -228,6 +225,35 @@ public class DriverMainScreen extends AppCompatActivity implements DateFragment.
         else if (hour > 20 && hour < 23)
             timeTv.setText("לילה טוב");
     }
+
+    @Override
+    public void checkTimeByDate(String date) {
+
+        final String picDate = date;
+
+        queueRef.orderByChild("queue").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                        String chosenDate = snapshot.child("date").getValue(String.class);
+                        String chosenTime = snapshot.child("time").getValue(String.class);
+                        if (picDate.equals(chosenDate)) {
+
+                            timeByDateList.add(chosenTime);
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+    }
+
 }
 
 // use in recycler view

@@ -26,6 +26,10 @@ public class DateFragment extends Fragment {
         void onConfirmBtnClicked(String date);
 
         void onDeleteBtnClicked();
+
+        void checkTimeByDate(String date);
+
+
     }
 
     OnQueueFragmentListener callBack;
@@ -69,6 +73,7 @@ public class DateFragment extends Fragment {
             public void onClick(View v) {
                 if (picDate != null) {
                     callBack.onConfirmBtnClicked(picDate);
+                    callBack.checkTimeByDate(picDate);
                 } else {
                     Toast.makeText(calendarView.getContext(), "you need select date before pressed on confirm button", Toast.LENGTH_SHORT).show();
                 }
