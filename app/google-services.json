@@ -23,6 +23,14 @@
           }
         },
         {
+          "client_id": "497779062380-tv03fvd7cha25jj419n42pgh60o01kdt.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.iQueues",
+            "certificate_hash": "958e79c2e0ab3468bd339d32fd71e7e25bf140a3"
+          }
+        },
+        {
           "client_id": "497779062380-di9sekfpsecdlc9g5rv5ckso0n8njgfu.apps.googleusercontent.com",
           "client_type": 3
         }
