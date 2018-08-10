@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -15,6 +16,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
@@ -25,24 +28,35 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class SignUpProcess extends AppCompatActivity {
+
+    private String KEY_COMPANY = "company";
+    private String KEY_PHONE = "phone";
+    private String KEY_HAT = "hat";
+    private String KEY_FULL_NAME = "name";
+    private String TAG = "SignUpProcess";
+
 
     private EditText email, pWord, phone, hatNum, fullName;
     private ProgressDialog progressDialog;
     Button signUpBtn;
     private String uFullName, uPhone, uHat, uCompany;
-    AutoCompleteTextView taxiCompaniesTv;
+    private AutoCompleteTextView taxiCompaniesTv;
 
     private FirebaseAuth auth = FirebaseAuth.getInstance();
     private FirebaseAuth.AuthStateListener authStateListener;
 
-    private FirebaseDatabase database = FirebaseDatabase.getInstance();
-    private DatabaseReference userRef = database.getReference("users");
-    private DatabaseReference companiesRef = database.getReference();
+    private FirebaseFirestore database = FirebaseFirestore.getInstance();
+    private CollectionReference userRef = database.collection("users");
+    private CollectionReference companiesRef = database.collection("companies");
 
 
     @Override
@@ -57,7 +71,9 @@ public class SignUpProcess extends AppCompatActivity {
         phone = findViewById(R.id.phone_num);
         hatNum = findViewById(R.id.hat_num);
 
+        /* TODO GET  TAXI COMPAIES FROM FIRESTORE */
 
+/*
         companiesRef.child("companies").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -79,6 +95,7 @@ public class SignUpProcess extends AppCompatActivity {
 
             }
         });
+*/
 
 
         signUpBtn = findViewById(R.id.sign_up_btn);
@@ -100,6 +117,7 @@ public class SignUpProcess extends AppCompatActivity {
                 progressDialog.setMessage("registering user please wait.");
                 progressDialog.show();
 
+
                 auth.createUserWithEmailAndPassword(uEmail, uPword).addOnCompleteListener(SignUpProcess.this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
@@ -112,8 +130,31 @@ public class SignUpProcess extends AppCompatActivity {
                             uCompany = taxiCompaniesTv.getText().toString().trim();
 
                             //creates an object which contains all above strings.
-                            UserDetails userInfo = new UserDetails(uFullName, uPhone, uHat, uCompany);
-                            userRef.child(auth.getCurrentUser().getUid()).setValue(userInfo);
+                            Map <String,Object> userDetails = new HashMap<>();
+
+
+                            /*UserDetails userInfo = new UserDetails(uFullName, uPhone, uHat, uCompany);
+                            userRef.child(auth.getCurrentUser().getUid()).setValue(userInfo);*/
+
+                            userDetails.put(KEY_FULL_NAME,uFullName);
+                            userDetails.put(KEY_PHONE,uPhone);
+                            userDetails.put(KEY_HAT,uHat);
+                            userDetails.put(KEY_COMPANY,uCompany);
+
+                            userRef.document(auth.getCurrentUser().getUid()).set(userDetails)
+                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void aVoid) {
+                                            Toast.makeText(SignUpProcess.this, "user saved", Toast.LENGTH_SHORT).show();
+                                        }
+                                    })
+                                    .addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+                                            Toast.makeText(SignUpProcess.this, "Error!", Toast.LENGTH_SHORT).show();
+                                            Log.d(TAG,e.toString());
+                                        }
+                                    });
 
                             // Sign in success, update UI with the signed-in user's information
                             Toast.makeText(SignUpProcess.this, "registration successful", Toast.LENGTH_SHORT).show();
