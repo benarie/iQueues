@@ -4,23 +4,37 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+
+import javax.annotation.Nullable;
 
 public class DriverMainScreen extends AppCompatActivity implements DateFragment.OnQueueFragmentListener, TimeListFragment.OnTimeListFragmentListener {
 
@@ -37,17 +51,15 @@ public class DriverMainScreen extends AppCompatActivity implements DateFragment.
 
     final String DATE_FRAGMENT_TAG = "date_fragment";
     final String TIME_LIST_FRAGMENT_TAG = "time_list_fragment";
+    private String TAG = "DriverMainScreen";
 
 
     private FirebaseAuth auth = FirebaseAuth.getInstance();
-    private FirebaseAuth.AuthStateListener authStateListener;
 
+    private FirebaseFirestore database = FirebaseFirestore.getInstance();
+    private CollectionReference queueRef = database.collection("queue");
+    private CollectionReference userRef = database.collection("users");
 
-    private FirebaseDatabase database = FirebaseDatabase.getInstance();
-    private DatabaseReference queueRef = database.getReference("queue");
-    private DatabaseReference userRef = database.getReference("users");
-
-    FirebaseUser user = auth.getCurrentUser();
 
     public ArrayList<String> timeByDateList = new ArrayList<>();
 
@@ -59,10 +71,9 @@ public class DriverMainScreen extends AppCompatActivity implements DateFragment.
         setContentView(R.layout.activity_driver_main);
 
         timeTv = findViewById(R.id.time_text_output);
-        checkTime(); // check time in day
-
         nameTv = findViewById(R.id.name_text_output);
-        getUserDetails(); // get name
+
+        checkTime(); // check time in day
 
         final ArrayList<Queue> queue_cell = new ArrayList<>();
         queue_cell.add(new Queue());
@@ -78,7 +89,7 @@ public class DriverMainScreen extends AppCompatActivity implements DateFragment.
         cardView = findViewById(R.id.card);
 
         //READ DATA FROM FIREBASE
-        queueRef.child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+       /* queueRef.child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 queue_cell.clear();
@@ -122,6 +133,7 @@ public class DriverMainScreen extends AppCompatActivity implements DateFragment.
             }
 
         });
+*/
 
         insertQueueBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -135,6 +147,7 @@ public class DriverMainScreen extends AppCompatActivity implements DateFragment.
 
             }
         });
+
 
     }
 
@@ -190,27 +203,29 @@ public class DriverMainScreen extends AppCompatActivity implements DateFragment.
         queue.setTime(time);
         queue.setStatus("true");
 
-        queueRef.child(auth.getCurrentUser().getUid()).push().setValue(queue);
+        //queueRef.child(auth.getCurrentUser().getUid()).push().setValue(queue);
 
     }
 
-    public void getUserDetails() {
+    @Override
+    protected void onStart() {
+        super.onStart();
 
-        userRef.orderByChild("full_Name").addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    String name = snapshot.child("full_Name").getValue(String.class);
-                    nameTv.setText(name);
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                throw databaseError.toException();
-            }
-        });
+        FirebaseUser user = auth.getCurrentUser();
+        getUserDetails(user);
     }
+
+/////////////
+
+    public void getUserDetails(FirebaseUser user) {
+
+        if (user != null) {
+
+            String name = user.getDisplayName();
+            nameTv.setText(name);
+        }
+    }
+
 
     public void checkTime() {
 
@@ -231,7 +246,7 @@ public class DriverMainScreen extends AppCompatActivity implements DateFragment.
 
         final String picDate = date;
 
-        queueRef.orderByChild("queue").addListenerForSingleValueEvent(new ValueEventListener() {
+       /* queueRef.orderByChild("queue").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
@@ -250,14 +265,14 @@ public class DriverMainScreen extends AppCompatActivity implements DateFragment.
             public void onCancelled(DatabaseError databaseError) {
 
             }
-        });
+        });*/
 
     }
+
 
 }
 
 // use in recycler view
-
     /*final RecyclerView recyclerView = findViewById(R.id.recycler);
         recyclerView.setHasFixedSize(true);
 
@@ -270,5 +285,28 @@ public class DriverMainScreen extends AppCompatActivity implements DateFragment.
 
 
         adapter.notifyDataSetChanged();*/
+
+//get user name frome fiebase
+    /*    userRef.document(auth.getCurrentUser().getUid())
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                        if (task.isSuccessful()) {
+                            DocumentSnapshot document = task.getResult();
+                            if (document.exists()) {
+                                Log.d(TAG, "DocumentSnapshot data: " + document.getData());
+                                String name = document.getString("full_name");
+                                nameTv.setText(name);
+                            } else {
+                                Log.d(TAG, "No such document");
+                            }
+                        } else {
+                            Log.d(TAG, "get failed with ", task.getException());
+                        }
+                    }
+                });*/
+
+
 
 

@@ -38,12 +38,7 @@ import java.util.Map;
 
 public class SignUpProcess extends AppCompatActivity {
 
-    private String KEY_COMPANY = "company";
-    private String KEY_PHONE = "phone";
-    private String KEY_HAT = "hat";
-    private String KEY_FULL_NAME = "name";
     private String TAG = "SignUpProcess";
-
 
     private EditText email, pWord, phone, hatNum, fullName;
     private ProgressDialog progressDialog;
@@ -55,8 +50,9 @@ public class SignUpProcess extends AppCompatActivity {
     private FirebaseAuth.AuthStateListener authStateListener;
 
     private FirebaseFirestore database = FirebaseFirestore.getInstance();
+    private FirebaseDatabase db = FirebaseDatabase.getInstance();
     private CollectionReference userRef = database.collection("users");
-    private CollectionReference companiesRef = database.collection("companies");
+    private DatabaseReference companiesRef = db.getReference();
 
 
     @Override
@@ -71,13 +67,12 @@ public class SignUpProcess extends AppCompatActivity {
         phone = findViewById(R.id.phone_num);
         hatNum = findViewById(R.id.hat_num);
 
-        /* TODO GET  TAXI COMPAIES FROM FIRESTORE */
+        /* GET  TAXI COMPAIES FROM FIREBASE */
 
-/*
         companiesRef.child("companies").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                final List<String> companies = new ArrayList<>();
+                final ArrayList<String> companies = new ArrayList<>();
 
                 for (DataSnapshot companiesSnapshot : dataSnapshot.getChildren()) {
                     String taxiCompanies = companiesSnapshot.child("taxiCompanies").getValue(String.class);
@@ -92,10 +87,9 @@ public class SignUpProcess extends AppCompatActivity {
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-
+                Log.d(TAG, "Failed to read value.", databaseError.toException());
             }
         });
-*/
 
 
         signUpBtn = findViewById(R.id.sign_up_btn);
@@ -130,18 +124,11 @@ public class SignUpProcess extends AppCompatActivity {
                             uCompany = taxiCompaniesTv.getText().toString().trim();
 
                             //creates an object which contains all above strings.
-                            Map <String,Object> userDetails = new HashMap<>();
 
+                            UserDetails userDetails = new UserDetails(uFullName, uPhone, uHat, uCompany);
 
-                            /*UserDetails userInfo = new UserDetails(uFullName, uPhone, uHat, uCompany);
-                            userRef.child(auth.getCurrentUser().getUid()).setValue(userInfo);*/
-
-                            userDetails.put(KEY_FULL_NAME,uFullName);
-                            userDetails.put(KEY_PHONE,uPhone);
-                            userDetails.put(KEY_HAT,uHat);
-                            userDetails.put(KEY_COMPANY,uCompany);
-
-                            userRef.document(auth.getCurrentUser().getUid()).set(userDetails)
+                            userRef.document(auth.getCurrentUser().getUid())
+                                    .set(userDetails)
                                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                                         @Override
                                         public void onSuccess(Void aVoid) {
@@ -152,11 +139,14 @@ public class SignUpProcess extends AppCompatActivity {
                                         @Override
                                         public void onFailure(@NonNull Exception e) {
                                             Toast.makeText(SignUpProcess.this, "Error!", Toast.LENGTH_SHORT).show();
-                                            Log.d(TAG,e.toString());
+                                            Log.d(TAG, e.toString());
                                         }
                                     });
 
-                            // Sign in success, update UI with the signed-in user's information
+                            // Sign up success, update UI with the signed-in user's information
+
+                            updateUser();
+
                             Toast.makeText(SignUpProcess.this, "registration successful", Toast.LENGTH_SHORT).show();
                             progressDialog.dismiss();
 
@@ -164,7 +154,7 @@ public class SignUpProcess extends AppCompatActivity {
                             startActivity(intent);
 
                         } else {
-                            // If sign in fails, display a message to the user.
+                            // If sign up fails, display a message to the user.
                             progressDialog.dismiss();
                             Toast.makeText(SignUpProcess.this, "registration failed,please try again", Toast.LENGTH_SHORT).show();
                         }
@@ -173,43 +163,26 @@ public class SignUpProcess extends AppCompatActivity {
             }
         });
 
-        authStateListener = new FirebaseAuth.AuthStateListener() {
-            @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
 
-                FirebaseUser user = firebaseAuth.getCurrentUser();
+    }
 
-                if (user != null) {
-                    if (uFullName != null) {
-                        user.updateProfile(new UserProfileChangeRequest.Builder().setDisplayName(uFullName).build()).addOnCompleteListener(new OnCompleteListener<Void>() {
-                            @Override
-                            public void onComplete(@NonNull Task<Void> task) {
-                                if (task.isSuccessful()) {
+    private void updateUser() {
 
-                                    Toast.makeText(SignUpProcess.this, uFullName + " Welcome!!!", Toast.LENGTH_SHORT).show();
-                                }
-                            }
-                        });
+        final FirebaseUser user = auth.getCurrentUser();
+
+        UserProfileChangeRequest profileUpdate = new UserProfileChangeRequest.Builder()
+                .setDisplayName(uFullName)
+                .build();
+        user.updateProfile(profileUpdate)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()) {
+                            Log.d(TAG, "User profile updated." + user.getDisplayName());
+                        }
                     }
-                }
-            }
-        };
-
-
+                });
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-
-        auth.addAuthStateListener(authStateListener);
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-
-        auth.removeAuthStateListener(authStateListener);
-    }
 
 }
