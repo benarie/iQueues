@@ -13,11 +13,8 @@
     <string name="signup" translatable="false"> להרשמה</string>
     <string name="mail" translatable="false"> אימייל</string>
     <string name="pword" translatable="false"> בחר סיסמה</string>
-    <string-array name="companies">
-        <item>רחביה</item>
-        <item>בקעה</item>
-        <item>בית הכרם</item>
-        <item>הפסגה</item>
-        <item>עץ הזית</item>
-    </string-array>
+    <string name="note" translatable="false">שעות קבלת קהל: \n בין השעות 17:00 - 08:00 \n אם ברצונך להזמין תור \n אנא לחץ על כפתור \n קבע תור</string>
+    <string name="date" translatable="false">תאריך:</string>
+    <string name="time" translatable="false">שעה:</string>
+
 </resources>

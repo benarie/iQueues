@@ -67,8 +67,6 @@ public class TimeListFragment extends ListFragment {
 
         callback.onListItemClicked(timePerDay[position]);
 
-        Intent intent = new Intent(getActivity(),DriverMainScreen.class);
-        startActivity(intent);
     }
 
 }

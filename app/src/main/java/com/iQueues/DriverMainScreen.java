@@ -1,5 +1,6 @@
 package com.iQueues;
 
+import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
@@ -9,11 +10,14 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -33,6 +37,8 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.annotation.Nullable;
 
@@ -51,7 +57,10 @@ public class DriverMainScreen extends AppCompatActivity implements DateFragment.
 
     final String DATE_FRAGMENT_TAG = "date_fragment";
     final String TIME_LIST_FRAGMENT_TAG = "time_list_fragment";
-    private String TAG = "DriverMainScreen";
+    final String TAG = "DriverMainScreen";
+    final String DATE_TAG = "date";
+    final String TIME_TAG = "time";
+    final String STATUS_TAG = "status";
 
 
     private FirebaseAuth auth = FirebaseAuth.getInstance();
@@ -71,12 +80,13 @@ public class DriverMainScreen extends AppCompatActivity implements DateFragment.
         setContentView(R.layout.activity_driver_main);
 
         timeTv = findViewById(R.id.time_text_output);
-        nameTv = findViewById(R.id.name_text_output);
 
         checkTime(); // check time in day
 
-        final ArrayList<Queue> queue_cell = new ArrayList<>();
-        queue_cell.add(new Queue());
+        nameTv = findViewById(R.id.name_text_output);
+
+       /* final ArrayList<Queue> queue_cell = new ArrayList<>();
+        queue_cell.add(new Queue());*/
 
         dateTv = findViewById(R.id.date_text_view);
         timeTv = findViewById(R.id.time_text_view);
@@ -203,8 +213,13 @@ public class DriverMainScreen extends AppCompatActivity implements DateFragment.
         queue.setTime(time);
         queue.setStatus("true");
 
-        //queueRef.child(auth.getCurrentUser().getUid()).push().setValue(queue);
+        Map<String,Object> data = new HashMap<>();
+        data.put(DATE_TAG,queue.getDate());
+        data.put(TIME_TAG,queue.getTime());
+        data.put(STATUS_TAG,queue.getStatus());
 
+
+        queueRef.document(auth.getCurrentUser().getUid()).set(data);
     }
 
     @Override

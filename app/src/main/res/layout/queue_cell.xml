@@ -13,11 +13,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:text="אין תור"
+        android:text="@string/note"
         android:textAlignment="center"
         android:textColor="#888"
-        android:textSize="25sp"
+        android:textSize="15sp"
         android:textStyle="bold"
+        android:textDirection="rtl"
         android:visibility="visible" />
 
     <LinearLayout
@@ -30,8 +31,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:text="תאריך"
-            android:textSize="17sp"
+            android:text="@string/date"
+            android:textSize="15sp"
             android:visibility="gone" />
 
         <Space
@@ -43,8 +44,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:text="שעה"
-            android:textSize="17sp"
+            android:text="@string/time"
+            android:textSize="15sp"
             android:visibility="gone" />
 
     </LinearLayout>
