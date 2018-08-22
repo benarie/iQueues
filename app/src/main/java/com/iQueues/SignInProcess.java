@@ -12,7 +12,9 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.signin.SignIn;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
@@ -23,9 +25,16 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import data.GlobalUtils;
+import data.Globals;
 
 public class SignInProcess extends AppCompatActivity {
 
@@ -34,17 +43,23 @@ public class SignInProcess extends AppCompatActivity {
     private TextView loginEmail;
     private TextView loginPword;
     private ProgressDialog progressDialog;
-
+    private String uid;
 
     private FirebaseAuth auth = FirebaseAuth.getInstance();
 
-
+    private FirebaseFirestore database = FirebaseFirestore.getInstance();
+    private CollectionReference userRef = database.collection("users");
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.sign_in_process);
+
+        if(GlobalUtils.getStringFromLocalStorage(this, Globals.UID_LOCAL_STORAGE_KEY) != null) {
+            goToMainScreen();
+            return;
+        }
 
         loginEmail = findViewById(R.id.login_email);
         loginPword = findViewById(R.id.login_Pword);
@@ -77,18 +92,25 @@ public class SignInProcess extends AppCompatActivity {
                             Log.d(TAG, "signInWithEmail:success");
 
                             Toast.makeText(SignInProcess.this, "signIn successful", Toast.LENGTH_SHORT).show();
-                            progressDialog.dismiss();
 
-                            Intent intent = new Intent(SignInProcess.this, DriverMainScreen.class);
-                            startActivity(intent);
+                            //read data frome firestore
+                            uid = auth.getCurrentUser().getUid();
 
+                            userRef.document(uid).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                @Override
+                                public void onSuccess(DocumentSnapshot snapshot) {
+                                    UserDetails userDetails = snapshot.toObject(UserDetails.class);
+                                    GlobalUtils.setStringToLocalStorage(SignInProcess.this, Globals.UID_LOCAL_STORAGE_KEY, uid);
+                                    GlobalUtils.setStringToLocalStorage(SignInProcess.this, Globals.FULL_NAME_LOCAL_STORAGE_KEY, auth.getCurrentUser().getDisplayName());
+                                    goToMainScreen();
+                                }
+                            });
                         } else {
 
-                            progressDialog.dismiss();
                             Toast.makeText(SignInProcess.this, "email or password are incorrect,please check your entries.", Toast.LENGTH_SHORT).show();
 
                         }
-
+                        progressDialog.dismiss();
                     }
                 });
             }
@@ -96,7 +118,9 @@ public class SignInProcess extends AppCompatActivity {
 
 
         Button signInBtn = findViewById(R.id.sign_in_btn);
-        signInBtn.setOnClickListener(new View.OnClickListener() {
+        signInBtn.setOnClickListener(new View.OnClickListener()
+
+        {
             @Override
             public void onClick(View v) {
 
@@ -121,4 +145,11 @@ public class SignInProcess extends AppCompatActivity {
 
         };*/
     }
+
+    private void goToMainScreen() {
+        Intent intent = new Intent(SignInProcess.this, DriverMainScreen.class);
+        startActivity(intent);
+    }
+
+
 }

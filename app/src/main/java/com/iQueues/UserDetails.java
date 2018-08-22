@@ -1,29 +1,41 @@
 package com.iQueues;
 
 
+
+
+import com.google.firebase.database.Exclude;
+
+import java.util.ArrayList;
+
 public class UserDetails {
 
-    private String full_name;
+    private String uid;
     private String phone_number;
     private String hat_number;
     private String company_name;
+    private ArrayList <String> idQueue;
+
+    @Exclude private transient ArrayList <Order> orders;
+
 
 
     public  UserDetails(){}
 
-    public UserDetails(String full_name, String phone_number, String hat_number, String company_name) {
-        this.full_name = full_name;
+    public UserDetails(String uid, String phone_number, String hat_number, String company_name, ArrayList<String> idQueue) {
+        this.uid = uid;
         this.phone_number = phone_number;
         this.hat_number = hat_number;
         this.company_name = company_name;
+        this.idQueue = idQueue;
+        this.orders = orders;
     }
 
-    public String getFull_name() {
-        return full_name;
+    public String getUid() {
+        return uid;
     }
 
-    public void setFull_name(String full_name) {
-        this.full_name = full_name;
+    public void setUid(String uid) {
+        this.uid = uid;
     }
 
     public String getPhone_number() {
@@ -48,6 +60,22 @@ public class UserDetails {
 
     public void setCompany_name(String company_name) {
         this.company_name = company_name;
+    }
+
+    public ArrayList<String> getIdQueue() {
+        return idQueue;
+    }
+
+    public void setIdQueue(ArrayList<String> idQueue) {
+        this.idQueue = idQueue;
+    }
+
+    public ArrayList<Order> getOrders() {
+        return orders;
+    }
+
+    public void setOrders(ArrayList<Order> orders) {
+        this.orders = orders;
     }
 }
 

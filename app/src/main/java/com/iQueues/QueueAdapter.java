@@ -7,32 +7,33 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class QueueAdapter extends RecyclerView.Adapter<QueueAdapter.QueueViewHolder> {
 
-    private List<Queue> queues;
+    private ArrayList<Order> orders;
 
-    public QueueAdapter(List<Queue> queues) {
-        this.queues = queues;
+    public QueueAdapter(ArrayList<Order> orders) {
+        this.orders = orders;
     }
 
     @Override
     public int getItemCount() {
-        return queues.size();
+        return orders.size();
     }
 
     public class QueueViewHolder extends RecyclerView.ViewHolder {
 
         TextView dateTv;
         TextView timeTv;
-        TextView noQueueTv;
+
 
         public QueueViewHolder(View itemView) {
             super(itemView);
             dateTv = itemView.findViewById(R.id.date_text_view);
             timeTv = itemView.findViewById(R.id.time_text_view);
-            noQueueTv = itemView.findViewById(R.id.no_queue_text_view);
+
         }
 
     }
@@ -49,7 +50,7 @@ public class QueueAdapter extends RecyclerView.Adapter<QueueAdapter.QueueViewHol
     @Override
     public void onBindViewHolder(@NonNull QueueViewHolder holder, int position) {
 
-        Queue queue = queues.get(position);
+        Order order = orders.get(position);
 
       /*  if(queue.getStatus().equalsIgnoreCase("true")) {
             holder.dateTv.setText(queue.getDate());

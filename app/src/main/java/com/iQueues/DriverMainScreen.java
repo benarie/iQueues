@@ -1,9 +1,11 @@
 package com.iQueues;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.content.LocalBroadcastManager;
@@ -42,6 +44,9 @@ import java.util.Map;
 
 import javax.annotation.Nullable;
 
+import data.GlobalUtils;
+import data.Globals;
+
 public class DriverMainScreen extends AppCompatActivity implements DateFragment.OnQueueFragmentListener, TimeListFragment.OnTimeListFragmentListener {
 
     TextView nameTv;
@@ -60,19 +65,19 @@ public class DriverMainScreen extends AppCompatActivity implements DateFragment.
     final String TAG = "DriverMainScreen";
     final String DATE_TAG = "date";
     final String TIME_TAG = "time";
-    final String STATUS_TAG = "status";
+    final String KEY_NAME = "name";
 
 
     private FirebaseAuth auth = FirebaseAuth.getInstance();
 
     private FirebaseFirestore database = FirebaseFirestore.getInstance();
-    private CollectionReference queueRef = database.collection("queue");
+    private CollectionReference orderRef = database.collection("queue");
     private CollectionReference userRef = database.collection("users");
 
 
     public ArrayList<String> timeByDateList = new ArrayList<>();
 
-    Queue queue = new Queue();
+    Order order = new Order();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,10 +89,6 @@ public class DriverMainScreen extends AppCompatActivity implements DateFragment.
         checkTime(); // check time in day
 
         nameTv = findViewById(R.id.name_text_output);
-
-       /* final ArrayList<Queue> queue_cell = new ArrayList<>();
-        queue_cell.add(new Queue());*/
-
         dateTv = findViewById(R.id.date_text_view);
         timeTv = findViewById(R.id.time_text_view);
         baseTv = findViewById(R.id.no_queue_text_view);
@@ -191,7 +192,7 @@ public class DriverMainScreen extends AppCompatActivity implements DateFragment.
         Fragment fragment = getFragmentManager().findFragmentByTag(DATE_FRAGMENT_TAG);
         getFragmentManager().beginTransaction().remove(fragment).commit();
 
-        queue.setDate(date);
+        order.setDate(date);
 
     }
 
@@ -210,35 +211,32 @@ public class DriverMainScreen extends AppCompatActivity implements DateFragment.
         Fragment fragment = getFragmentManager().findFragmentByTag(TIME_LIST_FRAGMENT_TAG);
         getFragmentManager().beginTransaction().remove(fragment).commit();
 
-        queue.setTime(time);
-        queue.setStatus("true");
-
-        Map<String,Object> data = new HashMap<>();
-        data.put(DATE_TAG,queue.getDate());
-        data.put(TIME_TAG,queue.getTime());
-        data.put(STATUS_TAG,queue.getStatus());
+        order.setTime(time);
 
 
-        queueRef.document(auth.getCurrentUser().getUid()).set(data);
+        Map<String, Object> data = new HashMap<>();
+        data.put(DATE_TAG, order.getDate());
+        data.put(TIME_TAG, order.getTime());
+
+
+        orderRef.document(auth.getCurrentUser().getUid()).set(data);
     }
 
     @Override
     protected void onStart() {
         super.onStart();
 
-        FirebaseUser user = auth.getCurrentUser();
-        getUserDetails(user);
+        getUserDetails();
     }
 
 /////////////
 
-    public void getUserDetails(FirebaseUser user) {
+    public void getUserDetails() {
 
-        if (user != null) {
+        String name = GlobalUtils.getStringFromLocalStorage(this, Globals.FULL_NAME_LOCAL_STORAGE_KEY);
 
-            String name = user.getDisplayName();
-            nameTv.setText(name);
-        }
+        nameTv.setText(name);
+
     }
 
 

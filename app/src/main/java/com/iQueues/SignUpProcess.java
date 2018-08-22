@@ -1,5 +1,6 @@
 package com.iQueues;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -32,19 +33,24 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+
+import data.GlobalUtils;
+import data.Globals;
+
 
 public class SignUpProcess extends AppCompatActivity {
 
     private String TAG = "SignUpProcess";
+    private String KEY_NAME = "name";
+    private String KEY_UID = "uid";
+
 
     private EditText email, pWord, phone, hatNum, fullName;
     private ProgressDialog progressDialog;
     Button signUpBtn;
-    private String uFullName, uPhone, uHat, uCompany;
+    private String uFullName, uPhone, uHat, uCompany, uid;
     private AutoCompleteTextView taxiCompaniesTv;
+
 
     private FirebaseAuth auth = FirebaseAuth.getInstance();
     private FirebaseAuth.AuthStateListener authStateListener;
@@ -66,6 +72,7 @@ public class SignUpProcess extends AppCompatActivity {
         fullName = findViewById(R.id.full_name);
         phone = findViewById(R.id.phone_num);
         hatNum = findViewById(R.id.hat_num);
+        final ArrayList<String> idQueue = new ArrayList<>();
 
         /* GET  TAXI COMPAIES FROM FIREBASE */
 
@@ -122,12 +129,13 @@ public class SignUpProcess extends AppCompatActivity {
                             uPhone = phone.getText().toString().trim();
                             uHat = hatNum.getText().toString().trim();
                             uCompany = taxiCompaniesTv.getText().toString().trim();
+                            uid = auth.getCurrentUser().getUid();
+
 
                             //creates an object which contains all above strings.
 
-                            UserDetails userDetails = new UserDetails(uFullName, uPhone, uHat, uCompany);
-
-                            userRef.document(auth.getCurrentUser().getUid())
+                            UserDetails userDetails = new UserDetails(uid,uPhone, uHat, uCompany,idQueue);
+                            userRef.document(uid)
                                     .set(userDetails)
                                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                                         @Override
@@ -146,6 +154,11 @@ public class SignUpProcess extends AppCompatActivity {
                             // Sign up success, update UI with the signed-in user's information
 
                             updateUser();
+
+                            //save name and uid by SharedPreferences
+
+                            GlobalUtils.setStringToLocalStorage(SignUpProcess.this, Globals.UID_LOCAL_STORAGE_KEY, uid);
+                            GlobalUtils.setStringToLocalStorage(SignUpProcess.this, Globals.FULL_NAME_LOCAL_STORAGE_KEY, uFullName);
 
                             Toast.makeText(SignUpProcess.this, "registration successful", Toast.LENGTH_SHORT).show();
                             progressDialog.dismiss();
