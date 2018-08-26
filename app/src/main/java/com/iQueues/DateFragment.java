@@ -27,7 +27,7 @@ public class DateFragment extends Fragment {
 
         void onDeleteBtnClicked();
 
-        void checkTimeByDate(String date);
+      //  void checkTimeByDate(String date);
 
 
     }
@@ -60,7 +60,7 @@ public class DateFragment extends Fragment {
         calendarView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
             @Override
             public void onSelectedDayChange(@NonNull CalendarView view, int year, int month, int dayOfMonth) {
-                picDate = dayOfMonth + "/" + month + "/" + year;
+                picDate =  dayOfMonth + "/" + month + "/" + year;
                 Log.d(TAG, picDate);
 
             }
@@ -73,7 +73,7 @@ public class DateFragment extends Fragment {
             public void onClick(View v) {
                 if (picDate != null) {
                     callBack.onConfirmBtnClicked(picDate);
-                    callBack.checkTimeByDate(picDate);
+                    //callBack.checkTimeByDate(picDate);
                 } else {
                     Toast.makeText(calendarView.getContext(), "you need select date before pressed on confirm button", Toast.LENGTH_SHORT).show();
                 }

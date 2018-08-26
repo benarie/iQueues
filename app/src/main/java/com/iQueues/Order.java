@@ -2,21 +2,22 @@ package com.iQueues;
 
 public class Order {
 
+    private String orderId;
     private String date;
     private String time;
-    private String orderId;
     private String uid;
-
+    private String status;
 
     public Order() {
         //default cons.
-    }
+   }
 
-    public Order(String date, String time, String orderId, String uid) {
+    public Order(String orderId, String date, String time, String uid, String status) {
         this.date = date;
         this.time = time;
         this.orderId = orderId;
         this.uid = uid;
+        this.status = status;
     }
 
     public String getDate() {
@@ -49,5 +50,13 @@ public class Order {
 
     public void setUid(String uid) {
         this.uid = uid;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 }

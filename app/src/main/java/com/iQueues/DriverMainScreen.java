@@ -7,6 +7,8 @@ import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.provider.Settings;
+import android.renderscript.Sampler;
 import android.support.annotation.NonNull;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
@@ -16,6 +18,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.common.internal.safeparcel.SafeParcelable;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -31,8 +34,10 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -71,13 +76,13 @@ public class DriverMainScreen extends AppCompatActivity implements DateFragment.
     private FirebaseAuth auth = FirebaseAuth.getInstance();
 
     private FirebaseFirestore database = FirebaseFirestore.getInstance();
-    private CollectionReference orderRef = database.collection("queue");
-    private CollectionReference userRef = database.collection("users");
+    private CollectionReference orderRef = database.collection("orders");
 
 
     public ArrayList<String> timeByDateList = new ArrayList<>();
 
     Order order = new Order();
+    UserDetails userDetails = UserDetails.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,54 +102,40 @@ public class DriverMainScreen extends AppCompatActivity implements DateFragment.
         deleteQueueBtn = findViewById(R.id.delete_btn);
         insertQueueBtn = findViewById(R.id.insert_queue_btn);
         targetBtn = findViewById(R.id.target_btn);
-        cardView = findViewById(R.id.card);
+        cardView = findViewById(R.id.queue_cell);
 
-        //READ DATA FROM FIREBASE
-       /* queueRef.child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                queue_cell.clear();
-                if (dataSnapshot.exists()) {
-                    queue = dataSnapshot.getValue(Queue.class);
-                    queue_cell.add(queue);
+        dateTv.setText(order.getDate());
+        timeTv.setText(order.getTime());
 
-                    if (queue.getStatus().equalsIgnoreCase("true")) {
+        order.getDate();
+        userDetails.getCompany_name();
 
-                        baseTv.setVisibility(View.GONE);
-                        dateTv.setVisibility(View.VISIBLE);
-                        timeTv.setVisibility(View.VISIBLE);
-                        dateTv.setText(queue.getDate());
-                        timeTv.setText(queue.getTime());
+       /* if (order.getStatus().equalsIgnoreCase("active")) {
 
-                        insertQueueBtn.setVisibility(View.GONE);
-                        editedQueueBtn.setVisibility(View.VISIBLE);
-                        deleteQueueBtn.setVisibility(View.VISIBLE);
-                        targetBtn.setVisibility(View.VISIBLE);
+            baseTv.setVisibility(View.GONE);
+            dateTv.setVisibility(View.VISIBLE);
+            timeTv.setVisibility(View.VISIBLE);
+            dateTv.setText(order.getDate());
+            timeTv.setText(order.getTime());
 
-                    } else {
+            insertQueueBtn.setVisibility(View.GONE);
+            editedQueueBtn.setVisibility(View.VISIBLE);
+            deleteQueueBtn.setVisibility(View.VISIBLE);
+            targetBtn.setVisibility(View.VISIBLE);
 
-                        baseTv.setVisibility(View.VISIBLE);
-                        dateTv.setVisibility(View.GONE);
-                        timeTv.setVisibility(View.GONE);
-                        baseTv.setText("אין לך תור כרגע");
+        } else {
 
-                        insertQueueBtn.setVisibility(View.VISIBLE);
-                        editedQueueBtn.setVisibility(View.GONE);
-                        deleteQueueBtn.setVisibility(View.GONE);
-                        targetBtn.setVisibility(View.GONE);
+            baseTv.setVisibility(View.VISIBLE);
+            dateTv.setVisibility(View.GONE);
+            timeTv.setVisibility(View.GONE);
+            baseTv.setText(R.string.note);
 
-                    }
+            insertQueueBtn.setVisibility(View.VISIBLE);
+            editedQueueBtn.setVisibility(View.GONE);
+            deleteQueueBtn.setVisibility(View.GONE);
+            targetBtn.setVisibility(View.GONE);
 
-                } else baseTv.setText("אין לך תור כרגע");
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-            }
-
-        });
-*/
+        }
 
         insertQueueBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -158,6 +149,8 @@ public class DriverMainScreen extends AppCompatActivity implements DateFragment.
 
             }
         });
+*/
+
 
 
     }
@@ -213,13 +206,8 @@ public class DriverMainScreen extends AppCompatActivity implements DateFragment.
 
         order.setTime(time);
 
+        pushOrderDataToDataBase();
 
-        Map<String, Object> data = new HashMap<>();
-        data.put(DATE_TAG, order.getDate());
-        data.put(TIME_TAG, order.getTime());
-
-
-        orderRef.document(auth.getCurrentUser().getUid()).set(data);
     }
 
     @Override
@@ -239,7 +227,6 @@ public class DriverMainScreen extends AppCompatActivity implements DateFragment.
 
     }
 
-
     public void checkTime() {
 
         int hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
@@ -254,12 +241,43 @@ public class DriverMainScreen extends AppCompatActivity implements DateFragment.
             timeTv.setText("לילה טוב");
     }
 
-    @Override
+    private void pushOrderDataToDataBase() {
+
+        String date = order.getDate();
+        String time = order.getTime();
+        String uid = GlobalUtils.getStringFromLocalStorage(DriverMainScreen.this, Globals.UID_LOCAL_STORAGE_KEY);
+        String status = Globals.ACTIVE_ORDER_STATUS;
+        String orderId = orderRef.document().getId();
+
+        Order order = new Order(orderId, date, time, uid, status);
+
+        orderRef.document(uid)
+                .set(order)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Toast.makeText(DriverMainScreen.this, "order saved", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(DriverMainScreen.this, "Error!", Toast.LENGTH_SHORT).show();
+                        Log.d(TAG, e.toString());
+                    }
+                });
+
+        /*// Atomically add a new orderId to the "orderIds" array field.
+        DocumentReference userRef = database.collection("users").document(uid);
+        userRef.update("idQueue", FieldValue.arrayUnion(orderId));*/
+    }
+
+/*    @Override
     public void checkTimeByDate(String date) {
 
         final String picDate = date;
 
-       /* queueRef.orderByChild("queue").addListenerForSingleValueEvent(new ValueEventListener() {
+        queueRef.orderByChild("queue").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
@@ -278,9 +296,9 @@ public class DriverMainScreen extends AppCompatActivity implements DateFragment.
             public void onCancelled(DatabaseError databaseError) {
 
             }
-        });*/
+        });
 
-    }
+    }*/
 
 
 }

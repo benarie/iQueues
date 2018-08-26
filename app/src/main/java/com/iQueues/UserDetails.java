@@ -13,22 +13,17 @@ public class UserDetails {
     private String phone_number;
     private String hat_number;
     private String company_name;
-    private ArrayList <String> idQueue;
 
-    @Exclude private transient ArrayList <Order> orders;
+    private static UserDetails instance;
 
-
-
-    public  UserDetails(){}
-
-    public UserDetails(String uid, String phone_number, String hat_number, String company_name, ArrayList<String> idQueue) {
-        this.uid = uid;
-        this.phone_number = phone_number;
-        this.hat_number = hat_number;
-        this.company_name = company_name;
-        this.idQueue = idQueue;
-        this.orders = orders;
+    public static UserDetails getInstance() {
+        if(instance == null) {
+            instance = new UserDetails();
+        }
+        return instance;
     }
+
+    private UserDetails(){}
 
     public String getUid() {
         return uid;
@@ -62,20 +57,12 @@ public class UserDetails {
         this.company_name = company_name;
     }
 
-    public ArrayList<String> getIdQueue() {
-        return idQueue;
+    public void setParams(String uid, String uPhone, String uHat, String uCompany) {
+        this.setUid(uid);
+        this.setPhone_number(uPhone);
+        this.setHat_number(uHat);
+        this.setCompany_name(uCompany);
     }
 
-    public void setIdQueue(ArrayList<String> idQueue) {
-        this.idQueue = idQueue;
-    }
-
-    public ArrayList<Order> getOrders() {
-        return orders;
-    }
-
-    public void setOrders(ArrayList<Order> orders) {
-        this.orders = orders;
-    }
 }
 

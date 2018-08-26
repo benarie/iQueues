@@ -4,6 +4,7 @@ package com.iQueues;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -49,6 +50,10 @@ public class SignInProcess extends AppCompatActivity {
 
     private FirebaseFirestore database = FirebaseFirestore.getInstance();
     private CollectionReference userRef = database.collection("users");
+    private CollectionReference orderRef = database.collection("orders");
+
+    UserDetails userDetails = UserDetails.getInstance();
+    Order order = new Order();
 
 
     @Override
@@ -56,7 +61,15 @@ public class SignInProcess extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.sign_in_process);
 
-        if(GlobalUtils.getStringFromLocalStorage(this, Globals.UID_LOCAL_STORAGE_KEY) != null) {
+        progressDialog = new ProgressDialog(SignInProcess.this);
+
+        if (GlobalUtils.getStringFromLocalStorage(this, Globals.UID_LOCAL_STORAGE_KEY) != null) {
+
+            progressDialog.setMessage("login");
+            progressDialog.show();
+
+            uid = GlobalUtils.getStringFromLocalStorage(this, Globals.UID_LOCAL_STORAGE_KEY);
+            pullDataOfUserFromFireStore(uid);
             goToMainScreen();
             return;
         }
@@ -73,7 +86,7 @@ public class SignInProcess extends AppCompatActivity {
                 String email = loginEmail.getText().toString().trim();
                 String pWord = loginPword.getText().toString().trim();
 
-                progressDialog = new ProgressDialog(SignInProcess.this);
+
                 progressDialog.setMessage("login");
                 progressDialog.show();
 
@@ -89,19 +102,23 @@ public class SignInProcess extends AppCompatActivity {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
 
-                            Log.d(TAG, "signInWithEmail:success");
+                            Log.d(TAG, "signIn With Email:success");
 
                             Toast.makeText(SignInProcess.this, "signIn successful", Toast.LENGTH_SHORT).show();
 
-                            //read data frome firestore
                             uid = auth.getCurrentUser().getUid();
 
+                            //pull data frome fireStore
                             userRef.document(uid).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                                 @Override
                                 public void onSuccess(DocumentSnapshot snapshot) {
-                                    UserDetails userDetails = snapshot.toObject(UserDetails.class);
+                                    userDetails = snapshot.toObject(UserDetails.class);
+
                                     GlobalUtils.setStringToLocalStorage(SignInProcess.this, Globals.UID_LOCAL_STORAGE_KEY, uid);
                                     GlobalUtils.setStringToLocalStorage(SignInProcess.this, Globals.FULL_NAME_LOCAL_STORAGE_KEY, auth.getCurrentUser().getDisplayName());
+
+                                    pullDataOfOrderFromFireStore(uid);
+
                                     goToMainScreen();
                                 }
                             });
@@ -129,26 +146,37 @@ public class SignInProcess extends AppCompatActivity {
             }
         });
 
-
-        /*authStateListener = new FirebaseAuth.AuthStateListener() {
-            @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-
-                FirebaseUser user = firebaseAuth.getCurrentUser();
-                if (user != null) {
-                    //user is already sign in.
-
-                    boolean emailVerified = user.isEmailVerified();
-
-                }
-            }
-
-        };*/
     }
 
     private void goToMainScreen() {
         Intent intent = new Intent(SignInProcess.this, DriverMainScreen.class);
         startActivity(intent);
+    }
+
+    private void pullDataOfUserFromFireStore(final String uid) {
+
+        userRef.document(uid).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot snapshot) {
+                userDetails = snapshot.toObject(UserDetails.class);
+
+                pullDataOfOrderFromFireStore(uid);
+            }
+        });
+    }
+
+    private void pullDataOfOrderFromFireStore(String uid) {
+
+        orderRef.document(uid).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot snapshot) {
+                order = snapshot.toObject(Order.class);
+
+
+
+            }
+        });
+
     }
 
 

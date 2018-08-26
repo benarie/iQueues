@@ -19,12 +19,14 @@ public class GlobalUtils {
     }
 
     public static void removeStringFromLocalStorage(Context context, String key) {
-        getSharedPreferences(context).edit().remove(key);
+        getSharedPreferences(context).edit().remove(key).apply();
     }
 
     public static void cleanUserDataFromMemory(Context context) {
         removeStringFromLocalStorage(context, Globals.FULL_NAME_LOCAL_STORAGE_KEY);
         removeStringFromLocalStorage(context, Globals.UID_LOCAL_STORAGE_KEY);
     }
+
+
 
 }

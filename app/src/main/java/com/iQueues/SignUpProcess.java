@@ -74,7 +74,7 @@ public class SignUpProcess extends AppCompatActivity {
         hatNum = findViewById(R.id.hat_num);
         final ArrayList<String> idQueue = new ArrayList<>();
 
-        /* GET  TAXI COMPAIES FROM FIREBASE */
+        /* GET  TAXI COMPANIES FROM FIREBASE */
 
         companiesRef.child("companies").addValueEventListener(new ValueEventListener() {
             @Override
@@ -134,7 +134,10 @@ public class SignUpProcess extends AppCompatActivity {
 
                             //creates an object which contains all above strings.
 
-                            UserDetails userDetails = new UserDetails(uid,uPhone, uHat, uCompany,idQueue);
+                            UserDetails userDetails = UserDetails.getInstance();
+                            userDetails.setParams(uid,uPhone, uHat, uCompany);
+
+
                             userRef.document(uid)
                                     .set(userDetails)
                                     .addOnSuccessListener(new OnSuccessListener<Void>() {
