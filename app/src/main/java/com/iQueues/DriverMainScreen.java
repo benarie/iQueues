@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.app.ProgressDialog;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.provider.Settings;
@@ -45,6 +46,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Nullable;
@@ -63,6 +65,7 @@ public class DriverMainScreen extends AppCompatActivity implements DateFragment.
     Button editedQueueBtn;
     Button targetBtn;
     CardView cardView;
+    ProgressDialog progressDialog;
 
 
     final String DATE_FRAGMENT_TAG = "date_fragment";
@@ -78,8 +81,6 @@ public class DriverMainScreen extends AppCompatActivity implements DateFragment.
     private FirebaseFirestore database = FirebaseFirestore.getInstance();
     private CollectionReference orderRef = database.collection("orders");
 
-
-    public ArrayList<String> timeByDateList = new ArrayList<>();
 
     Order order = new Order();
     UserDetails userDetails = UserDetails.getInstance();
@@ -104,38 +105,9 @@ public class DriverMainScreen extends AppCompatActivity implements DateFragment.
         targetBtn = findViewById(R.id.target_btn);
         cardView = findViewById(R.id.queue_cell);
 
-        dateTv.setText(order.getDate());
-        timeTv.setText(order.getTime());
 
-        order.getDate();
-        userDetails.getCompany_name();
-
-       /* if (order.getStatus().equalsIgnoreCase("active")) {
-
-            baseTv.setVisibility(View.GONE);
-            dateTv.setVisibility(View.VISIBLE);
-            timeTv.setVisibility(View.VISIBLE);
-            dateTv.setText(order.getDate());
-            timeTv.setText(order.getTime());
-
-            insertQueueBtn.setVisibility(View.GONE);
-            editedQueueBtn.setVisibility(View.VISIBLE);
-            deleteQueueBtn.setVisibility(View.VISIBLE);
-            targetBtn.setVisibility(View.VISIBLE);
-
-        } else {
-
-            baseTv.setVisibility(View.VISIBLE);
-            dateTv.setVisibility(View.GONE);
-            timeTv.setVisibility(View.GONE);
-            baseTv.setText(R.string.note);
-
-            insertQueueBtn.setVisibility(View.VISIBLE);
-            editedQueueBtn.setVisibility(View.GONE);
-            deleteQueueBtn.setVisibility(View.GONE);
-            targetBtn.setVisibility(View.GONE);
-
-        }
+        String uid = GlobalUtils.getStringFromLocalStorage(DriverMainScreen.this,Globals.UID_LOCAL_STORAGE_KEY);
+        pullDataOfOrderFromFireStore(uid);
 
         insertQueueBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -149,11 +121,12 @@ public class DriverMainScreen extends AppCompatActivity implements DateFragment.
 
             }
         });
-*/
+
 
 
 
     }
+
 
     @Override
     public void onBackPressed() {
@@ -170,13 +143,6 @@ public class DriverMainScreen extends AppCompatActivity implements DateFragment.
     /////////////
     @Override
     public void onConfirmBtnClicked(String date) {
-
-
-        //send list to the timeListFragment
-        Bundle args = new Bundle();
-        args.putStringArrayList("ArrayList", timeByDateList);
-        TimeListFragment timeListFragment = new TimeListFragment();
-        timeListFragment.setArguments(args);
 
         //replace between fragments
         getFragmentManager().beginTransaction().replace(R.id.fragment_container, new TimeListFragment(), TIME_LIST_FRAGMENT_TAG)
@@ -251,7 +217,7 @@ public class DriverMainScreen extends AppCompatActivity implements DateFragment.
 
         Order order = new Order(orderId, date, time, uid, status);
 
-        orderRef.document(uid)
+        orderRef.document(orderId)
                 .set(order)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
@@ -272,72 +238,59 @@ public class DriverMainScreen extends AppCompatActivity implements DateFragment.
         userRef.update("idQueue", FieldValue.arrayUnion(orderId));*/
     }
 
-/*    @Override
-    public void checkTimeByDate(String date) {
+    private void pullDataOfOrderFromFireStore(String uid) {
 
-        final String picDate = date;
-
-        queueRef.orderByChild("queue").addListenerForSingleValueEvent(new ValueEventListener() {
+        orderRef.whereEqualTo("uid", uid).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()) {
-                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                        String chosenDate = snapshot.child("date").getValue(String.class);
-                        String chosenTime = snapshot.child("time").getValue(String.class);
-                        if (picDate.equals(chosenDate)) {
+            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                List<DocumentSnapshot> list = queryDocumentSnapshots.getDocuments();
+                for (DocumentSnapshot single : list) {
+                     OrdersQueue.getInstance().add(single.toObject(Order.class));
+                     order = single.toObject(Order.class);
 
-                            timeByDateList.add(chosenTime);
-                        }
-                    }
+                    afterGetOrderData();
+
                 }
             }
-
+        }).addOnFailureListener(new OnFailureListener() {
             @Override
-            public void onCancelled(DatabaseError databaseError) {
-
+            public void onFailure(@NonNull Exception e) {
+                Log.d(TAG, e + "pullDataOfOrderFromFireStore");
             }
         });
 
-    }*/
+    }
 
+    private void afterGetOrderData() {
 
+        if (OrdersQueue.getInstance().getActive() != null) {
+
+            dateTv.setText(order.getDate());
+            timeTv.setText(order.getTime());
+
+            baseTv.setVisibility(View.GONE);
+            dateTv.setVisibility(View.VISIBLE);
+            timeTv.setVisibility(View.VISIBLE);
+            dateTv.setText(order.getDate());
+            timeTv.setText(order.getTime());
+
+            insertQueueBtn.setVisibility(View.GONE);
+            editedQueueBtn.setVisibility(View.VISIBLE);
+            deleteQueueBtn.setVisibility(View.VISIBLE);
+            targetBtn.setVisibility(View.VISIBLE);
+
+        } else {
+
+            baseTv.setVisibility(View.VISIBLE);
+            dateTv.setVisibility(View.GONE);
+            timeTv.setVisibility(View.GONE);
+            baseTv.setText(R.string.note);
+
+            insertQueueBtn.setVisibility(View.VISIBLE);
+            editedQueueBtn.setVisibility(View.GONE);
+            deleteQueueBtn.setVisibility(View.GONE);
+            targetBtn.setVisibility(View.GONE);
+
+        }
+    }
 }
-
-// use in recycler view
-    /*final RecyclerView recyclerView = findViewById(R.id.recycler);
-        recyclerView.setHasFixedSize(true);
-
-        LinearLayoutManager llm = new LinearLayoutManager(DriverMainScreen.this);
-        llm.setOrientation(LinearLayoutManager.VERTICAL);
-        recyclerView.setLayoutManager(llm);
-
-        final QueueAdapter adapter = new QueueAdapter(queue_cell);
-        recyclerView.setAdapter(adapter);
-
-
-        adapter.notifyDataSetChanged();*/
-
-//get user name frome fiebase
-    /*    userRef.document(auth.getCurrentUser().getUid())
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                        if (task.isSuccessful()) {
-                            DocumentSnapshot document = task.getResult();
-                            if (document.exists()) {
-                                Log.d(TAG, "DocumentSnapshot data: " + document.getData());
-                                String name = document.getString("full_name");
-                                nameTv.setText(name);
-                            } else {
-                                Log.d(TAG, "No such document");
-                            }
-                        } else {
-                            Log.d(TAG, "get failed with ", task.getException());
-                        }
-                    }
-                });*/
-
-
-
-

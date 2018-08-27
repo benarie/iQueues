@@ -53,15 +53,14 @@ public class SignInProcess extends AppCompatActivity {
     private CollectionReference orderRef = database.collection("orders");
 
     UserDetails userDetails = UserDetails.getInstance();
-    Order order = new Order();
-
+    OrdersQueue queue = OrdersQueue.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.sign_in_process);
 
-        progressDialog = new ProgressDialog(SignInProcess.this);
+        progressDialog = new ProgressDialog(this);
 
         if (GlobalUtils.getStringFromLocalStorage(this, Globals.UID_LOCAL_STORAGE_KEY) != null) {
 
@@ -117,8 +116,6 @@ public class SignInProcess extends AppCompatActivity {
                                     GlobalUtils.setStringToLocalStorage(SignInProcess.this, Globals.UID_LOCAL_STORAGE_KEY, uid);
                                     GlobalUtils.setStringToLocalStorage(SignInProcess.this, Globals.FULL_NAME_LOCAL_STORAGE_KEY, auth.getCurrentUser().getDisplayName());
 
-                                    pullDataOfOrderFromFireStore(uid);
-
                                     goToMainScreen();
                                 }
                             });
@@ -160,23 +157,8 @@ public class SignInProcess extends AppCompatActivity {
             public void onSuccess(DocumentSnapshot snapshot) {
                 userDetails = snapshot.toObject(UserDetails.class);
 
-                pullDataOfOrderFromFireStore(uid);
             }
         });
-    }
-
-    private void pullDataOfOrderFromFireStore(String uid) {
-
-        orderRef.document(uid).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-            @Override
-            public void onSuccess(DocumentSnapshot snapshot) {
-                order = snapshot.toObject(Order.class);
-
-
-
-            }
-        });
-
     }
 
 
