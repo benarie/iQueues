@@ -7,7 +7,7 @@ public class Globals {
     public static final String SHARED_PREF_NAME = "SHARED_PREF_NAME";
 
     public static final String ACTIVE_ORDER_STATUS = "active";
-    public static final String FINISHED_ORDER_STATUS = "finished";
+    public static final String INACTIVE_ORDER_STATUS = "inactive";
     public static final String WAITING_ORDER_STATUS = "waiting";
 
 

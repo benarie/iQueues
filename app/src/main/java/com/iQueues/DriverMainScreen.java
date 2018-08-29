@@ -18,6 +18,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -65,7 +66,7 @@ public class DriverMainScreen extends AppCompatActivity implements DateFragment.
     Button editedQueueBtn;
     Button targetBtn;
     CardView cardView;
-    ProgressDialog progressDialog;
+    ProgressBar progressBar;
 
 
     final String DATE_FRAGMENT_TAG = "date_fragment";
@@ -75,6 +76,7 @@ public class DriverMainScreen extends AppCompatActivity implements DateFragment.
     final String TIME_TAG = "time";
     final String KEY_NAME = "name";
 
+    private String time;
 
     private FirebaseAuth auth = FirebaseAuth.getInstance();
 
@@ -105,9 +107,13 @@ public class DriverMainScreen extends AppCompatActivity implements DateFragment.
         targetBtn = findViewById(R.id.target_btn);
         cardView = findViewById(R.id.queue_cell);
 
+        progressBar = findViewById(R.id.progress_bar);
 
-        String uid = GlobalUtils.getStringFromLocalStorage(DriverMainScreen.this,Globals.UID_LOCAL_STORAGE_KEY);
+
+        String uid = GlobalUtils.getStringFromLocalStorage(DriverMainScreen.this, Globals.UID_LOCAL_STORAGE_KEY);
         pullDataOfOrderFromFireStore(uid);
+
+        deleteQueueOnClick ();
 
         insertQueueBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -142,7 +148,7 @@ public class DriverMainScreen extends AppCompatActivity implements DateFragment.
 
     /////////////
     @Override
-    public void onConfirmBtnClicked(String date) {
+    public void onConfirmDateBtnClicked(String date) {
 
         //replace between fragments
         getFragmentManager().beginTransaction().replace(R.id.fragment_container, new TimeListFragment(), TIME_LIST_FRAGMENT_TAG)
@@ -157,7 +163,7 @@ public class DriverMainScreen extends AppCompatActivity implements DateFragment.
 
     /////////////
     @Override
-    public void onDeleteBtnClicked() {
+    public void onDeleteDateBtnClicked() {
 
         Fragment fragment = getFragmentManager().findFragmentByTag(DATE_FRAGMENT_TAG);
         getFragmentManager().beginTransaction().remove(fragment).commit();
@@ -171,8 +177,10 @@ public class DriverMainScreen extends AppCompatActivity implements DateFragment.
         getFragmentManager().beginTransaction().remove(fragment).commit();
 
         order.setTime(time);
+        order.setStatus(Globals.ACTIVE_ORDER_STATUS);
 
         pushOrderDataToDataBase();
+        afterGetOrderData();
 
     }
 
@@ -215,7 +223,7 @@ public class DriverMainScreen extends AppCompatActivity implements DateFragment.
         String status = Globals.ACTIVE_ORDER_STATUS;
         String orderId = orderRef.document().getId();
 
-        Order order = new Order(orderId, date, time, uid, status);
+        final Order order = new Order(orderId, date, time, uid, status);
 
         orderRef.document(orderId)
                 .set(order)
@@ -233,20 +241,19 @@ public class DriverMainScreen extends AppCompatActivity implements DateFragment.
                     }
                 });
 
-        /*// Atomically add a new orderId to the "orderIds" array field.
-        DocumentReference userRef = database.collection("users").document(uid);
-        userRef.update("idQueue", FieldValue.arrayUnion(orderId));*/
     }
 
     private void pullDataOfOrderFromFireStore(String uid) {
+
+        progressBar.setVisibility(View.VISIBLE);
 
         orderRef.whereEqualTo("uid", uid).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
             public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                 List<DocumentSnapshot> list = queryDocumentSnapshots.getDocuments();
                 for (DocumentSnapshot single : list) {
-                     OrdersQueue.getInstance().add(single.toObject(Order.class));
-                     order = single.toObject(Order.class);
+                    OrdersQueue.getInstance().add(single.toObject(Order.class));
+                    order = single.toObject(Order.class);
 
                     afterGetOrderData();
 
@@ -259,11 +266,15 @@ public class DriverMainScreen extends AppCompatActivity implements DateFragment.
             }
         });
 
+        progressBar.setVisibility(View.GONE);
+
     }
 
     private void afterGetOrderData() {
 
-        if (OrdersQueue.getInstance().getActive() != null) {
+        if (OrdersQueue.getInstance().getActive() != null || order.getStatus().equalsIgnoreCase("active")) {
+
+            progressBar.setVisibility(View.VISIBLE);
 
             dateTv.setText(order.getDate());
             timeTv.setText(order.getTime());
@@ -292,5 +303,42 @@ public class DriverMainScreen extends AppCompatActivity implements DateFragment.
             targetBtn.setVisibility(View.GONE);
 
         }
+
+        progressBar.setVisibility(View.GONE);
+    }
+
+
+    private void deleteQueueOnClick (){
+
+        deleteQueueBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                String orderId = OrdersQueue.getInstance().getLast().getOrderId();
+                time = OrdersQueue.getInstance().getLast().getTime();
+
+                deleteLastQueueFromFireStore(orderId);
+            }
+        });
+    }
+
+
+    private void deleteLastQueueFromFireStore(String orderId) {
+
+        orderRef.document(orderId)
+                .delete()
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d(TAG, "DocumentSnapshot successfully deleted!");
+                        afterGetOrderData();
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.w(TAG, "Error deleting document", e);
+            }
+        });
+
     }
 }

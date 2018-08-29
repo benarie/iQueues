@@ -53,16 +53,14 @@
             android:text="שם"
             android:textSize="25sp" />
 
-        <!--  <TextView
-              android:id="@+id/next_text_view"
+          <ProgressBar
+              android:id="@+id/progress_bar"
               android:layout_width="wrap_content"
               android:layout_height="wrap_content"
-              android:layout_below="@+id/name_text_output"
               android:layout_centerHorizontal="true"
-              android:layout_gravity="center"
-              android:layout_margin="@dimen/margin"
-              android:text="התור הבא שלך"
-              android:textSize="25sp" />-->
+              android:layout_centerVertical="true"
+              android:indeterminate="false"
+              android:visibility="gone"/>
 
         <include
             android:id="@+id/card"

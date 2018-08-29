@@ -10,6 +10,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -44,6 +45,7 @@ public class SignInProcess extends AppCompatActivity {
     private TextView loginEmail;
     private TextView loginPword;
     private ProgressDialog progressDialog;
+    ProgressBar progressBar;
     private String uid;
 
     private FirebaseAuth auth = FirebaseAuth.getInstance();
@@ -60,16 +62,16 @@ public class SignInProcess extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.sign_in_process);
 
+        progressBar = findViewById(R.id.progress_bar_0);
         progressDialog = new ProgressDialog(this);
 
         if (GlobalUtils.getStringFromLocalStorage(this, Globals.UID_LOCAL_STORAGE_KEY) != null) {
 
-            progressDialog.setMessage("login");
-            progressDialog.show();
-
             uid = GlobalUtils.getStringFromLocalStorage(this, Globals.UID_LOCAL_STORAGE_KEY);
             pullDataOfUserFromFireStore(uid);
+
             goToMainScreen();
+
             return;
         }
 
@@ -152,13 +154,16 @@ public class SignInProcess extends AppCompatActivity {
 
     private void pullDataOfUserFromFireStore(final String uid) {
 
+        progressBar.setVisibility(View.VISIBLE);
+
         userRef.document(uid).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot snapshot) {
                 userDetails = snapshot.toObject(UserDetails.class);
-
             }
         });
+
+        progressBar.setVisibility(View.GONE);
     }
 
 
