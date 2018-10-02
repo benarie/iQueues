@@ -60,7 +60,7 @@
               android:layout_centerHorizontal="true"
               android:layout_centerVertical="true"
               android:indeterminate="false"
-              android:visibility="gone"/>
+              android:visibility="gone" />
 
         <include
             android:id="@+id/card"

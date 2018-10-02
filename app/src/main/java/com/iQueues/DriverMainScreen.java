@@ -7,6 +7,7 @@ import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
 import android.content.SharedPreferences;
+import android.nfc.Tag;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.renderscript.Sampler;
@@ -44,8 +45,11 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -66,7 +70,7 @@ public class DriverMainScreen extends AppCompatActivity implements DateFragment.
     Button editedQueueBtn;
     Button targetBtn;
     CardView cardView;
-    ProgressBar progressBar;
+
 
 
     final String DATE_FRAGMENT_TAG = "date_fragment";
@@ -78,14 +82,13 @@ public class DriverMainScreen extends AppCompatActivity implements DateFragment.
 
     private String time;
 
-    private FirebaseAuth auth = FirebaseAuth.getInstance();
+  ;
 
     private FirebaseFirestore database = FirebaseFirestore.getInstance();
     private CollectionReference orderRef = database.collection("orders");
 
 
     Order order = new Order();
-    UserDetails userDetails = UserDetails.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -107,13 +110,9 @@ public class DriverMainScreen extends AppCompatActivity implements DateFragment.
         targetBtn = findViewById(R.id.target_btn);
         cardView = findViewById(R.id.queue_cell);
 
-        progressBar = findViewById(R.id.progress_bar);
-
-
         String uid = GlobalUtils.getStringFromLocalStorage(DriverMainScreen.this, Globals.UID_LOCAL_STORAGE_KEY);
-        pullDataOfOrderFromFireStore(uid);
 
-        deleteQueueOnClick ();
+        pullDataOfOrderFromFireStore(uid);
 
         insertQueueBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -125,10 +124,13 @@ public class DriverMainScreen extends AppCompatActivity implements DateFragment.
 
                 transaction.addToBackStack(null).commit();
 
+
+
             }
         });
 
 
+       // deleteQueueOnClick();
 
 
     }
@@ -144,7 +146,6 @@ public class DriverMainScreen extends AppCompatActivity implements DateFragment.
         }
 
     }
-
 
     /////////////
     @Override
@@ -170,17 +171,26 @@ public class DriverMainScreen extends AppCompatActivity implements DateFragment.
     }
 
     @Override
-    public void onListItemClicked(String time) {
+    public void onListItemClicked(final String time) {
+
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+
+                Fragment fragment = getFragmentManager().findFragmentByTag(TIME_LIST_FRAGMENT_TAG);
+                getFragmentManager().beginTransaction().remove(fragment).commit();
 
 
-        Fragment fragment = getFragmentManager().findFragmentByTag(TIME_LIST_FRAGMENT_TAG);
-        getFragmentManager().beginTransaction().remove(fragment).commit();
+                order.setTime(time);
+                order.setStatus(Globals.ACTIVE_ORDER_STATUS);
 
-        order.setTime(time);
-        order.setStatus(Globals.ACTIVE_ORDER_STATUS);
+                pushOrderDataToDataBase();
+                afterGetOrderData();
 
-        pushOrderDataToDataBase();
-        afterGetOrderData();
+
+            }
+
+        });
 
     }
 
@@ -245,8 +255,6 @@ public class DriverMainScreen extends AppCompatActivity implements DateFragment.
 
     private void pullDataOfOrderFromFireStore(String uid) {
 
-        progressBar.setVisibility(View.VISIBLE);
-
         orderRef.whereEqualTo("uid", uid).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
             public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
@@ -266,7 +274,7 @@ public class DriverMainScreen extends AppCompatActivity implements DateFragment.
             }
         });
 
-        progressBar.setVisibility(View.GONE);
+
 
     }
 
@@ -274,7 +282,7 @@ public class DriverMainScreen extends AppCompatActivity implements DateFragment.
 
         if (OrdersQueue.getInstance().getActive() != null || order.getStatus().equalsIgnoreCase("active")) {
 
-            progressBar.setVisibility(View.VISIBLE);
+
 
             dateTv.setText(order.getDate());
             timeTv.setText(order.getTime());
@@ -304,18 +312,18 @@ public class DriverMainScreen extends AppCompatActivity implements DateFragment.
 
         }
 
-        progressBar.setVisibility(View.GONE);
+
     }
 
 
-    private void deleteQueueOnClick (){
+    public void deleteQueueOnClick() {
 
         deleteQueueBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
                 String orderId = OrdersQueue.getInstance().getLast().getOrderId();
-                time = OrdersQueue.getInstance().getLast().getTime();
+                /*time = OrdersQueue.getInstance().getLast().getTime();*/
 
                 deleteLastQueueFromFireStore(orderId);
             }

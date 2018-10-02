@@ -14,7 +14,10 @@ import android.widget.CalendarView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 
 public class DateFragment extends Fragment {
 
@@ -27,7 +30,6 @@ public class DateFragment extends Fragment {
 
         void onDeleteDateBtnClicked();
 
-      //  void checkTimeByDate(String date);
 
     }
 
@@ -59,8 +61,18 @@ public class DateFragment extends Fragment {
         calendarView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
             @Override
             public void onSelectedDayChange(@NonNull CalendarView view, int year, int month, int dayOfMonth) {
-                picDate =  dayOfMonth + "/" + (month + 1) + "/" + year;
-                Log.d(TAG, picDate);
+
+                int hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
+                int currentDate = Calendar.getInstance().get(Calendar.DAY_OF_MONTH);
+                int dayOfWeek = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
+
+                if (dayOfMonth == currentDate && hour >= 17 || Calendar.FRIDAY == dayOfWeek && hour >= 12) {
+
+                    Toast.makeText(calendarView.getContext(), "You can't select this date after the end of the working day", Toast.LENGTH_SHORT).show();
+                } else {
+                    picDate = dayOfMonth + "/" + (month + 1) + "/" + year;
+                    Log.d(TAG, picDate);
+                }
 
             }
         });
@@ -70,9 +82,9 @@ public class DateFragment extends Fragment {
         okDateBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 if (picDate != null) {
                     callBack.onConfirmDateBtnClicked(picDate);
-                    //callBack.checkTimeByDate(picDate);
                 } else {
                     Toast.makeText(calendarView.getContext(), "you need select date before pressed on confirm button", Toast.LENGTH_SHORT).show();
                 }

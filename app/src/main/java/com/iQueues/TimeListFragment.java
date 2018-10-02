@@ -31,6 +31,7 @@ public class TimeListFragment extends ListFragment {
     public interface OnTimeListFragmentListener {
 
         void onListItemClicked(String time);
+
     }
 
     OnTimeListFragmentListener callback;
@@ -51,9 +52,6 @@ public class TimeListFragment extends ListFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        //get the list from activity
-      //  ArrayList<String> timeByDateList = getArguments().getStringArrayList("ArrayList");
-
         View v = inflater.inflate(R.layout.time_fragment, container, false);
         ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1, timePerDay);
         setListAdapter(adapter);
@@ -67,6 +65,9 @@ public class TimeListFragment extends ListFragment {
 
         callback.onListItemClicked(timePerDay[position]);
 
+
+
     }
+
 
 }
