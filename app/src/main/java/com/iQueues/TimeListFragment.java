@@ -10,15 +10,27 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.ProgressBar;
+
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import data.GlobalUtils;
+import data.Globals;
+
 
 public class TimeListFragment extends ListFragment {
 
-    String[] timePerDay = {"08:00 - 08:30", "08:30 - 09:00",
+    ProgressBar progressBar;
+
+    private FirebaseFirestore database = FirebaseFirestore.getInstance();
+    private CollectionReference orderRef = database.collection("orders");
+
+    private final String[] timePerDay = {"08:00 - 08:30", "08:30 - 09:00",
             "09:00 - 09:30", "09:30 - 10:00",
             "10:00 - 10:30", "10:00 - 10:30",
             "10:30 - 11:00", "11:00 - 11:30",
@@ -28,6 +40,8 @@ public class TimeListFragment extends ListFragment {
             "14:30 - 15:00", "15:00 - 15:30",
             "15:30 - 16:00", "16:30 - 17:00"};
 
+    private ArrayList<String> availableTimes = new ArrayList<>();
+
     public interface OnTimeListFragmentListener {
 
         void onListItemClicked(String time);
@@ -36,9 +50,12 @@ public class TimeListFragment extends ListFragment {
 
     OnTimeListFragmentListener callback;
 
+
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
+        
+        for(String s : timePerDay) availableTimes.add(s);
 
         Activity activity = (Activity) context;
         try {
@@ -46,6 +63,22 @@ public class TimeListFragment extends ListFragment {
         } catch (ClassCastException ex) {
             throw new ClassCastException(activity.toString() + "must implement the OnTimeListFragmentListener interface ");
         }
+
+        // show loading spinner here
+        progressBar =activity.findViewById(R.id.progress_bar);
+        progressBar.setVisibility(View.VISIBLE);
+
+        getAvailableTimesFromFirebase();
+
+    }
+
+    private void getAvailableTimesFromFirebase() {
+        /* call firebase here to check which times can be used.
+        after that add success and fail listeners.
+        don't forget to remove the loading spinner inside the listeners :) */
+
+
+        progressBar.setVisibility(View.GONE);
     }
 
 

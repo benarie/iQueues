@@ -22,7 +22,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentTop="true"
-                android:layout_centerHorizontal="true"
+                android:layout_centerHorizontal="true"edited_btn
                 android:layout_gravity="center"
                 android:layout_marginBottom="5dp"
                 android:layout_marginTop="10dp"
@@ -52,15 +52,6 @@
             android:layout_marginTop="10dp"
             android:text="שם"
             android:textSize="25sp" />
-
-          <ProgressBar
-              android:id="@+id/progress_bar"
-              android:layout_width="wrap_content"
-              android:layout_height="wrap_content"
-              android:layout_centerHorizontal="true"
-              android:layout_centerVertical="true"
-              android:indeterminate="false"
-              android:visibility="gone" />
 
         <include
             android:id="@+id/card"

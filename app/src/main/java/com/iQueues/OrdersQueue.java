@@ -38,4 +38,13 @@ public class OrdersQueue {
         return null;
     }
 
+    public void removeOrder(String orderId){
+        for(Order order : orders) {
+            if(order.getOrderId().equals(orderId)) {
+                orders.remove(order);
+                break;
+            }
+        }
+    }
+
 }
