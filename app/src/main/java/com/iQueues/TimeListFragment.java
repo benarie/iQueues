@@ -54,7 +54,7 @@ public class TimeListFragment extends ListFragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        
+
         for(String s : timePerDay) availableTimes.add(s);
 
         Activity activity = (Activity) context;
