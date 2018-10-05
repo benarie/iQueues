@@ -23,8 +23,11 @@
         android:id="@android:id/list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_marginTop="40dp"
         android:textDirection="anyRtl"
         android:gravity="center"/>
+
+
 
     <ProgressBar
         android:id="@+id/progress_bar"
@@ -33,5 +36,6 @@
         android:layout_centerInParent="true"
         android:indeterminate="true"
         android:visibility="gone" />
+
 
 </RelativeLayout>

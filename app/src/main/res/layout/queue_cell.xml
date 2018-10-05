@@ -46,6 +46,7 @@
             android:layout_gravity="center"
             android:text="@string/time"
             android:textSize="20sp"
+            android:textDirection="anyRtl"
             android:visibility="gone" />
 
     </LinearLayout>

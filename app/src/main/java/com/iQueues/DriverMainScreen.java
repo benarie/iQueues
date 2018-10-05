@@ -320,7 +320,6 @@ public class DriverMainScreen extends AppCompatActivity implements DateFragment.
             public void onClick(View v) {
 
                 String orderId = OrdersQueue.getInstance().getLast().getOrderId();
-                /*time = OrdersQueue.getInstance().getLast().getTime();*/
 
                 deleteLastQueueFromFireStore(orderId);
             }
