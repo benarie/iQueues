@@ -120,13 +120,11 @@ public class DriverMainScreen extends AppCompatActivity implements DateFragment.
 
                 transaction.addToBackStack(null).commit();
 
-
-
             }
         });
 
 
-       deleteQueueOnClick();
+        deleteQueueOnClick();
 
 
     }
@@ -147,14 +145,19 @@ public class DriverMainScreen extends AppCompatActivity implements DateFragment.
     @Override
     public void onConfirmDateBtnClicked(String date) {
 
+        order.setDate(date);
+
+        TimeListFragment tlf = new TimeListFragment ();
+        Bundle args = new Bundle();
+        args.putString(TimeListFragment.DATA_RECEIVE,date);
+        tlf .setArguments(args);
+
         //replace between fragments
-        getFragmentManager().beginTransaction().replace(R.id.fragment_container, new TimeListFragment(), TIME_LIST_FRAGMENT_TAG)
+        getFragmentManager().beginTransaction().replace(R.id.fragment_container, tlf, TIME_LIST_FRAGMENT_TAG)
                 .addToBackStack(null).commit();
 
         Fragment fragment = getFragmentManager().findFragmentByTag(DATE_FRAGMENT_TAG);
         getFragmentManager().beginTransaction().remove(fragment).commit();
-
-        order.setDate(date);
 
     }
 
@@ -176,19 +179,17 @@ public class DriverMainScreen extends AppCompatActivity implements DateFragment.
                 Fragment fragment = getFragmentManager().findFragmentByTag(TIME_LIST_FRAGMENT_TAG);
                 getFragmentManager().beginTransaction().remove(fragment).commit();
 
-
                 order.setTime(time);
                 order.setStatus(Globals.ACTIVE_ORDER_STATUS);
 
                 pushOrderDataToDataBase();
-
-
 
             }
 
         });
 
     }
+
 
     @Override
     protected void onStart() {
@@ -217,7 +218,7 @@ public class DriverMainScreen extends AppCompatActivity implements DateFragment.
             timeTv.setText("צהריים טובים");
         else if (hour > 17 && hour <= 20)
             timeTv.setText("ערב טוב");
-        else if (hour > 20 && hour < 23)
+        else if (hour > 20 && hour <= 23)
             timeTv.setText("לילה טוב");
     }
 
@@ -227,7 +228,7 @@ public class DriverMainScreen extends AppCompatActivity implements DateFragment.
         String time = order.getTime();
         String uid = GlobalUtils.getStringFromLocalStorage(DriverMainScreen.this, Globals.UID_LOCAL_STORAGE_KEY);
         String status = Globals.ACTIVE_ORDER_STATUS;
-        String orderId = orderRef.document().getId();
+        String orderId = orderRef.document().getId(); //generate new id
 
         final Order order = new Order(orderId, date, time, uid, status);
 
@@ -271,7 +272,6 @@ public class DriverMainScreen extends AppCompatActivity implements DateFragment.
                 Log.d(TAG, e + "pullDataOfOrderFromFireStore");
             }
         });
-
 
 
     }

@@ -3,6 +3,7 @@ package com.iQueues;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -29,8 +30,6 @@ public class DateFragment extends Fragment {
         void onConfirmDateBtnClicked(String date);
 
         void onDeleteDateBtnClicked();
-
-
     }
 
     OnQueueFragmentListener callBack;
@@ -77,13 +76,13 @@ public class DateFragment extends Fragment {
             }
         });
 
-
         TextView okDateBtn = viewGroup.findViewById(R.id.ok_date_btn);
         okDateBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
                 if (picDate != null) {
+
                     callBack.onConfirmDateBtnClicked(picDate);
                 } else {
                     Toast.makeText(calendarView.getContext(), "you need select date before pressed on confirm button", Toast.LENGTH_SHORT).show();
@@ -100,5 +99,12 @@ public class DateFragment extends Fragment {
         });
 
         return viewGroup;
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+
     }
 }
