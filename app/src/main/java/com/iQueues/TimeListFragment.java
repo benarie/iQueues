@@ -23,6 +23,9 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 
@@ -124,7 +127,7 @@ public class TimeListFragment extends ListFragment {
 
         orderRef.whereEqualTo("status", "active")
                 .whereEqualTo("date", date)
-                .orderBy("time").get()
+                .get()
                 .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                     @Override
                     public void onSuccess(QuerySnapshot queryDocumentSnapshots) {

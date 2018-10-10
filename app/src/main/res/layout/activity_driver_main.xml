@@ -86,7 +86,7 @@
                 android:visibility="gone" />
 
             <Button
-                android:id="@+id/edited_btn"
+                android:id="@+id/change_btn"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -105,7 +105,7 @@
         </LinearLayout>
 
         <Button
-            android:id="@+id/target_btn"
+            android:id="@+id/direction_btn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"

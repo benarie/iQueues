@@ -1,60 +1,27 @@
 package com.iQueues;
 
-import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
-import android.app.ProgressDialog;
-import android.content.SharedPreferences;
-import android.nfc.Tag;
 import android.os.Bundle;
-import android.provider.Settings;
-import android.renderscript.Sampler;
 import android.support.annotation.NonNull;
-import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.common.internal.safeparcel.SafeParcelable;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.UserProfileChangeRequest;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
-import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
-import javax.annotation.Nullable;
 
 import data.GlobalUtils;
 import data.Globals;
@@ -67,8 +34,8 @@ public class DriverMainScreen extends AppCompatActivity implements DateFragment.
     TextView baseTv;
     Button insertQueueBtn;
     Button deleteQueueBtn;
-    Button editedQueueBtn;
-    Button targetBtn;
+    Button changeQueueBtn;
+    Button directionBtn;
     CardView cardView;
 
     final String DATE_FRAGMENT_TAG = "date_fragment";
@@ -78,13 +45,12 @@ public class DriverMainScreen extends AppCompatActivity implements DateFragment.
     final String TIME_TAG = "time";
     final String KEY_NAME = "name";
 
-    private String time;
-
     private FirebaseFirestore database = FirebaseFirestore.getInstance();
     private CollectionReference orderRef = database.collection("orders");
 
 
     Order order = new Order();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,10 +66,10 @@ public class DriverMainScreen extends AppCompatActivity implements DateFragment.
         timeTv = findViewById(R.id.time_text_view);
         baseTv = findViewById(R.id.no_queue_text_view);
 
-        editedQueueBtn = findViewById(R.id.edited_btn);
+        changeQueueBtn = findViewById(R.id.change_btn);
         deleteQueueBtn = findViewById(R.id.delete_btn);
         insertQueueBtn = findViewById(R.id.insert_queue_btn);
-        targetBtn = findViewById(R.id.target_btn);
+        directionBtn = findViewById(R.id.direction_btn);
         cardView = findViewById(R.id.queue_cell);
 
         String uid = GlobalUtils.getStringFromLocalStorage(DriverMainScreen.this, Globals.UID_LOCAL_STORAGE_KEY);
@@ -119,16 +85,14 @@ public class DriverMainScreen extends AppCompatActivity implements DateFragment.
                 transaction.add(R.id.fragment_container, new DateFragment(), DATE_FRAGMENT_TAG);
 
                 transaction.addToBackStack(null).commit();
-
             }
         });
 
-
         deleteQueueOnClick();
 
+        changeQueueOnClick();
 
     }
-
 
     @Override
     public void onBackPressed() {
@@ -138,7 +102,6 @@ public class DriverMainScreen extends AppCompatActivity implements DateFragment.
         } else {
             super.onBackPressed();
         }
-
     }
 
     /////////////
@@ -147,10 +110,10 @@ public class DriverMainScreen extends AppCompatActivity implements DateFragment.
 
         order.setDate(date);
 
-        TimeListFragment tlf = new TimeListFragment ();
+        TimeListFragment tlf = new TimeListFragment();
         Bundle args = new Bundle();
-        args.putString(TimeListFragment.DATA_RECEIVE,date);
-        tlf .setArguments(args);
+        args.putString(TimeListFragment.DATA_RECEIVE, date);
+        tlf.setArguments(args);
 
         //replace between fragments
         getFragmentManager().beginTransaction().replace(R.id.fragment_container, tlf, TIME_LIST_FRAGMENT_TAG)
@@ -158,7 +121,6 @@ public class DriverMainScreen extends AppCompatActivity implements DateFragment.
 
         Fragment fragment = getFragmentManager().findFragmentByTag(DATE_FRAGMENT_TAG);
         getFragmentManager().beginTransaction().remove(fragment).commit();
-
     }
 
     /////////////
@@ -182,7 +144,7 @@ public class DriverMainScreen extends AppCompatActivity implements DateFragment.
                 order.setTime(time);
                 order.setStatus(Globals.ACTIVE_ORDER_STATUS);
 
-                pushOrderDataToDataBase();
+                pushDataOfOrderToFireStore();
 
             }
 
@@ -222,33 +184,54 @@ public class DriverMainScreen extends AppCompatActivity implements DateFragment.
             timeTv.setText("לילה טוב");
     }
 
-    private void pushOrderDataToDataBase() {
+    private void pushDataOfOrderToFireStore() {
 
-        String date = order.getDate();
-        String time = order.getTime();
-        String uid = GlobalUtils.getStringFromLocalStorage(DriverMainScreen.this, Globals.UID_LOCAL_STORAGE_KEY);
+        final String date = order.getDate();
+        final String time = order.getTime();
+        final String uid = GlobalUtils.getStringFromLocalStorage(DriverMainScreen.this, Globals.UID_LOCAL_STORAGE_KEY);
         String status = Globals.ACTIVE_ORDER_STATUS;
-        String orderId = orderRef.document().getId(); //generate new id
+        final String orderId = orderRef.document().getId(); //generate new id
 
         final Order order = new Order(orderId, date, time, uid, status);
 
-        orderRef.document(orderId)
-                .set(order)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        Toast.makeText(DriverMainScreen.this, "order saved", Toast.LENGTH_SHORT).show();
-                        OrdersQueue.getInstance().add(order);
-                        afterGetOrderData();
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(DriverMainScreen.this, "Error!", Toast.LENGTH_SHORT).show();
-                        Log.d(TAG, e.toString());
-                    }
-                });
+        final Order temp = OrdersQueue.getInstance().getActive();
+
+        if (OrdersQueue.getInstance().getSize() <= 0) {
+            orderRef.document(orderId) //make a new order
+                    .set(order)
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            Toast.makeText(DriverMainScreen.this, "order saved", Toast.LENGTH_SHORT).show();
+                            OrdersQueue.getInstance().add(order);
+                            afterGetOrderData();
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Toast.makeText(DriverMainScreen.this, "Error!", Toast.LENGTH_SHORT).show();
+                            Log.d(TAG, e.toString());
+                        }
+                    });
+        } else {
+            orderRef.document(temp.getOrderId())
+                    .update("date", date, "time", time)
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            OrdersQueue.getInstance().updateOrder(temp.getOrderId(), date, time);
+                            afterGetOrderData();
+                            Toast.makeText(DriverMainScreen.this, "The update is successed", Toast.LENGTH_SHORT).show();
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Toast.makeText(DriverMainScreen.this, "Error!", Toast.LENGTH_SHORT).show();
+                    Log.d(TAG, e.toString());
+                }
+            });
+        }
 
     }
 
@@ -291,9 +274,9 @@ public class DriverMainScreen extends AppCompatActivity implements DateFragment.
             timeTv.setText(temp.getTime());
 
             insertQueueBtn.setVisibility(View.GONE);
-            editedQueueBtn.setVisibility(View.VISIBLE);
+            changeQueueBtn.setVisibility(View.VISIBLE);
             deleteQueueBtn.setVisibility(View.VISIBLE);
-            targetBtn.setVisibility(View.VISIBLE);
+            directionBtn.setVisibility(View.VISIBLE);
 
         } else {
 
@@ -303,9 +286,9 @@ public class DriverMainScreen extends AppCompatActivity implements DateFragment.
             baseTv.setText(R.string.note);
 
             insertQueueBtn.setVisibility(View.VISIBLE);
-            editedQueueBtn.setVisibility(View.GONE);
+            changeQueueBtn.setVisibility(View.GONE);
             deleteQueueBtn.setVisibility(View.GONE);
-            targetBtn.setVisibility(View.GONE);
+            directionBtn.setVisibility(View.GONE);
 
         }
 
@@ -345,6 +328,24 @@ public class DriverMainScreen extends AppCompatActivity implements DateFragment.
                 Log.w(TAG, "Error deleting document", e);
             }
         });
+
+    }
+
+    public void changeQueueOnClick() {
+
+        changeQueueBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                FragmentManager manager = getFragmentManager();
+                FragmentTransaction transaction = manager.beginTransaction();
+                transaction.add(R.id.fragment_container, new DateFragment(), DATE_FRAGMENT_TAG);
+
+                transaction.addToBackStack(null).commit();
+
+            }
+        });
+
 
     }
 }
