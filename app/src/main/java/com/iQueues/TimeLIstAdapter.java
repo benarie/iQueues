@@ -12,7 +12,7 @@ import java.util.ArrayList;
 
 public class TimeLIstAdapter extends BaseAdapter {
 
-    private ArrayList<TimeListFragment.Time> times = new ArrayList<>();
+    private ArrayList<TimeListFragment.Time> times ;
 
     private Context context;
 
@@ -53,11 +53,11 @@ public class TimeLIstAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
+        long tStart = System.currentTimeMillis();
+//        if (convertView == null) {// no suitable view in the listView recycler view is found.
 
-        if (convertView == null) {// no suitable view in the listView recycler view is found.
-
-            convertView = LayoutInflater.from(context).inflate(R.layout.time_cell, null);
-        }
+        convertView = LayoutInflater.from(context).inflate(R.layout.time_cell, null);
+//        }
 
         TextView orderTimeTv = convertView.findViewById(R.id.order_time_text_view);
 
@@ -66,11 +66,13 @@ public class TimeLIstAdapter extends BaseAdapter {
         orderTimeTv.setText(time.getTime());
 
         if (!time.isAvailable) {
-
             convertView.setAlpha(0.5f);
-            convertView.setClickable(false);
+            //convertView.setClickable(false);
+        }else{
+            convertView.setAlpha(1f);
+           // convertView.setClickable(true);
         }
-
+        System.out.printf("AVIHU: %s \n", (System.currentTimeMillis() - tStart));
         return convertView;
     }
 }

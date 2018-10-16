@@ -16,5 +16,6 @@
     <string name="note" translatable="false">שעות קבלת קהל: \n בין השעות 17:00 - 08:00 \n אם ברצונך להזמין תור \n אנא לחץ על כפתור \n קבע תור</string>
     <string name="date" translatable="false">תאריך:</string>
     <string name="time" translatable="false">שעה:</string>
+    <string name="verification" translatable="false">האימייל שלך מאושר\n לחץ להמשך</string>
 
 </resources>

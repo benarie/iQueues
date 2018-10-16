@@ -35,14 +35,6 @@
         android:gravity="end"
         android:inputType="textPassword" />
 
-    <ProgressBar
-        android:id="@+id/progress_bar_0"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:indeterminate="false"
-        android:visibility="gone"/>
-
     <Button
         android:id="@+id/login_btn"
         style="@style/Widget.AppCompat.Button"

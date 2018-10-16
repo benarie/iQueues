@@ -14,7 +14,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.signin.SignIn;
+//import com.google.android.gms.signin.SignIn;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -62,7 +62,6 @@ public class SignInProcess extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.sign_in_process);
 
-        progressBar = findViewById(R.id.progress_bar_0);
         progressDialog = new ProgressDialog(this);
 
       /*  if (GlobalUtils.getStringFromLocalStorage(this, Globals.UID_LOCAL_STORAGE_KEY) != null) {
@@ -78,11 +77,8 @@ public class SignInProcess extends AppCompatActivity {
         uid = GlobalUtils.getStringFromLocalStorage(this, Globals.UID_LOCAL_STORAGE_KEY);
         pullDataOfUserFromFireStore(uid);
 
-
-
         loginEmail = findViewById(R.id.login_email);
         loginPword = findViewById(R.id.login_Pword);
-
 
         Button logInBtn = findViewById(R.id.login_btn);
         logInBtn.setOnClickListener(new View.OnClickListener() {
@@ -153,13 +149,13 @@ public class SignInProcess extends AppCompatActivity {
     }
 
     private void goToMainScreen() {
+
         Intent intent = new Intent(SignInProcess.this, DriverMainScreen.class);
         startActivity(intent);
     }
 
     private void pullDataOfUserFromFireStore(final String uid) {
 
-        progressBar.setVisibility(View.VISIBLE);
 
         userRef.document(uid).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
@@ -168,7 +164,6 @@ public class SignInProcess extends AppCompatActivity {
             }
         });
 
-        progressBar.setVisibility(View.GONE);
     }
 
 

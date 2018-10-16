@@ -1,8 +1,13 @@
 package com.iQueues;
 
+import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.content.ActivityNotFoundException;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -92,6 +97,8 @@ public class DriverMainScreen extends AppCompatActivity implements DateFragment.
 
         changeQueueOnClick();
 
+        directionOnClick();
+
     }
 
     @Override
@@ -132,19 +139,21 @@ public class DriverMainScreen extends AppCompatActivity implements DateFragment.
     }
 
     @Override
-    public void onListItemClicked(final String time) {
+    public void onListItemClicked(final TimeListFragment.Time time) {
 
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
+                if (time.isAvailable){
+                    Fragment fragment = getFragmentManager().findFragmentByTag(TIME_LIST_FRAGMENT_TAG);
+                    getFragmentManager().beginTransaction().remove(fragment).commit();
 
-                Fragment fragment = getFragmentManager().findFragmentByTag(TIME_LIST_FRAGMENT_TAG);
-                getFragmentManager().beginTransaction().remove(fragment).commit();
+                    order.setTime(time.time);
+                    order.setStatus(Globals.ACTIVE_ORDER_STATUS);
 
-                order.setTime(time);
-                order.setStatus(Globals.ACTIVE_ORDER_STATUS);
+                    pushDataOfOrderToFireStore();
+                }
 
-                pushDataOfOrderToFireStore();
 
             }
 
@@ -295,16 +304,31 @@ public class DriverMainScreen extends AppCompatActivity implements DateFragment.
 
     }
 
-
     public void deleteQueueOnClick() {
 
         deleteQueueBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                String orderId = OrdersQueue.getInstance().getLast().getOrderId();
+                final String orderId = OrdersQueue.getInstance().getLast().getOrderId();
 
-                deleteLastQueueFromFireStore(orderId);
+                AlertDialog.Builder  builder = new AlertDialog.Builder(DriverMainScreen.this);
+                builder.setMessage("האם לבטל את התור הזה?");
+                builder.setPositiveButton("אישור", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        deleteLastQueueFromFireStore(orderId);
+                    }
+                });
+                builder.setNegativeButton("ביטול", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+                builder.setCancelable(false);
+                builder.show();
+
             }
         });
     }
@@ -347,5 +371,25 @@ public class DriverMainScreen extends AppCompatActivity implements DateFragment.
         });
 
 
+    }
+
+    public void directionOnClick() {
+
+        directionBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                try {
+                    // Launch Waze to look for Hawaii:
+                    String url = "https://waze.com/ul?q=31.794307, 35.187647&navigate=yes";
+                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                    startActivity(intent);
+                } catch (ActivityNotFoundException ex) {
+                    // If Waze is not installed, open it in Google Play:
+                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=com.waze"));
+                    startActivity(intent);
+                }
+            }
+        });
     }
 }
