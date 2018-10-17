@@ -181,8 +181,8 @@ public class TimeListFragment extends ListFragment {
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        View v = inflater.inflate(R.layout.time_fragment, container, false);
-        return v;
+        View view = inflater.inflate(R.layout.time_fragment, container, false);
+        return view;
 
     }
 

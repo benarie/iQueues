@@ -67,10 +67,8 @@ public class TimeLIstAdapter extends BaseAdapter {
 
         if (!time.isAvailable) {
             convertView.setAlpha(0.5f);
-            //convertView.setClickable(false);
         }else{
             convertView.setAlpha(1f);
-           // convertView.setClickable(true);
         }
         System.out.printf("AVIHU: %s \n", (System.currentTimeMillis() - tStart));
         return convertView;

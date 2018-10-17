@@ -47,12 +47,12 @@ public class SignUpProcess extends AppCompatActivity {
 
 
     private EditText email, pWord, phone, hatNum, fullName;
+    private TextView afterVerifyingTv;
     private ProgressDialog progressDialog;
     Button signUpBtn;
     Button verificationBtn;
     private String uFullName, uPhone, uHat, uCompany, uid;
     private AutoCompleteTextView taxiCompaniesTv;
-
 
     private FirebaseAuth auth = FirebaseAuth.getInstance();
     private FirebaseUser user = auth.getCurrentUser();
@@ -74,31 +74,38 @@ public class SignUpProcess extends AppCompatActivity {
         fullName = findViewById(R.id.full_name);
         phone = findViewById(R.id.phone_num);
         hatNum = findViewById(R.id.hat_num);
-
-        boolean emailVerified = user.isEmailVerified();
+        progressDialog = new ProgressDialog(SignUpProcess.this);
+        afterVerifyingTv = findViewById(R.id.after_verifying_text_view);
 
         getTaxiCompaniesList(); //  GET  TAXI COMPANIES FROM FIRE BASE
 
         signUpBtn = findViewById(R.id.sign_up_btn);
+        verificationBtn = findViewById(R.id.verification_btn);
+
 
         signUpBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
+                progressDialog.setMessage("registering user please wait...");
+                progressDialog.show();
+
                 String uEmail = email.getText().toString().trim();
                 String uPword = pWord.getText().toString().trim();
+
+                uFullName = fullName.getText().toString().trim();
+                uPhone = phone.getText().toString().trim();
+                uHat = hatNum.getText().toString().trim();
+                uCompany = taxiCompaniesTv.getText().toString().trim();
+                uid = auth.getCurrentUser().getUid();
+
 
                 if (uEmail.isEmpty() || uPword.isEmpty()) {//if the email or password are empty, you can't be registered
                     Toast.makeText(SignUpProcess.this, "email or password fields are empty", Toast.LENGTH_SHORT).show();
                     return;
                 } else if (uPword.length() < 6) {
                     Toast.makeText(SignUpProcess.this, "The password need to be over 6 digit", Toast.LENGTH_SHORT).show();
-
                 }
-
-                progressDialog = new ProgressDialog(SignUpProcess.this);
-                progressDialog.setMessage("registering user please wait.");
-                progressDialog.show();
 
                 auth.createUserWithEmailAndPassword(uEmail, uPword).addOnCompleteListener(SignUpProcess.this, new OnCompleteListener<AuthResult>() {
                     @Override
@@ -106,35 +113,23 @@ public class SignUpProcess extends AppCompatActivity {
                         //checks if the request has been successfully sent
                         if (task.isSuccessful()) {
 
-                            Toast.makeText(SignUpProcess.this, "registration successful", Toast.LENGTH_SHORT).show();
-                            //save name and uid by SharedPreferences
-                            GlobalUtils.setStringToLocalStorage(SignUpProcess.this, Globals.UID_LOCAL_STORAGE_KEY, uid);
-                            GlobalUtils.setStringToLocalStorage(SignUpProcess.this, Globals.FULL_NAME_LOCAL_STORAGE_KEY, uFullName);
                             // Sign up success, update UI with the signed-in user's information
                             updateUser(user);
 
-                            //sendVerificationEmail();
+                            sendVerificationEmail();
 
                         } else {
                             // If sign up fails, display a message to the user.
                             progressDialog.dismiss();
-                            Toast.makeText(SignUpProcess.this, "registration failed,please try again", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(SignUpProcess.this, "registration failed,please try again The email or password is incorrect", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(SignUpProcess.this, "The email or password is incorrect", Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
-
-                pushUserDetailsToFireStore();
-
-
-                Intent intent = new Intent(SignUpProcess.this, DriverMainScreen.class);
-                startActivity(intent);
-
-                progressDialog.dismiss();
-
             }
-
         });
 
+        waitForVerification();
 
     }
 
@@ -163,14 +158,20 @@ public class SignUpProcess extends AppCompatActivity {
         });
     }
 
-   /* private void sendVerificationEmail() {
+    private void sendVerificationEmail() {
 
         if (user != null) {
             user.sendEmailVerification().addOnCompleteListener(new OnCompleteListener<Void>() {
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
                     if (task.isSuccessful()) {
-                        Toast.makeText(SignUpProcess.this, "Verification email sent to " + user.getEmail(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(SignUpProcess.this, "Verification email sent to" + user.getEmail(), Toast.LENGTH_SHORT).show();
+
+                        signUpBtn.setVisibility(View.GONE);
+                        afterVerifyingTv.setVisibility(View.VISIBLE);
+                        verificationBtn.setVisibility(View.VISIBLE);
+
+                        progressDialog.dismiss();
 
                     } else {
                         Log.e(TAG, "sendEmailVerification", task.getException());
@@ -180,11 +181,48 @@ public class SignUpProcess extends AppCompatActivity {
                 }
             });
         }
-    }*/
+    }
+
+    private void waitForVerification() {
+
+
+        verificationBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                user.reload();
+                while (user.isEmailVerified()) {
+
+                    progressDialog.setMessage("Updating details Please wait...");
+                    progressDialog.show();
+
+                    if (user.isEmailVerified()) {
+
+                        verificationBtn.setClickable(true);
+
+                        Toast.makeText(SignUpProcess.this, "Sign up successful", Toast.LENGTH_SHORT).show();
+
+                        pushUserDetailsToFireStore();
+
+                        Intent intent = new Intent(SignUpProcess.this, DriverMainScreen.class);
+                        startActivity(intent);
+
+                        progressDialog.dismiss();
+
+                        break;
+                    }
+                }
+
+            }
+        });
+
+    }
 
     private void updateUser(final FirebaseUser user) {
 
-        /* final FirebaseUser user = auth.getCurrentUser();*/
+        //save name and uid by SharedPreferences
+        GlobalUtils.setStringToLocalStorage(SignUpProcess.this, Globals.UID_LOCAL_STORAGE_KEY, uid);
+        GlobalUtils.setStringToLocalStorage(SignUpProcess.this, Globals.FULL_NAME_LOCAL_STORAGE_KEY, uFullName);
 
         UserProfileChangeRequest profileUpdate = new UserProfileChangeRequest.Builder()
                 .setDisplayName(uFullName)
@@ -202,13 +240,7 @@ public class SignUpProcess extends AppCompatActivity {
 
     private void pushUserDetailsToFireStore() {
 
-        uFullName = fullName.getText().toString().trim();
-        uPhone = phone.getText().toString().trim();
-        uHat = hatNum.getText().toString().trim();
-        uCompany = taxiCompaniesTv.getText().toString().trim();
-        uid = auth.getCurrentUser().getUid();
         //creates an object which contains all above strings.
-
         UserDetails userDetails = UserDetails.getInstance();
         userDetails.setParams(uid, uPhone, uHat, uCompany);
 
@@ -227,9 +259,6 @@ public class SignUpProcess extends AppCompatActivity {
                         Log.d(TAG, e.toString());
                     }
                 });
-
-
     }
-
 
 }

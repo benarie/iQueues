@@ -64,18 +64,15 @@ public class SignInProcess extends AppCompatActivity {
 
         progressDialog = new ProgressDialog(this);
 
-      /*  if (GlobalUtils.getStringFromLocalStorage(this, Globals.UID_LOCAL_STORAGE_KEY) != null) {
+        if (GlobalUtils.getStringFromLocalStorage(this, Globals.UID_LOCAL_STORAGE_KEY) != null) {
 
             uid = GlobalUtils.getStringFromLocalStorage(this, Globals.UID_LOCAL_STORAGE_KEY);
             pullDataOfUserFromFireStore(uid);
 
-            goToMainScreen();
+            //goToMainScreen();
 
-            return;
-        }*/
-
-        uid = GlobalUtils.getStringFromLocalStorage(this, Globals.UID_LOCAL_STORAGE_KEY);
-        pullDataOfUserFromFireStore(uid);
+            //return;
+        }
 
         loginEmail = findViewById(R.id.login_email);
         loginPword = findViewById(R.id.login_Pword);
@@ -155,7 +152,6 @@ public class SignInProcess extends AppCompatActivity {
     }
 
     private void pullDataOfUserFromFireStore(final String uid) {
-
 
         userRef.document(uid).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override

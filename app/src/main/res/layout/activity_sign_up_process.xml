@@ -90,6 +90,17 @@
             android:inputType="number"
             android:textDirection="rtl" />
 
+        <TextView
+            android:id="@+id/after_verifying_text_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_margin="20dp"
+            android:text="לאחר אימות המייל לחץ כאן"
+            android:textSize="15sp"
+            android:textAlignment="center"
+            android:visibility="gone"/>
+
         <Button
             android:id="@+id/sign_up_btn"
             android:layout_width="200dp"
@@ -99,6 +110,16 @@
             android:text="להרשמה לחץ כאן"
             android:textSize="15sp"
             android:visibility="visible"/>
+
+
+        <Button
+            android:id="@+id/verification_btn"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="לאימות לחץ כאן"
+            android:textSize="15sp"
+            android:visibility="gone"/>
 
     </LinearLayout>
 
