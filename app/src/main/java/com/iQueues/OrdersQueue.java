@@ -39,8 +39,31 @@ public class OrdersQueue {
         return null;
     }
 
-    public int getSize() {
+    public Order getInActive() {
+        for (Order order : orders)
+            if (order.getStatus().equalsIgnoreCase(Globals.INACTIVE_ORDER_STATUS)) return order;
+        return null;
+    }
 
+    public String getDate() {
+        for (Order order : orders)
+            if (order.getDate() != null) return order.getDate();
+        return null;
+    }
+
+    public String getTime() {
+        for (Order order : orders)
+            if (order.getTime() != null) return order.getTime();
+        return null;
+    }
+
+    public String getStatus() {
+        for (Order order : orders)
+            if (order.getStatus() != null) return order.getStatus();
+        return null;
+    }
+
+    public int getSize() {
         return this.orders.size();
     }
 

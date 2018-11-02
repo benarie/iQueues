@@ -57,6 +57,7 @@ public class DateFragment extends Fragment {
 
         calendarView.setMinDate(System.currentTimeMillis() - 1000);
 
+
         calendarView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
             @Override
             public void onSelectedDayChange(@NonNull CalendarView view, int year, int month, int dayOfMonth) {
@@ -65,7 +66,7 @@ public class DateFragment extends Fragment {
                 int currentDate = Calendar.getInstance().get(Calendar.DAY_OF_MONTH);
                 int dayOfWeek = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
 
-                if (dayOfMonth == currentDate && hour >= 17 || Calendar.FRIDAY == dayOfWeek && hour >= 12) {
+                if (dayOfMonth == currentDate && hour >= 17) {
 
                     Toast.makeText(calendarView.getContext(), "You can't select this date after the end of the working day", Toast.LENGTH_SHORT).show();
                 } else {

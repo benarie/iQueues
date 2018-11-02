@@ -77,7 +77,8 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_margin="5dp"
-            android:hint="מוניות" />
+            android:hint="מוניות"
+            android:inputType="textAutoComplete"/>
 
         <EditText
             android:id="@+id/hat_num"
@@ -97,6 +98,7 @@
             android:layout_gravity="center"
             android:layout_margin="20dp"
             android:text="לאחר אימות המייל לחץ כאן"
+            android:textColor="@color/colorAccent"
             android:textSize="15sp"
             android:textAlignment="center"
             android:visibility="gone"/>

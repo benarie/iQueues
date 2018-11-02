@@ -10,5 +10,7 @@ public class Globals {
     public static final String INACTIVE_ORDER_STATUS = "inactive";
     public static final String WAITING_ORDER_STATUS = "waiting";
 
+    public static final String ORDER_DATE = "ORDER_DATE";
+
 
 }

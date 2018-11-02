@@ -141,8 +141,7 @@ public class TimeListFragment extends ListFragment {
             date = args.getString(DATA_RECEIVE);
         }
 
-        orderRef.whereEqualTo("status", "active")
-                .whereEqualTo("date", date)
+        orderRef.whereEqualTo("date", date)
                 .get()
                 .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                     @Override
