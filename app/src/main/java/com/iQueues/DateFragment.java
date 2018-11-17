@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.icu.text.TimeZoneFormat;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -12,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CalendarView;
+import android.widget.DatePicker;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -52,24 +54,25 @@ public class DateFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
 
         ViewGroup viewGroup = (ViewGroup) inflater.inflate(R.layout.date_fragment, container, false);
-
         final CalendarView calendarView = viewGroup.findViewById(R.id.calendar);
-
         calendarView.setMinDate(System.currentTimeMillis() - 1000);
-
 
         calendarView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
             @Override
             public void onSelectedDayChange(@NonNull CalendarView view, int year, int month, int dayOfMonth) {
 
-                int hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
-                int currentDate = Calendar.getInstance().get(Calendar.DAY_OF_MONTH);
-                int dayOfWeek = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
+                Calendar calendar = Calendar.getInstance();
+
+                int hour = calendar.get(Calendar.HOUR_OF_DAY);
+                int currentDate = calendar.get(Calendar.DAY_OF_MONTH);
+                int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
+
 
                 if (dayOfMonth == currentDate && hour >= 17) {
 
                     Toast.makeText(calendarView.getContext(), "You can't select this date after the end of the working day", Toast.LENGTH_SHORT).show();
                 } else {
+
                     picDate = dayOfMonth + "/" + (month + 1) + "/" + year;
                     Log.d(TAG, picDate);
                 }

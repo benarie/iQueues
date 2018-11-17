@@ -1,10 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.iQueues">
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
-
+   <uses-permission android:name="android.permission.SEND_SMS"/>
 
     <application
         android:allowBackup="true"
@@ -13,9 +12,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
         <activity
-            android:name="com.iQueues.SignInProcess"
+            android:name=".SignInProcess"
             android:label="@string/app_name"
             android:theme="@style/AppTheme">
             <intent-filter>
@@ -24,10 +22,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".SignUpProcess" />
+        <activity android:name=".DriverMainActivity" />
+        <activity android:name=".technicianMainActivity"/>
 
-        <activity android:name="com.iQueues.SignUpProcess" />
-        <activity android:name="com.iQueues.DriverMainScreen" />
-
+        <receiver android:name=".AlarmReceiver"/>
     </application>
 
 </manifest>

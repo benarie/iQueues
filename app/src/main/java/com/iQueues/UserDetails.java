@@ -1,8 +1,6 @@
 package com.iQueues;
 
 
-
-
 import com.google.firebase.database.Exclude;
 
 import java.util.ArrayList;
@@ -16,14 +14,22 @@ public class UserDetails {
 
     private static UserDetails instance;
 
+    private ArrayList<UserDetails> details = new ArrayList<>();
+
     public static UserDetails getInstance() {
-        if(instance == null) {
+        if (instance == null) {
             instance = new UserDetails();
         }
         return instance;
     }
 
-    private UserDetails(){}
+    private UserDetails() {
+    }
+
+    public UserDetails add(UserDetails userDetails) {
+        this.details.add(userDetails);
+        return this;
+    }
 
     public String getUid() {
         return uid;

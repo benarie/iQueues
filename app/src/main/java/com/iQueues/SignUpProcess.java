@@ -1,9 +1,7 @@
 package com.iQueues;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -32,7 +30,6 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-import java.time.Instant;
 import java.util.ArrayList;
 
 import data.GlobalUtils;
@@ -185,7 +182,6 @@ public class SignUpProcess extends AppCompatActivity {
 
     private void waitForVerification() {
 
-
         verificationBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -204,7 +200,7 @@ public class SignUpProcess extends AppCompatActivity {
 
                         pushUserDetailsToFireStore();
 
-                        Intent intent = new Intent(SignUpProcess.this, DriverMainScreen.class);
+                        Intent intent = new Intent(SignUpProcess.this, DriverMainActivity.class);
                         startActivity(intent);
 
                         progressDialog.dismiss();
@@ -223,6 +219,7 @@ public class SignUpProcess extends AppCompatActivity {
         //save name and uid by SharedPreferences
         GlobalUtils.setStringToLocalStorage(SignUpProcess.this, Globals.UID_LOCAL_STORAGE_KEY, uid);
         GlobalUtils.setStringToLocalStorage(SignUpProcess.this, Globals.FULL_NAME_LOCAL_STORAGE_KEY, uFullName);
+        GlobalUtils.setStringToLocalStorage(SignUpProcess.this,Globals.PHONE_NUMBER_LOCAL_STORAGE_KEY,uPhone);
 
         UserProfileChangeRequest profileUpdate = new UserProfileChangeRequest.Builder()
                 .setDisplayName(uFullName)

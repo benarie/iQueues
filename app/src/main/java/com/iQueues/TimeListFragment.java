@@ -35,6 +35,9 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
+
+import data.GlobalUtils;
 
 
 public class TimeListFragment extends ListFragment {
@@ -52,7 +55,6 @@ public class TimeListFragment extends ListFragment {
     private CollectionReference orderRef = database.collection("orders");
 
     private ArrayList<TimeListFragment.Time> times = new ArrayList<>();
-
 
 
     public TimeListFragment() {
@@ -124,8 +126,8 @@ public class TimeListFragment extends ListFragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-       progressBar = getActivity().findViewById(R.id.progress_bar);
-       progressBar.setVisibility(View.VISIBLE);
+        progressBar = getActivity().findViewById(R.id.progress_bar);
+        progressBar.setVisibility(View.VISIBLE);
 
         getAvailableTimesFromFireStore();
 

@@ -36,35 +36,23 @@ public class GlobalUtils {
     }
 
     public static Long getTimeStamp() {
-        return System.currentTimeMillis() / 1000;
+        return System.currentTimeMillis();
     }
 
-    public static long convertDateToTimestamp(String dateOfOrder) {
+    public static long convertDateToTimestamp(String dateOfOrder, String timeOfOrder) {
 
-        DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
-        formatter.setTimeZone(TimeZone.getTimeZone("iw"));
+        DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault());
+        formatter.setTimeZone(TimeZone.getTimeZone("Asia/Jerusalem"));
         Date date = null;
         try {
-            date = formatter.parse(dateOfOrder);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        return date.getTime() / 1000;
-    }
-
-    public static  long convertTimeToTimestamp(String timeOfOrder){
-
-        DateFormat formatter = new SimpleDateFormat("hh:mm:ss",Locale.getDefault());
-        formatter.setTimeZone(TimeZone.getTimeZone("iw"));
-        Date date = null;
-        try {
-            date = formatter.parse(timeOfOrder);
+            date = formatter.parse(dateOfOrder + " " + timeOfOrder);
         } catch (ParseException e) {
             e.printStackTrace();
         }
 
         return date.getTime();
     }
+
 
 
 }

@@ -4,7 +4,6 @@ package com.iQueues;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -20,20 +19,9 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.UserProfileChangeRequest;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QuerySnapshot;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import data.GlobalUtils;
 import data.Globals;
@@ -47,15 +35,15 @@ public class SignInProcess extends AppCompatActivity {
     private ProgressDialog progressDialog;
     ProgressBar progressBar;
     private String uid;
+    private String name;
+    private String namber;
 
     private FirebaseAuth auth = FirebaseAuth.getInstance();
 
     private FirebaseFirestore database = FirebaseFirestore.getInstance();
     private CollectionReference userRef = database.collection("users");
-    private CollectionReference orderRef = database.collection("orders");
 
-    UserDetails userDetails = UserDetails.getInstance();
-    OrdersQueue queue = OrdersQueue.getInstance();
+    UserDetails userDetails;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -106,15 +94,24 @@ public class SignInProcess extends AppCompatActivity {
                             Toast.makeText(SignInProcess.this, "signIn successful", Toast.LENGTH_SHORT).show();
 
                             uid = auth.getCurrentUser().getUid();
+                            name = auth.getCurrentUser().getDisplayName();
 
-                            //pull data frome fireStore
+                            pullDataOfUserFromFireStore(uid);
+
+                            // pull data frome fireStore
                             userRef.document(uid).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                                 @Override
                                 public void onSuccess(DocumentSnapshot snapshot) {
+                                    UserDetails.getInstance().add(snapshot.toObject(UserDetails.class));
                                     userDetails = snapshot.toObject(UserDetails.class);
 
+                                    String number = null;
+                                    if (userDetails != null) {
+                                        number = userDetails.getPhone_number();
+                                    }
                                     GlobalUtils.setStringToLocalStorage(SignInProcess.this, Globals.UID_LOCAL_STORAGE_KEY, uid);
-                                    GlobalUtils.setStringToLocalStorage(SignInProcess.this, Globals.FULL_NAME_LOCAL_STORAGE_KEY, auth.getCurrentUser().getDisplayName());
+                                    GlobalUtils.setStringToLocalStorage(SignInProcess.this, Globals.FULL_NAME_LOCAL_STORAGE_KEY, name);
+                                    GlobalUtils.setStringToLocalStorage(SignInProcess.this, Globals.PHONE_NUMBER_LOCAL_STORAGE_KEY, number);
 
                                     goToMainScreen();
                                 }
@@ -147,16 +144,20 @@ public class SignInProcess extends AppCompatActivity {
 
     private void goToMainScreen() {
 
-        Intent intent = new Intent(SignInProcess.this, DriverMainScreen.class);
+        Intent intent = new Intent(SignInProcess.this, DriverMainActivity.class);
         startActivity(intent);
     }
 
-    private void pullDataOfUserFromFireStore(final String uid) {
+    private void pullDataOfUserFromFireStore(String uid) {
 
         userRef.document(uid).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot snapshot) {
+                UserDetails.getInstance().add(snapshot.toObject(UserDetails.class));
                 userDetails = snapshot.toObject(UserDetails.class);
+
+                System.out.print(userDetails);
+
             }
         });
 

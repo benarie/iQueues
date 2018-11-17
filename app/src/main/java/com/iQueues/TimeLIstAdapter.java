@@ -9,12 +9,15 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
+
+import data.GlobalUtils;
 
 public class TimeLIstAdapter extends BaseAdapter {
 
-    private ArrayList<TimeListFragment.Time> times ;
-
+    private ArrayList<TimeListFragment.Time> times;
     private Context context;
+    private Long hoursToLeft;
 
     public TimeLIstAdapter(ArrayList<TimeListFragment.Time> times, Context context) {
         this.times = times;
@@ -53,11 +56,8 @@ public class TimeLIstAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        long tStart = System.currentTimeMillis();
-//        if (convertView == null) {// no suitable view in the listView recycler view is found.
 
         convertView = LayoutInflater.from(context).inflate(R.layout.time_cell, null);
-//        }
 
         TextView orderTimeTv = convertView.findViewById(R.id.order_time_text_view);
 
@@ -67,10 +67,9 @@ public class TimeLIstAdapter extends BaseAdapter {
 
         if (!time.isAvailable) {
             convertView.setAlpha(0.5f);
-        }else{
+        } else {
             convertView.setAlpha(1f);
         }
-        System.out.printf("AVIHU: %s \n", (System.currentTimeMillis() - tStart));
         return convertView;
     }
 }
