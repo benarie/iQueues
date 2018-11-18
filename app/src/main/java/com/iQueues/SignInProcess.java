@@ -156,8 +156,6 @@ public class SignInProcess extends AppCompatActivity {
                 UserDetails.getInstance().add(snapshot.toObject(UserDetails.class));
                 userDetails = snapshot.toObject(UserDetails.class);
 
-                System.out.print(userDetails);
-
             }
         });
 
