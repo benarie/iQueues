@@ -14,6 +14,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.annotation.NonNull;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.util.Log;
@@ -21,6 +22,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.Toolbar;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -57,9 +59,6 @@ public class DriverMainActivity extends AppCompatActivity implements DateFragmen
     final String DATE_FRAGMENT_TAG = "date_fragment";
     final String TIME_LIST_FRAGMENT_TAG = "time_list_fragment";
     final String TAG = "DriverMainActivity";
-    final String DATE_TAG = "date";
-    final String TIME_TAG = "time";
-    final String KEY_NAME = "name";
 
     private String dateOfOrder;
     private String timeOfOrder;
@@ -81,6 +80,13 @@ public class DriverMainActivity extends AppCompatActivity implements DateFragmen
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_driver_main);
+
+        Toolbar toolbar = findViewById(R.id.tool_bar_driver);
+        setSupportActionBar(toolbar);
+
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setHomeAsUpIndicator(R.mipmap.baseline_exit_to_app);
 
         timeTv = findViewById(R.id.time_text_output);
 
@@ -104,8 +110,6 @@ public class DriverMainActivity extends AppCompatActivity implements DateFragmen
         currentTimeDate = GlobalUtils.getTimeStamp();
 
         String uid = GlobalUtils.getStringFromLocalStorage(DriverMainActivity.this, Globals.UID_LOCAL_STORAGE_KEY);
-        String number = GlobalUtils.getStringFromLocalStorage(DriverMainActivity.this,Globals.PHONE_NUMBER_LOCAL_STORAGE_KEY);
-
 
         pullDataOfOrderFromFireStore(uid);
 
@@ -127,6 +131,9 @@ public class DriverMainActivity extends AppCompatActivity implements DateFragmen
 
         directionOnClick();
 
+    }
+
+    private void setSupportActionBar(Toolbar toolbar) {
     }
 
 
@@ -487,19 +494,19 @@ public class DriverMainActivity extends AppCompatActivity implements DateFragmen
         });
     }
 
-    public void SendSmsReminder() {
-
-        String massage = "להזכירך! התור לטיפול בתקלה בשעה: " + OrdersQueue.getInstance().getTime() + "\n" + "נא להגיע בזמן...";
-        String number = GlobalUtils.getStringFromLocalStorage(DriverMainActivity.this,Globals.PHONE_NUMBER_LOCAL_STORAGE_KEY);
-        Long second = convertDate - 3600 * 1000;
-
-        Intent intent = new Intent(DriverMainActivity.this, AlarmReceiver.class);
-        intent.putExtra("massage", massage);
-        intent.putExtra("number", number);
-        pendingIntent = PendingIntent.getBroadcast(DriverMainActivity.this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-        manager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-        manager.setExact(AlarmManager.RTC_WAKEUP, second * 1000, pendingIntent);
-        manager.setRepeating(AlarmManager.RTC_WAKEUP, second, 1000 * 60 * 20, pendingIntent);
-    }
+//    public void SendSmsReminder() {
+//
+//        String massage = "להזכירך! התור לטיפול בתקלה בשעה: " + OrdersQueue.getInstance().getTime() + "\n" + "נא להגיע בזמן...";
+//        String number = GlobalUtils.getStringFromLocalStorage(DriverMainActivity.this,Globals.PHONE_NUMBER_LOCAL_STORAGE_KEY);
+//        Long second = convertDate - 3600 * 1000;
+//
+//        Intent intent = new Intent(DriverMainActivity.this, AlarmReceiver.class);
+//        intent.putExtra("massage", massage);
+//        intent.putExtra("number", number);
+//        pendingIntent = PendingIntent.getBroadcast(DriverMainActivity.this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+//
+//        manager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+//        manager.setExact(AlarmManager.RTC_WAKEUP, second * 1000, pendingIntent);
+//        manager.setRepeating(AlarmManager.RTC_WAKEUP, second, 1000 * 60 * 20, pendingIntent);
+//    }
 }

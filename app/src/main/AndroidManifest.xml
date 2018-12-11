@@ -24,7 +24,7 @@
         </activity>
         <activity android:name=".SignUpProcess" />
         <activity android:name=".DriverMainActivity" />
-        <activity android:name=".technicianMainActivity"/>
+        <activity android:name=".TechnicianMainActivity"/>
 
         <receiver android:name=".AlarmReceiver"/>
     </application>

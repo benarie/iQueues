@@ -5,10 +5,15 @@
 
         <item
             android:id="@+id/reports"
-            android:checked="true"
-            android:title="reports"/>
+            android:checked="false"
+            android:title="reports"
+            android:icon="@mipmap/baseline_edit"/>
 
-
+        <item
+            android:id="@+id/exit_app"
+            android:checked="false"
+            android:title="exit"
+            android:icon="@mipmap/baseline_exit_to_app"/>
 
     </group>
 </menu>

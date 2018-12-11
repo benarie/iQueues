@@ -7,6 +7,7 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
@@ -31,6 +32,7 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 import data.GlobalUtils;
 import data.Globals;
@@ -48,7 +50,7 @@ public class SignUpProcess extends AppCompatActivity {
     private ProgressDialog progressDialog;
     Button signUpBtn;
     Button verificationBtn;
-    private String uFullName, uPhone, uHat, uCompany, uid;
+    private String uFullName, uPhone, uHat, uCompany, uid, position;
     private AutoCompleteTextView taxiCompaniesTv;
 
     private FirebaseAuth auth = FirebaseAuth.getInstance();
@@ -94,8 +96,10 @@ public class SignUpProcess extends AppCompatActivity {
                 uPhone = phone.getText().toString().trim();
                 uHat = hatNum.getText().toString().trim();
                 uCompany = taxiCompaniesTv.getText().toString().trim();
-                uid = auth.getCurrentUser().getUid();
 
+                if(auth.getCurrentUser() != null){
+                    uid = auth.getCurrentUser().getUid();
+                }
 
                 if (uEmail.isEmpty() || uPword.isEmpty()) {//if the email or password are empty, you can't be registered
                     Toast.makeText(SignUpProcess.this, "email or password fields are empty", Toast.LENGTH_SHORT).show();
@@ -181,7 +185,6 @@ public class SignUpProcess extends AppCompatActivity {
     }
 
     private void waitForVerification() {
-
         verificationBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -189,13 +192,18 @@ public class SignUpProcess extends AppCompatActivity {
                 user.reload();
                 while (user.isEmailVerified()) {
 
+                    WindowManager.LayoutParams layoutParams = getWindow().getAttributes();
+                    layoutParams.dimAmount = 1.0f;
+                    getWindow().setAttributes(layoutParams);
+
+                    //ADD CUSTOM DIALOG;
+
                     progressDialog.setMessage("Updating details Please wait...");
                     progressDialog.show();
 
                     if (user.isEmailVerified()) {
 
                         verificationBtn.setClickable(true);
-
                         Toast.makeText(SignUpProcess.this, "Sign up successful", Toast.LENGTH_SHORT).show();
 
                         pushUserDetailsToFireStore();
@@ -203,12 +211,13 @@ public class SignUpProcess extends AppCompatActivity {
                         Intent intent = new Intent(SignUpProcess.this, DriverMainActivity.class);
                         startActivity(intent);
 
+                        layoutParams.dimAmount = 0f;
+
                         progressDialog.dismiss();
 
                         break;
                     }
                 }
-
             }
         });
 
@@ -219,7 +228,7 @@ public class SignUpProcess extends AppCompatActivity {
         //save name and uid by SharedPreferences
         GlobalUtils.setStringToLocalStorage(SignUpProcess.this, Globals.UID_LOCAL_STORAGE_KEY, uid);
         GlobalUtils.setStringToLocalStorage(SignUpProcess.this, Globals.FULL_NAME_LOCAL_STORAGE_KEY, uFullName);
-        GlobalUtils.setStringToLocalStorage(SignUpProcess.this,Globals.PHONE_NUMBER_LOCAL_STORAGE_KEY,uPhone);
+
 
         UserProfileChangeRequest profileUpdate = new UserProfileChangeRequest.Builder()
                 .setDisplayName(uFullName)
@@ -239,7 +248,7 @@ public class SignUpProcess extends AppCompatActivity {
 
         //creates an object which contains all above strings.
         UserDetails userDetails = UserDetails.getInstance();
-        userDetails.setParams(uid, uPhone, uHat, uCompany);
+        userDetails.setParams(uid, uPhone, uHat, uCompany, position);
 
         userRef.document(uid)
                 .set(userDetails)

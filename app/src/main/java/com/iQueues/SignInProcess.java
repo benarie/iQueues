@@ -23,6 +23,8 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.Objects;
+
 import data.GlobalUtils;
 import data.Globals;
 
@@ -33,10 +35,9 @@ public class SignInProcess extends AppCompatActivity {
     private TextView loginEmail;
     private TextView loginPword;
     private ProgressDialog progressDialog;
-    ProgressBar progressBar;
     private String uid;
     private String name;
-    private String namber;
+    private String position;
 
     private FirebaseAuth auth = FirebaseAuth.getInstance();
 
@@ -57,7 +58,8 @@ public class SignInProcess extends AppCompatActivity {
             uid = GlobalUtils.getStringFromLocalStorage(this, Globals.UID_LOCAL_STORAGE_KEY);
             pullDataOfUserFromFireStore(uid);
 
-            //goToMainScreen();
+            position = userDetails.getPosition();
+            goToMainScreen(position);
 
             //return;
         }
@@ -93,7 +95,7 @@ public class SignInProcess extends AppCompatActivity {
 
                             Toast.makeText(SignInProcess.this, "signIn successful", Toast.LENGTH_SHORT).show();
 
-                            uid = auth.getCurrentUser().getUid();
+                            uid = Objects.requireNonNull(auth.getCurrentUser()).getUid();
                             name = auth.getCurrentUser().getDisplayName();
 
                             pullDataOfUserFromFireStore(uid);
@@ -105,15 +107,10 @@ public class SignInProcess extends AppCompatActivity {
                                     UserDetails.getInstance().add(snapshot.toObject(UserDetails.class));
                                     userDetails = snapshot.toObject(UserDetails.class);
 
-                                    String number = null;
-                                    if (userDetails != null) {
-                                        number = userDetails.getPhone_number();
-                                    }
                                     GlobalUtils.setStringToLocalStorage(SignInProcess.this, Globals.UID_LOCAL_STORAGE_KEY, uid);
                                     GlobalUtils.setStringToLocalStorage(SignInProcess.this, Globals.FULL_NAME_LOCAL_STORAGE_KEY, name);
-                                    GlobalUtils.setStringToLocalStorage(SignInProcess.this, Globals.PHONE_NUMBER_LOCAL_STORAGE_KEY, number);
 
-                                    goToMainScreen();
+                                    goToMainScreen(position);
                                 }
                             });
                         } else {
@@ -142,10 +139,16 @@ public class SignInProcess extends AppCompatActivity {
 
     }
 
-    private void goToMainScreen() {
+    private void goToMainScreen(String position) {
 
-        Intent intent = new Intent(SignInProcess.this, DriverMainActivity.class);
-        startActivity(intent);
+        if (position.equalsIgnoreCase(Globals.POSITION)) {
+            Intent intent = new Intent(SignInProcess.this, DriverMainActivity.class);
+            startActivity(intent);
+        } else {
+            Intent intent = new Intent(SignInProcess.this, TechnicianMainActivity.class);
+            startActivity(intent);
+        }
+
     }
 
     private void pullDataOfUserFromFireStore(String uid) {
