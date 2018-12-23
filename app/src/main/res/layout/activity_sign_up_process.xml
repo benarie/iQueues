@@ -73,12 +73,12 @@
 
         <android.support.v7.widget.AppCompatAutoCompleteTextView
             android:id="@+id/taxi_companies"
-            android:layout_width="200dp"
+            android:layout_width="215dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_margin="5dp"
             android:hint="מוניות"
-            android:inputType="textAutoComplete"/>
+            android:inputType="textAutoComplete" />
 
         <EditText
             android:id="@+id/hat_num"
@@ -98,10 +98,10 @@
             android:layout_gravity="center"
             android:layout_margin="20dp"
             android:text="לאחר אימות המייל לחץ כאן"
+            android:textAlignment="center"
             android:textColor="@color/colorAccent"
             android:textSize="15sp"
-            android:textAlignment="center"
-            android:visibility="gone"/>
+            android:visibility="gone" />
 
         <Button
             android:id="@+id/sign_up_btn"
@@ -111,7 +111,7 @@
             android:layout_margin="50dp"
             android:text="להרשמה לחץ כאן"
             android:textSize="15sp"
-            android:visibility="visible"/>
+            android:visibility="visible" />
 
 
         <Button
@@ -121,7 +121,7 @@
             android:layout_gravity="center"
             android:text="לאימות לחץ כאן"
             android:textSize="15sp"
-            android:visibility="gone"/>
+            android:visibility="gone" />
 
     </LinearLayout>
 

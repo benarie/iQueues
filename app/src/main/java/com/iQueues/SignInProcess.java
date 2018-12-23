@@ -59,7 +59,10 @@ public class SignInProcess extends AppCompatActivity {
             pullDataOfUserFromFireStore(uid);
 
             position = userDetails.getPosition();
+
+
             goToMainScreen(position);
+
 
             //return;
         }

@@ -53,8 +53,8 @@ public class SignUpProcess extends AppCompatActivity {
     private String uFullName, uPhone, uHat, uCompany, uid, position;
     private AutoCompleteTextView taxiCompaniesTv;
 
-    private FirebaseAuth auth = FirebaseAuth.getInstance();
-    private FirebaseUser user = auth.getCurrentUser();
+    FirebaseAuth auth = FirebaseAuth.getInstance();
+    FirebaseUser user = auth.getCurrentUser();
 
     private FirebaseFirestore database = FirebaseFirestore.getInstance();
     private FirebaseDatabase db = FirebaseDatabase.getInstance();
@@ -192,12 +192,6 @@ public class SignUpProcess extends AppCompatActivity {
                 user.reload();
                 while (user.isEmailVerified()) {
 
-                    WindowManager.LayoutParams layoutParams = getWindow().getAttributes();
-                    layoutParams.dimAmount = 1.0f;
-                    getWindow().setAttributes(layoutParams);
-
-                    //ADD CUSTOM DIALOG;
-
                     progressDialog.setMessage("Updating details Please wait...");
                     progressDialog.show();
 
@@ -210,8 +204,6 @@ public class SignUpProcess extends AppCompatActivity {
 
                         Intent intent = new Intent(SignUpProcess.this, DriverMainActivity.class);
                         startActivity(intent);
-
-                        layoutParams.dimAmount = 0f;
 
                         progressDialog.dismiss();
 
@@ -228,7 +220,6 @@ public class SignUpProcess extends AppCompatActivity {
         //save name and uid by SharedPreferences
         GlobalUtils.setStringToLocalStorage(SignUpProcess.this, Globals.UID_LOCAL_STORAGE_KEY, uid);
         GlobalUtils.setStringToLocalStorage(SignUpProcess.this, Globals.FULL_NAME_LOCAL_STORAGE_KEY, uFullName);
-
 
         UserProfileChangeRequest profileUpdate = new UserProfileChangeRequest.Builder()
                 .setDisplayName(uFullName)
