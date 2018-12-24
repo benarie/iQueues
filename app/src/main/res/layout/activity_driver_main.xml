@@ -48,7 +48,7 @@
             android:layout_alignParentTop="true"
             android:layout_centerHorizontal="true"
             android:layout_gravity="center"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="60dp"
             android:layout_marginBottom="5dp"
             android:text="זמן"
             android:textSize="25sp" />
@@ -60,7 +60,7 @@
             android:layout_below="@+id/time_text_output"
             android:layout_centerHorizontal="true"
             android:layout_gravity="center"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="25dp"
             android:layout_marginBottom="5dp"
             android:text="שם"
             android:textSize="25sp" />
@@ -72,7 +72,7 @@
             android:layout_height="wrap_content"
             android:layout_below="@+id/name_text_output"
             android:layout_marginStart="10dp"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="25dp"
             android:layout_marginEnd="10dp"
             android:layout_marginBottom="10dp" />
 
@@ -82,7 +82,7 @@
             android:layout_below="@+id/card"
             android:layout_centerHorizontal="true"
             android:layout_marginStart="10dp"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="-2dp"
             android:layout_marginEnd="10dp"
             android:layout_marginBottom="10dp"
             android:orientation="horizontal">
@@ -109,7 +109,7 @@
             <Button
                 android:id="@+id/insert_queue_btn"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_below="@+id/recycler"
                 android:text="קבע תור"
                 android:textSize="20sp"

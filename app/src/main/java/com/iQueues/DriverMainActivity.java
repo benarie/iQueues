@@ -86,7 +86,10 @@ public class DriverMainActivity extends AppCompatActivity implements DateFragmen
 
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
-        actionBar.setHomeAsUpIndicator(R.mipmap.baseline_exit_to_app);
+        actionBar.setHomeAsUpIndicator(R.mipmap.button_power);
+        actionBar.setTitle("תורTaxi4");
+
+
 
         timeTv = findViewById(R.id.time_text_output);
 

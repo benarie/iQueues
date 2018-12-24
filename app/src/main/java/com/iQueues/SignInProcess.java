@@ -58,13 +58,7 @@ public class SignInProcess extends AppCompatActivity {
             uid = GlobalUtils.getStringFromLocalStorage(this, Globals.UID_LOCAL_STORAGE_KEY);
             pullDataOfUserFromFireStore(uid);
 
-            position = userDetails.getPosition();
-
-
-            goToMainScreen(position);
-
-
-            //return;
+            goToMainScreen();
         }
 
         loginEmail = findViewById(R.id.login_email);
@@ -103,19 +97,11 @@ public class SignInProcess extends AppCompatActivity {
 
                             pullDataOfUserFromFireStore(uid);
 
-                            // pull data frome fireStore
-                            userRef.document(uid).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                                @Override
-                                public void onSuccess(DocumentSnapshot snapshot) {
-                                    UserDetails.getInstance().add(snapshot.toObject(UserDetails.class));
-                                    userDetails = snapshot.toObject(UserDetails.class);
-
                                     GlobalUtils.setStringToLocalStorage(SignInProcess.this, Globals.UID_LOCAL_STORAGE_KEY, uid);
                                     GlobalUtils.setStringToLocalStorage(SignInProcess.this, Globals.FULL_NAME_LOCAL_STORAGE_KEY, name);
 
-                                    goToMainScreen(position);
-                                }
-                            });
+                                    goToMainScreen();
+
                         } else {
 
                             Toast.makeText(SignInProcess.this, "email or password are incorrect,please check your entries.", Toast.LENGTH_SHORT).show();
@@ -142,15 +128,10 @@ public class SignInProcess extends AppCompatActivity {
 
     }
 
-    private void goToMainScreen(String position) {
+    private void goToMainScreen() {
 
-        if (position.equalsIgnoreCase(Globals.POSITION)) {
             Intent intent = new Intent(SignInProcess.this, DriverMainActivity.class);
             startActivity(intent);
-        } else {
-            Intent intent = new Intent(SignInProcess.this, TechnicianMainActivity.class);
-            startActivity(intent);
-        }
 
     }
 

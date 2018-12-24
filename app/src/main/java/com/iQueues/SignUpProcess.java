@@ -62,6 +62,7 @@ public class SignUpProcess extends AppCompatActivity {
     private DatabaseReference companiesRef = db.getReference();
 
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -115,6 +116,7 @@ public class SignUpProcess extends AppCompatActivity {
                         if (task.isSuccessful()) {
 
                             // Sign up success, update UI with the signed-in user's information
+
                             updateUser(user);
 
                             sendVerificationEmail();
