@@ -85,10 +85,10 @@ public class DriverMainActivity extends AppCompatActivity implements DateFragmen
         setSupportActionBar(toolbar);
 
         ActionBar actionBar = getSupportActionBar();
+        assert actionBar != null;
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setHomeAsUpIndicator(R.mipmap.button_power);
         actionBar.setTitle("תורTaxi4");
-
 
 
         timeTv = findViewById(R.id.time_text_output);
@@ -499,12 +499,10 @@ public class DriverMainActivity extends AppCompatActivity implements DateFragmen
 //    public void SendSmsReminder() {
 //
 //        String massage = "להזכירך! התור לטיפול בתקלה בשעה: " + OrdersQueue.getInstance().getTime() + "\n" + "נא להגיע בזמן...";
-//        String number = GlobalUtils.getStringFromLocalStorage(DriverMainActivity.this,Globals.PHONE_NUMBER_LOCAL_STORAGE_KEY);
 //        Long second = convertDate - 3600 * 1000;
 //
 //        Intent intent = new Intent(DriverMainActivity.this, AlarmReceiver.class);
 //        intent.putExtra("massage", massage);
-//        intent.putExtra("number", number);
 //        pendingIntent = PendingIntent.getBroadcast(DriverMainActivity.this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 //
 //        manager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);

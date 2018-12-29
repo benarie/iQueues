@@ -62,7 +62,6 @@ public class SignUpProcess extends AppCompatActivity {
     private DatabaseReference companiesRef = db.getReference();
 
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -98,11 +97,13 @@ public class SignUpProcess extends AppCompatActivity {
                 uHat = hatNum.getText().toString().trim();
                 uCompany = taxiCompaniesTv.getText().toString().trim();
 
-                if(auth.getCurrentUser() != null){
+                if (auth.getCurrentUser() != null) {
                     uid = auth.getCurrentUser().getUid();
                 }
+                if (uFullName.isEmpty()) {
+                    Toast.makeText(SignUpProcess.this, "The User name is empty", Toast.LENGTH_SHORT).show();
 
-                if (uEmail.isEmpty() || uPword.isEmpty()) {//if the email or password are empty, you can't be registered
+                } else if (uEmail.isEmpty() || uPword.isEmpty()) {//if the email or password are empty, you can't be registered
                     Toast.makeText(SignUpProcess.this, "email or password fields are empty", Toast.LENGTH_SHORT).show();
                     return;
                 } else if (uPword.length() < 6) {
