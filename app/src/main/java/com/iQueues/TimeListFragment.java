@@ -4,9 +4,12 @@ import android.app.Activity;
 import android.app.ListFragment;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -46,6 +49,12 @@ public class TimeListFragment extends ListFragment {
     private ProgressBar progressBar;
     private String date;
     private ListView listView;
+    private String dateOfOrder;
+    private String timeOfOrder;
+    private Long convertDate;
+    private Long currentTimeDate;
+    private int totalTime;
+    private ProgressDialog progressDialog;
 
     String TAG = "TimeListFragment";
     final static String DATA_RECEIVE = "data_receive";
@@ -78,6 +87,9 @@ public class TimeListFragment extends ListFragment {
         times.add(new TimeListFragment.Time("15:30 - 16:00"));
         times.add(new TimeListFragment.Time("16:00 - 16:30"));
         times.add(new TimeListFragment.Time("16:30 - 17:00"));
+
+        currentTimeDate = GlobalUtils.getTimeStamp();
+
 
     }
 
@@ -138,6 +150,7 @@ public class TimeListFragment extends ListFragment {
         after that add success and fail listeners.
         don't forget to remove the loading spinner inside the listeners :) */
 
+
         Bundle args = getArguments();
         if (args != null) {
             date = args.getString(DATA_RECEIVE);
@@ -146,6 +159,7 @@ public class TimeListFragment extends ListFragment {
         orderRef.whereEqualTo("date", date)
                 .get()
                 .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                    @RequiresApi(api = Build.VERSION_CODES.M)
                     @Override
                     public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                         List<DocumentSnapshot> documentsList = queryDocumentSnapshots.getDocuments();
@@ -154,19 +168,34 @@ public class TimeListFragment extends ListFragment {
                         for (DocumentSnapshot document : documentsList) {
                             notAvailableTImes.add(document.getString("time"));
                         }
+
                         Collections.sort(notAvailableTImes);
 
                         for (TimeListFragment.Time time : times) {
-                            for (String notAvailableTIme : notAvailableTImes)
+                            for (String notAvailableTIme : notAvailableTImes) {
                                 if (time.getTime().equals(notAvailableTIme)) {
                                     time.isAvailable = false;
+
                                 }
+
+                                dateOfOrder = date;
+                                timeOfOrder = time.getTime();
+                                convertDate = GlobalUtils.convertDateToTimestamp(dateOfOrder, timeOfOrder);
+
+                                if (currentTimeDate >= convertDate) {// if the time passed
+                                    time.isAvailable = false;
+
+                                }
+
+                            }
+
                         }
 
                         TimeLIstAdapter timeLIstAdapter = new TimeLIstAdapter(times, getContext());
                         setListAdapter(timeLIstAdapter);
 
                         progressBar.setVisibility(View.GONE);
+
 
                     }
                 }).addOnFailureListener(new OnFailureListener() {
