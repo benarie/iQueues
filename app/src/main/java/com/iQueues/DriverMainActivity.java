@@ -119,7 +119,6 @@ public class DriverMainActivity extends AppCompatActivity implements DateFragmen
         insertQueueBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 FragmentManager manager = getFragmentManager();
                 FragmentTransaction transaction = manager.beginTransaction();
                 transaction.add(R.id.fragment_container, new DateFragment(), DATE_FRAGMENT_TAG);
@@ -344,7 +343,7 @@ public class DriverMainActivity extends AppCompatActivity implements DateFragmen
 
                     } else {// NOT BETWEEN 24 HOURS
 
-                        countDownTimer.cancel();
+                       // countDownTimer.cancel();
                         viewManager.notBetween24Hours(temp);
                     }
 

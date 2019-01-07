@@ -13,5 +13,6 @@ public class Globals {
 
     public static final String POSITION = "DRIVER";
 
+    public static final String NOTIFICATION_CHANNEL_ID = "com.arie.iQueues";
 
 }
