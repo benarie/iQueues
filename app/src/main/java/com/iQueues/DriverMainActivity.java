@@ -135,8 +135,6 @@ public class DriverMainActivity extends AppCompatActivity implements DateFragmen
 
     }
 
-   
-
 
     @Override
     public void onBackPressed() {
@@ -343,7 +341,7 @@ public class DriverMainActivity extends AppCompatActivity implements DateFragmen
 
                     } else {// NOT BETWEEN 24 HOURS
 
-                       // countDownTimer.cancel();
+                        countDownTimer.cancel();
                         viewManager.notBetween24Hours(temp);
                     }
 
@@ -353,24 +351,7 @@ public class DriverMainActivity extends AppCompatActivity implements DateFragmen
                     OrdersQueue.getInstance().removeOrder(temp.getOrderId());
                 }
             } else {// change Active to inActive in fire store //remove order from local
-
-                String statusAfterPull = Globals.INACTIVE_ORDER_STATUS;
-                orderRef.document(temp.getOrderId())
-                        .update("status", statusAfterPull)
-                        .addOnSuccessListener(new OnSuccessListener<Void>() {
-                            @Override
-                            public void onSuccess(Void aVoid) {
-                                OrdersQueue.getInstance().removeOrder(temp.getOrderId());
-                                Toast.makeText(DriverMainActivity.this, "The update is succeed", Toast.LENGTH_SHORT).show();
-                            }
-                        }).addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(DriverMainActivity.this, "Error!", Toast.LENGTH_SHORT).show();
-                        Log.d(TAG, e.toString());
-                    }
-                });
-
+                changeStatusFromFirestore();
             }
         } else {// No queue
 
@@ -401,6 +382,8 @@ public class DriverMainActivity extends AppCompatActivity implements DateFragmen
 
                 timeLeftTv.setVisibility(View.GONE);
                 timeLeftTv_1.setText("The queue arrived");
+                changeStatusFromFirestore();
+
             }
         };
         return countDownTimer;
@@ -493,6 +476,28 @@ public class DriverMainActivity extends AppCompatActivity implements DateFragmen
                 }
             }
         });
+    }
+
+    private void changeStatusFromFirestore(){
+
+        final Order temp = OrdersQueue.getInstance().getFirst();
+        String statusAfterPull = Globals.INACTIVE_ORDER_STATUS;
+        orderRef.document(temp.getOrderId())
+                .update("status", statusAfterPull)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        OrdersQueue.getInstance().removeOrder(temp.getOrderId());
+                        Toast.makeText(DriverMainActivity.this, "The update is succeed", Toast.LENGTH_SHORT).show();
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Toast.makeText(DriverMainActivity.this, "Error!", Toast.LENGTH_SHORT).show();
+                Log.d(TAG, e.toString());
+            }
+        });
+
     }
 
 //    public void SendSmsReminder() {

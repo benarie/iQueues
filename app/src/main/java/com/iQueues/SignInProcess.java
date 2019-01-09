@@ -114,8 +114,8 @@ public class SignInProcess extends AppCompatActivity {
         });
 
 
-        Button signInBtn = findViewById(R.id.sign_in_btn);
-        signInBtn.setOnClickListener(new View.OnClickListener()
+        Button signUpBtn = findViewById(R.id.sign_in_btn);
+        signUpBtn.setOnClickListener(new View.OnClickListener()
 
         {
             @Override
