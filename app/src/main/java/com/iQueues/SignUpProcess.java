@@ -19,9 +19,12 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.FirebaseException;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.PhoneAuthCredential;
+import com.google.firebase.auth.PhoneAuthProvider;
 import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -33,6 +36,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 import data.GlobalUtils;
 import data.Globals;
@@ -41,8 +45,7 @@ import data.Globals;
 public class SignUpProcess extends AppCompatActivity {
 
     private String TAG = "SignUpProcess";
-    private String KEY_NAME = "name";
-    private String KEY_UID = "uid";
+    private String PHONE_NUMBER_TAG = "PHONE_NUMBER_TAG";
 
 
     private EditText email, pWord, phone, hatNum, fullName;
@@ -51,6 +54,7 @@ public class SignUpProcess extends AppCompatActivity {
     Button signUpBtn;
     Button verificationBtn;
     private String uFullName, uPhone, uHat, uCompany, uid, position;
+    private String codeSent;
     private AutoCompleteTextView taxiCompaniesTv;
 
     FirebaseAuth auth = FirebaseAuth.getInstance();
@@ -72,6 +76,7 @@ public class SignUpProcess extends AppCompatActivity {
         pWord = findViewById(R.id.pWord);
         fullName = findViewById(R.id.full_name);
         phone = findViewById(R.id.phone_num);
+        taxiCompaniesTv = findViewById(R.id.taxi_companies);
         hatNum = findViewById(R.id.hat_num);
         progressDialog = new ProgressDialog(SignUpProcess.this);
         afterVerifyingTv = findViewById(R.id.after_verifying_text_view);
@@ -101,14 +106,31 @@ public class SignUpProcess extends AppCompatActivity {
                     uid = auth.getCurrentUser().getUid();
                 }
                 if (uFullName.isEmpty()) {
-                    Toast.makeText(SignUpProcess.this, "The User name is empty", Toast.LENGTH_SHORT).show();
-
-                } else if (uEmail.isEmpty() || uPword.isEmpty()) {//if the email or password are empty, you can't be registered
-                    Toast.makeText(SignUpProcess.this, "email or password fields are empty", Toast.LENGTH_SHORT).show();
+                    fullName.setError("Email fields are empty");
+                    fullName.requestFocus();
+                    return;
+                } else if (uEmail.isEmpty()) {//if the email or password are empty, you can't be registered
+                    email.setError("Email fields is empty");
+                    email.requestFocus();
+                    return;
+                } else if (uPword.isEmpty()) {
+                    pWord.setError("Password fields is empty");
+                    pWord.requestFocus();
                     return;
                 } else if (uPword.length() < 6) {
-                    Toast.makeText(SignUpProcess.this, "The password need to be over 6 digit", Toast.LENGTH_SHORT).show();
+                    pWord.setError("The password need to be over 6 digit");
+                    pWord.requestFocus();
+                    return;
+                } else if (uPhone.isEmpty()) {
+                    phone.setError("Phone number is required");
+                    phone.requestFocus();
+                    return;
+                } else if (uHat.isEmpty()) {
+                    hatNum.setError("Hat number is empty");
+                    hatNum.requestFocus();
+                    return;
                 }
+
 
                 auth.createUserWithEmailAndPassword(uEmail, uPword).addOnCompleteListener(SignUpProcess.this, new OnCompleteListener<AuthResult>() {
                     @Override
@@ -119,8 +141,14 @@ public class SignUpProcess extends AppCompatActivity {
                             // Sign up success, update UI with the signed-in user's information
 
                             updateUser(user);
+//                            sendVerificationEmail();
 
-                            sendVerificationEmail();
+                            pushUserDetailsToFireStore();
+
+                            Intent intent = new Intent(SignUpProcess.this, VerifyCode.class);
+                            intent.putExtra("PHONE_NUMBER_TAG", uPhone);
+                            startActivity(intent);
+
 
                         } else {
                             // If sign up fails, display a message to the user.
@@ -133,9 +161,10 @@ public class SignUpProcess extends AppCompatActivity {
             }
         });
 
-        waitForVerification();
+//        waitForVerification();
 
     }
+
 
     private void getTaxiCompaniesList() {
 
@@ -149,7 +178,7 @@ public class SignUpProcess extends AppCompatActivity {
                     companies.add(taxiCompanies);
                 }
 
-                taxiCompaniesTv = findViewById(R.id.taxi_companies);
+
                 ArrayAdapter<String> companiesAdapter = new ArrayAdapter<>(SignUpProcess.this, android.R.layout.simple_list_item_1, companies);
                 companiesAdapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line);
                 taxiCompaniesTv.setAdapter(companiesAdapter);
@@ -162,61 +191,61 @@ public class SignUpProcess extends AppCompatActivity {
         });
     }
 
-    private void sendVerificationEmail() {
+//    private void sendVerificationEmail() {
+//
+//        if (user != null) {
+//            user.sendEmailVerification().addOnCompleteListener(new OnCompleteListener<Void>() {
+//                @Override
+//                public void onComplete(@NonNull Task<Void> task) {
+//                    if (task.isSuccessful()) {
+//                        Toast.makeText(SignUpProcess.this, "Verification email sent to" + user.getEmail(), Toast.LENGTH_SHORT).show();
+//
+//                        signUpBtn.setVisibility(View.GONE);
+//                        afterVerifyingTv.setVisibility(View.VISIBLE);
+//                        verificationBtn.setVisibility(View.VISIBLE);
+//
+//                        progressDialog.dismiss();
+//
+//                    } else {
+//                        Log.e(TAG, "sendEmailVerification", task.getException());
+//                        Toast.makeText(SignUpProcess.this, "Failed to send verification email.", Toast.LENGTH_SHORT).show();
+//                    }
+//
+//                }
+//            });
+//        }
+//    }
 
-        if (user != null) {
-            user.sendEmailVerification().addOnCompleteListener(new OnCompleteListener<Void>() {
-                @Override
-                public void onComplete(@NonNull Task<Void> task) {
-                    if (task.isSuccessful()) {
-                        Toast.makeText(SignUpProcess.this, "Verification email sent to" + user.getEmail(), Toast.LENGTH_SHORT).show();
-
-                        signUpBtn.setVisibility(View.GONE);
-                        afterVerifyingTv.setVisibility(View.VISIBLE);
-                        verificationBtn.setVisibility(View.VISIBLE);
-
-                        progressDialog.dismiss();
-
-                    } else {
-                        Log.e(TAG, "sendEmailVerification", task.getException());
-                        Toast.makeText(SignUpProcess.this, "Failed to send verification email.", Toast.LENGTH_SHORT).show();
-                    }
-
-                }
-            });
-        }
-    }
-
-    private void waitForVerification() {
-        verificationBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                user.reload();
-                while (user.isEmailVerified()) {
-
-                    progressDialog.setMessage("Updating details Please wait...");
-                    progressDialog.show();
-
-                    if (user.isEmailVerified()) {
-
-                        verificationBtn.setClickable(true);
-                        Toast.makeText(SignUpProcess.this, "Sign up successful", Toast.LENGTH_SHORT).show();
-
-                        pushUserDetailsToFireStore();
-
-                        Intent intent = new Intent(SignUpProcess.this, DriverMainActivity.class);
-                        startActivity(intent);
-
-                        progressDialog.dismiss();
-
-                        break;
-                    }
-                }
-            }
-        });
-
-    }
+//    private void waitForVerification() {
+//        verificationBtn.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//
+//                user.reload();
+//                while (user.isEmailVerified()) {
+//
+//                    progressDialog.setMessage("Updating details Please wait...");
+//                    progressDialog.show();
+//
+//                    if (user.isEmailVerified()) {
+//
+//                        verificationBtn.setClickable(true);
+//                        Toast.makeText(SignUpProcess.this, "Sign up successful", Toast.LENGTH_SHORT).show();
+//
+////                        pushUserDetailsToFireStore();
+//
+//                        Intent intent = new Intent(SignUpProcess.this, DriverMainActivity.class);
+//                        startActivity(intent);
+//
+//                        progressDialog.dismiss();
+//
+//                        break;
+//                    }
+//                }
+//            }
+//        });
+//
+//    }
 
     private void updateUser(final FirebaseUser user) {
 
@@ -227,15 +256,15 @@ public class SignUpProcess extends AppCompatActivity {
         UserProfileChangeRequest profileUpdate = new UserProfileChangeRequest.Builder()
                 .setDisplayName(uFullName)
                 .build();
-        user.updateProfile(profileUpdate)
-                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if (task.isSuccessful()) {
-                            Log.d(TAG, "User profile updated." + user.getDisplayName());
-                        }
-                    }
-                });
+        user.updateProfile(profileUpdate);
+//                .addOnCompleteListener(new OnCompleteListener<Void>() {
+//                    @Override
+//                    public void onComplete(@NonNull Task<Void> task) {
+//                        if (task.isSuccessful()) {
+//                            Log.d(TAG, "User profile updated." + user.getDisplayName());
+//                        }
+//                    }
+//                });
     }
 
     private void pushUserDetailsToFireStore() {

@@ -25,8 +25,8 @@
         <activity android:name=".SignUpProcess" />
         <activity android:name=".DriverMainActivity" />
         <activity android:name=".TechnicianMainActivity"/>
+        <activity android:name=".VerifyCode"/>
 
-        <receiver android:name=".AlarmReceiver"/>
     </application>
 
 </manifest>

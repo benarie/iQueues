@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginStart="10dp"
+    android:layout_marginTop="10dp"
+    android:layout_marginEnd="10dp"
+    android:layout_marginBottom="10dp"
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/linear-code"
+        android:layout_alignParentStart="true"
+        android:text="Type the code you received!"
+        android:layout_margin="20px"
+        android:textAlignment="center" />
+
+    <LinearLayout
+        android:id="@+id/linear-code"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_centerVertical="true">
+
+        <EditText
+            android:id="@+id/num_1"
+            android:layout_width="47px"
+            android:layout_height="150px"
+            android:layout_weight="1"
+            android:layout_centerInParent="true"
+            android:inputType="number" />
+
+        <EditText
+            android:id="@+id/num_2"
+            android:layout_width="47px"
+            android:layout_height="150px"
+            android:layout_weight="1"
+            android:layout_centerInParent="true"
+            android:inputType="number" />
+
+        <EditText
+            android:id="@+id/num_3"
+            android:layout_width="47px"
+            android:layout_height="150px"
+            android:layout_weight="1"
+            android:layout_centerInParent="true"
+            android:inputType="number" />
+
+        <EditText
+            android:id="@+id/num_4"
+            android:layout_width="47px"
+            android:layout_height="150px"
+            android:layout_weight="1"
+            android:layout_centerInParent="true"
+            android:inputType="number" />
+
+        <EditText
+            android:id="@+id/num_5"
+            android:layout_width="47px"
+            android:layout_height="150px"
+            android:layout_weight="1"
+            android:layout_centerInParent="true"
+            android:inputType="number" />
+
+        <EditText
+            android:id="@+id/num_6"
+            android:layout_width="47px"
+            android:layout_height="150px"
+            android:layout_weight="1"
+            android:layout_centerInParent="true"
+            android:inputType="number" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/text_not"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/linear-code"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="30dp"
+        android:layout_marginBottom="30px"
+        android:text="Not received?"
+        android:textAlignment="center" />
+
+    <TextView
+        android:id="@+id/Send_again"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/text_not"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10px"
+        android:text="Send again"
+        android:textAlignment="center"
+        android:linksClickable="true"/>
+
+    <Button
+        android:id="@+id/verification_code_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/text_not"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="30dp"
+        android:text="אישור"/>
+
+</RelativeLayout>
