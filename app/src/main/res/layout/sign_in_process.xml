@@ -3,23 +3,27 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginBottom="10dp"
-    android:layout_marginEnd="10dp"
-    android:layout_marginStart="10dp"
-    android:layout_marginTop="10dp"
+    android:background="@drawable/background"
     android:orientation="vertical">
-    
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/sign_in_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        android:visibility="visible"
+        android:background="#FFC444"/>
+
     <EditText
         android:id="@+id/login_email"
         android:layout_width="280dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:layout_marginBottom="10dp"
         android:layout_marginTop="100dp"
+        android:layout_marginBottom="10dp"
         android:ems="10"
         android:hint="אימייל"
-        android:text="baryeha@gmail.com"
-        android:inputType="textEmailAddress" />
+        android:inputType="textEmailAddress"
+        android:textAlignment="center" />
 
     <EditText
         android:id="@+id/login_Pword"
@@ -28,58 +32,47 @@
         android:layout_gravity="center"
         android:layout_marginTop="10dp"
         android:layout_marginBottom="10dp"
-        android:hint="הכנס סיסמה"
-        android:text="123456"
         android:ems="10"
-        android:textAlignment="gravity"
         android:gravity="end"
-        android:inputType="textPassword" />
+        android:hint="סיסמה"
+        android:inputType="textPassword"
+
+        android:textAlignment="center" />
 
     <Button
         android:id="@+id/login_btn"
-        style="@style/Widget.AppCompat.Button"
-        android:layout_width="180dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
+        android:background="@drawable/buttonshape_1"
         android:text="@string/loginBtn"
-        android:textSize="17sp"
-        android:textStyle="bold"/>
-
-    <!--android:background="@drawable/mybtn"-->
-    <!--android:backgroundTint="@android:color/holo_blue_light"-->
-
-    <ProgressBar
-        android:id="@+id/progress_bar"
-        style="?android:progressBarStyleLarge"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:indeterminate="false"
-        android:visibility="gone" />
-
-    <TextView
-        android:id="@+id/textview"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginBottom="8dp"
-        android:layout_marginTop="100dp"
-        android:text="@string/new_user"
-        android:textColor="@android:color/holo_red_dark"
-        android:textSize="15sp"
+        android:textColor="@color/colorWhit"
+        android:textSize="20sp"
         android:textStyle="bold" />
 
     <Button
         android:id="@+id/sign_in_btn"
-        android:layout_width="134dp"
-        android:layout_height="45dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:layout_marginBottom="10dp"
         android:layout_marginTop="10dp"
-        android:text="להרשמה"
-        android:textSize="15sp"
+        android:background="@drawable/buttonshape_2"
+        android:text="לא רשום? הרשמה"
+        android:textColor="@color/colorApp"
+        android:textSize="20sp"
         android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/forget_password"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="10dp"
+        android:text="שכחתי סיסמא"
+        android:textColor="@color/colorApp"
+        android:textSize="15dp"/>
 
 
 </LinearLayout>

@@ -9,11 +9,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.BitmapFactory;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Build;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 
-import com.google.firebase.firestore.auth.User;
 import com.iQueues.DriverMainActivity;
 import com.iQueues.R;
 
@@ -28,7 +29,7 @@ import java.util.TimeZone;
 
 public class GlobalUtils {
 
-    public static SharedPreferences getSharedPreferences(Context context) {
+    private static SharedPreferences getSharedPreferences(Context context) {
         return context.getSharedPreferences(Globals.SHARED_PREF_NAME, Activity.MODE_PRIVATE);
     }
 
@@ -40,7 +41,7 @@ public class GlobalUtils {
         return getSharedPreferences(context).getString(key, null);
     }
 
-    public static void removeStringFromLocalStorage(Context context, String key) {
+    private static void removeStringFromLocalStorage(Context context, String key) {
         getSharedPreferences(context).edit().remove(key).apply();
     }
 
@@ -64,7 +65,7 @@ public class GlobalUtils {
             e.printStackTrace();
         }
 
-        return date.getTime();
+        return date != null ? date.getTime() : 0;
     }
 
     public static void showNotification(String title, String content, Context context) {
@@ -76,14 +77,18 @@ public class GlobalUtils {
 
     private static Notification generateNotification(String title, String content, PendingIntent intent, Context context) {
         GlobalUtils.initChannels(context);
+        Uri soundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context, Globals.NOTIFICATION_CHANNEL_ID)
-                .setSmallIcon(android.R.drawable.ic_dialog_alert)
-                .setLargeIcon(BitmapFactory.decodeResource(context.getResources(), android.R.drawable.ic_dialog_alert))
-                .setBadgeIconType(android.R.drawable.ic_dialog_alert)
+                .setSmallIcon(R.drawable.logo)
+                .setLargeIcon(BitmapFactory.decodeResource(context.getResources(), R.drawable.logo))
+                .setBadgeIconType(R.drawable.logo)
                 .setContentTitle(title)
                 .setContentText(content)
                 .setAutoCancel(true)
+                .setSound(soundUri)
+                .setVibrate(new long[]{1000, 1000})
                 .setContentIntent(intent)
+
                 .setPriority(NotificationCompat.PRIORITY_MAX);
         return mBuilder.build();
     }
@@ -92,14 +97,14 @@ public class GlobalUtils {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
             return;
         }
-        NotificationManager notificationManager =  (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         NotificationChannel channel = new NotificationChannel(Globals.NOTIFICATION_CHANNEL_ID, context.getString(R.string.app_name), NotificationManager.IMPORTANCE_HIGH);
         channel.setDescription(context.getString(R.string.app_name) + " Channel");
         channel.enableLights(true);
         channel.enableVibration(true);
         channel.setShowBadge(true);
         channel.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
-        if(notificationManager != null) {
+        if (notificationManager != null) {
             notificationManager.createNotificationChannel(channel);
         }
     }

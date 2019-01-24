@@ -3,13 +3,12 @@
     android:id="@+id/queue_cell"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    app:cardCornerRadius="5dp"
-    app:cardElevation="5dp"
     app:cardUseCompatPadding="true"
-    app:contentPadding="50dp">
+    app:contentPadding="40dp"
+    app:cardBackgroundColor="#D6EDFB">
 
     <TextView
-        android:id="@+id/no_queue_text_view"
+        android:id="@+id/first_text_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
@@ -45,26 +44,6 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:text="@string/time"
-            android:textSize="20sp"
-            android:textDirection="anyRtl"
-            android:visibility="gone" />
-
-        <TextView
-            android:id="@+id/time_left_text_view"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:text="הזמן שנותר:"
-            android:textSize="20sp"
-            android:textDirection="anyRtl"
-            android:visibility="gone" />
-
-        <TextView
-            android:id="@+id/time_left_text_view_1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:text="00:00:00"
             android:textSize="20sp"
             android:textDirection="anyRtl"
             android:visibility="gone" />

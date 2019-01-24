@@ -10,6 +10,7 @@
         android:layout_height="50dp"
         android:text="זמן"
         android:textSize="20sp"
+        android:textStyle="bold"
         android:textAlignment="center"
         android:gravity="center"
         />

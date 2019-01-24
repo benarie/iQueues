@@ -11,7 +11,7 @@ public class Globals {
     public static final String INACTIVE_ORDER_STATUS = "INACTIVE";
     public static final String WAITING_ORDER_STATUS = "WAITING";
 
-    public static final String POSITION = "DRIVER";
+    public static final String ATTRIBUTE = "TAXI DRIVER";
 
     public static final String NOTIFICATION_CHANNEL_ID = "com.arie.iQueues";
 

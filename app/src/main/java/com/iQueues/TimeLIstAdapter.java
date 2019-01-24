@@ -5,13 +5,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
-import java.util.concurrent.TimeUnit;
-
-import data.GlobalUtils;
 
 public class TimeLIstAdapter extends BaseAdapter {
 
@@ -60,13 +56,12 @@ public class TimeLIstAdapter extends BaseAdapter {
         convertView = LayoutInflater.from(context).inflate(R.layout.time_cell, null);
 
         TextView orderTimeTv = convertView.findViewById(R.id.order_time_text_view);
-
         TimeListFragment.Time time = times.get(position);
 
         orderTimeTv.setText(time.getTime());
 
         if (!time.isAvailable) {
-            convertView.setAlpha(0.5f);
+            convertView.setAlpha(0.2f);
         } else {
             convertView.setAlpha(1f);
         }

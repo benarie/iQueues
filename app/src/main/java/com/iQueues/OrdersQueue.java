@@ -85,4 +85,12 @@ public class OrdersQueue {
             }
         }
     }
+
+    public boolean isThereActive() {
+        return this.getActive() != null;
+    }
+
+    public void clearQueue() {
+        this.orders = new ArrayList<>();
+    }
 }

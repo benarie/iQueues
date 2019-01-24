@@ -3,8 +3,6 @@ package com.iQueues;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
-import android.content.SharedPreferences;
-import android.icu.text.TimeZoneFormat;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -13,14 +11,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CalendarView;
-import android.widget.DatePicker;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
 
 public class DateFragment extends Fragment {
 
@@ -35,7 +29,6 @@ public class DateFragment extends Fragment {
     }
 
     OnQueueFragmentListener callBack;
-
 
     @Override
     public void onAttach(Context context) {
@@ -55,6 +48,7 @@ public class DateFragment extends Fragment {
 
         ViewGroup viewGroup = (ViewGroup) inflater.inflate(R.layout.date_fragment, container, false);
         final CalendarView calendarView = viewGroup.findViewById(R.id.calendar);
+
         calendarView.setMinDate(System.currentTimeMillis() - 1000);
 
         calendarView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
@@ -64,13 +58,12 @@ public class DateFragment extends Fragment {
                 Calendar calendar = Calendar.getInstance();
 
                 int hour = calendar.get(Calendar.HOUR_OF_DAY);
-                int currentDate = calendar.get(Calendar.DAY_OF_MONTH);
                 int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
+                int currentDate = Calendar.getInstance().get(Calendar.DAY_OF_MONTH);
 
 
                 if (dayOfMonth == currentDate && hour >= 17) {
-
-                    Toast.makeText(calendarView.getContext(), "You can't select this date after the end of the working day", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(calendarView.getContext(), "אין אפשרות להזמין תור!", Toast.LENGTH_SHORT).show();
                 } else {
 
                     picDate = dayOfMonth + "/" + (month + 1) + "/" + year;
@@ -89,7 +82,7 @@ public class DateFragment extends Fragment {
 
                     callBack.onConfirmDateBtnClicked(picDate);
                 } else {
-                    Toast.makeText(calendarView.getContext(), "you need select date before pressed on confirm button", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(calendarView.getContext(), "בחר יום", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -108,7 +101,5 @@ public class DateFragment extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
-
-
     }
 }

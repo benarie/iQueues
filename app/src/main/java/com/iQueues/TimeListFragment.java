@@ -2,22 +2,16 @@ package com.iQueues;
 
 import android.app.Activity;
 import android.app.ListFragment;
-import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Adapter;
-import android.widget.ArrayAdapter;
-import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 
@@ -26,19 +20,11 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
-import java.util.Locale;
-import java.util.Objects;
-import java.util.concurrent.TimeUnit;
 
 import data.GlobalUtils;
 
@@ -48,13 +34,8 @@ public class TimeListFragment extends ListFragment {
 
     private ProgressBar progressBar;
     private String date;
-    private ListView listView;
-    private String dateOfOrder;
-    private String timeOfOrder;
-    private Long convertDate;
     private Long currentTimeDate;
-    private int totalTime;
-    private ProgressDialog progressDialog;
+
 
     String TAG = "TimeListFragment";
     final static String DATA_RECEIVE = "data_receive";
@@ -101,14 +82,14 @@ public class TimeListFragment extends ListFragment {
             this.time = time;
         }
 
-        public String getTime() {
-
+        String getTime() {
             return time;
         }
 
         public void setTime(String time) {
             this.time = time;
         }
+
     }
 
 
@@ -141,20 +122,34 @@ public class TimeListFragment extends ListFragment {
         progressBar = getActivity().findViewById(R.id.progress_bar);
         progressBar.setVisibility(View.VISIBLE);
 
-        getAvailableTimesFromFireStore();
-
-    }
-
-    private void getAvailableTimesFromFireStore() {
-        /* call firebase here to check which times can be used.
-        after that add success and fail listeners.
-        don't forget to remove the loading spinner inside the listeners :) */
-
-
         Bundle args = getArguments();
         if (args != null) {
             date = args.getString(DATA_RECEIVE);
         }
+
+        getAvailableTimesFromFireStore(date);
+        getAvailableTimesFromTimeList(date);
+
+    }
+
+    private void getAvailableTimesFromTimeList(String date) {
+
+        for (TimeListFragment.Time time : times) {
+
+            String timeOfOrder = time.getTime();
+            Long convertDate = GlobalUtils.convertDateToTimestamp(date, timeOfOrder);
+
+            if (currentTimeDate >= convertDate) {// if the time passed
+                if (time.isAvailable)
+                    time.isAvailable = false;
+            }
+        }
+    }
+
+    private void getAvailableTimesFromFireStore(final String date) {
+        /* call firebase here to check which times can be used.
+        after that add success and fail listeners.
+        don't forget to remove the loading spinner inside the listeners :) */
 
         orderRef.whereEqualTo("date", date)
                 .get()
@@ -168,35 +163,21 @@ public class TimeListFragment extends ListFragment {
                         for (DocumentSnapshot document : documentsList) {
                             notAvailableTImes.add(document.getString("time"));
                         }
-
                         Collections.sort(notAvailableTImes);
 
                         for (TimeListFragment.Time time : times) {
                             for (String notAvailableTIme : notAvailableTImes) {
                                 if (time.getTime().equals(notAvailableTIme)) {
                                     time.isAvailable = false;
-
                                 }
-
-                                dateOfOrder = date;
-                                timeOfOrder = time.getTime();
-                                convertDate = GlobalUtils.convertDateToTimestamp(dateOfOrder, timeOfOrder);
-
-                                if (currentTimeDate >= convertDate) {// if the time passed
-                                    time.isAvailable = false;
-
-                                }
-
+                                // if the time of day passed
+                                getAvailableTimesFromTimeList(date);
                             }
-
                         }
-
                         TimeLIstAdapter timeLIstAdapter = new TimeLIstAdapter(times, getContext());
                         setListAdapter(timeLIstAdapter);
 
                         progressBar.setVisibility(View.GONE);
-
-
                     }
                 }).addOnFailureListener(new OnFailureListener() {
             @Override
@@ -211,8 +192,7 @@ public class TimeListFragment extends ListFragment {
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        View view = inflater.inflate(R.layout.time_fragment, container, false);
-        return view;
+        return inflater.inflate(R.layout.time_fragment, container, false);
 
     }
 

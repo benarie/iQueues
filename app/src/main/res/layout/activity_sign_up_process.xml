@@ -3,129 +3,112 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginStart="10dp"
-    android:layout_marginTop="10dp"
-    android:layout_marginEnd="10dp"
-    android:layout_marginBottom="10dp"
+    android:background="#D6EDFB"
     android:orientation="vertical">
 
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/sign_up_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        android:background="#FFC444"
+        android:visibility="visible" />
+
+<ScrollView
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_weight="1">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
+   
 
-        <EditText
-            android:id="@+id/full_name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_margin="5dp"
-            android:layout_marginTop="25dp"
-            android:ems="10"
-            android:hint="שם מלא"
-            android:inputType="textPersonName" />
+    <EditText
+        android:id="@+id/full_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="100dp"
+        android:layout_marginBottom="5dp"
+        android:ems="10"
+        android:hint="שם מלא"
+        android:inputType="textPersonName"
+        android:textAlignment="center" />
 
-        <EditText
-            android:id="@+id/email"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_margin="5dp"
-            android:layout_marginTop="25dp"
-            android:ems="10"
-            android:hint="אימייל"
-            android:inputType="textEmailAddress" />
+    <EditText
+        android:id="@+id/email"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_margin="5dp"
+        android:layout_marginTop="25dp"
+        android:ems="10"
+        android:hint="אימייל"
+        android:inputType="textEmailAddress"
+        android:textAlignment="center" />
 
-        <EditText
-            android:id="@+id/pWord"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_margin="5dp"
-            android:layout_marginTop="25dp"
-            android:ems="10"
-            android:gravity="end"
-            android:hint="סיסמה"
-            android:inputType="textPassword"
-            android:textAlignment="gravity" />
+    <EditText
+        android:id="@+id/pWord"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_margin="5dp"
+        android:layout_marginTop="25dp"
+        android:ems="10"
+        android:gravity="end"
+        android:hint="סיסמה"
+        android:inputType="textPassword"
+        android:textAlignment="center" />
 
-        <EditText
-            android:id="@+id/phone_num"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_margin="5dp"
-            android:ems="10"
-            android:gravity="end"
-            android:hint="מספר טלפון"
-            android:inputType="phone"
-            android:textAlignment="gravity" />
+    <EditText
+        android:id="@+id/phone_num"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_margin="5dp"
+        android:ems="10"
+        android:gravity="end"
+        android:hint="מספר טלפון"
+        android:inputType="phone"
+        android:textAlignment="center" />
 
-        <TextView
-            android:id="@+id/text_view"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginTop="10dp"
-            android:layout_marginBottom="10dp"
-            android:text="@string/company"
-            android:textSize="15sp"
-            android:textStyle="bold" />
+    <android.support.v7.widget.AppCompatAutoCompleteTextView
+        android:id="@+id/taxi_companies"
+        android:layout_width="215dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_margin="5dp"
+        android:hint="בחר חברת מוניות"
+        android:inputType="textAutoComplete"
+        android:textAlignment="center" />
 
-        <android.support.v7.widget.AppCompatAutoCompleteTextView
-            android:id="@+id/taxi_companies"
-            android:layout_width="215dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_margin="5dp"
-            android:hint="מוניות"
-            android:inputType="textAutoComplete" />
+    <EditText
+        android:id="@+id/hat_num"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_margin="5dp"
+        android:ems="10"
+        android:hint="מספר כובע"
+        android:inputType="number"
+        android:textAlignment="center"
+        android:textDirection="rtl" />
 
-        <EditText
-            android:id="@+id/hat_num"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_margin="5dp"
-            android:ems="10"
-            android:hint="מספר כובע"
-            android:inputType="number"
-            android:textDirection="rtl" />
-
-        <TextView
-            android:id="@+id/after_verifying_text_view"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_margin="20dp"
-            android:text="לאחר אימות המייל לחץ כאן"
-            android:textAlignment="center"
-            android:textColor="@color/colorAccent"
-            android:textSize="15sp"
-            android:visibility="gone" />
-
-        <Button
-            android:id="@+id/sign_up_btn"
-            android:layout_width="200dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_margin="50dp"
-            android:text="להרשמה לחץ כאן"
-            android:textSize="15sp"
-            android:visibility="visible" />
-
-
-        <Button
-            android:id="@+id/verification_btn"
-            android:layout_width="200dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:text="לאימות לחץ כאן"
-            android:textSize="15sp"
-            android:visibility="gone" />
+    <Button
+        android:id="@+id/sign_up_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_margin="50dp"
+        android:background="@drawable/buttonshape_2"
+        android:text="שלח קוד ב SMS"
+        android:textColor="#0099CC"
+        android:textSize="20sp" />
 
     </LinearLayout>
+
+    </ScrollView>
 
 
 </LinearLayout>

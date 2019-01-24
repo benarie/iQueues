@@ -14,15 +14,16 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.annotation.NonNull;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.support.v7.widget.Toolbar;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -47,18 +48,21 @@ public class DriverMainActivity extends AppCompatActivity implements DateFragmen
     TextView baseTv;
     TextView timeLeftTv_1;
     TextView timeLeftTv;
+    TextView firstTv;
     Button insertQueueBtn;
-    Button deleteQueueBtn;
-    Button changeQueueBtn;
+    ImageButton deleteQueueBtn;
+    ImageButton changeQueueBtn;
     Button directionBtn;
+    ImageButton powerBtn;
     CardView cardView;
     CountDownTimer countDownTimer;
     AlarmManager manager;
-    PendingIntent pendingIntent;
+    ProgressBar progressBar;
 
     final String DATE_FRAGMENT_TAG = "date_fragment";
     final String TIME_LIST_FRAGMENT_TAG = "time_list_fragment";
     final String TAG = "DriverMainActivity";
+    final String TOTAL_TIME = "TOTAL_TIME";
 
     private String dateOfOrder;
     private String timeOfOrder;
@@ -76,20 +80,11 @@ public class DriverMainActivity extends AppCompatActivity implements DateFragmen
 
     Order order = new Order();
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_driver_main);
-
-        Toolbar toolbar = findViewById(R.id.tool_bar_driver);
-        setSupportActionBar(toolbar);
-
-        ActionBar actionBar = getSupportActionBar();
-        assert actionBar != null;
-        actionBar.setDisplayHomeAsUpEnabled(true);
-        actionBar.setHomeAsUpIndicator(R.mipmap.button_power);
-        actionBar.setTitle("תורTaxi4");
-
 
         timeTv = findViewById(R.id.time_text_output);
 
@@ -101,19 +96,21 @@ public class DriverMainActivity extends AppCompatActivity implements DateFragmen
         baseTv = findViewById(R.id.no_queue_text_view);
         timeLeftTv_1 = findViewById(R.id.time_left_text_view_1);
         timeLeftTv = findViewById(R.id.time_left_text_view);
+        firstTv = findViewById(R.id.first_text_view);
 
         changeQueueBtn = findViewById(R.id.change_btn);
         deleteQueueBtn = findViewById(R.id.delete_btn);
         insertQueueBtn = findViewById(R.id.insert_queue_btn);
         directionBtn = findViewById(R.id.direction_btn);
+        powerBtn = findViewById(R.id.btn_power);
         cardView = findViewById(R.id.queue_cell);
+        progressBar = findViewById(R.id.main_progress_bar);
 
-        viewManager = new ViewManager(timeTv, dateTv, baseTv, timeLeftTv_1, timeLeftTv, insertQueueBtn, deleteQueueBtn, changeQueueBtn, directionBtn);
+        viewManager = new ViewManager(firstTv, timeTv, dateTv, baseTv, timeLeftTv_1, timeLeftTv, insertQueueBtn, deleteQueueBtn, changeQueueBtn, directionBtn);
 
         currentTimeDate = GlobalUtils.getTimeStamp();
 
         String uid = GlobalUtils.getStringFromLocalStorage(DriverMainActivity.this, Globals.UID_LOCAL_STORAGE_KEY);
-
         pullDataOfOrderFromFireStore(uid);
 
         insertQueueBtn.setOnClickListener(new View.OnClickListener() {
@@ -127,12 +124,27 @@ public class DriverMainActivity extends AppCompatActivity implements DateFragmen
             }
         });
 
+        logoutFromMainActivity();
+
         deleteQueueOnClick();
 
         changeQueueOnClick();
 
         directionOnClick();
 
+    }
+
+    private void logoutFromMainActivity() {
+
+        powerBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                GlobalUtils.cleanUserDataFromMemory(DriverMainActivity.this);
+
+                Intent intent = new Intent(DriverMainActivity.this, SignInProcess.class);
+                startActivity(intent);
+            }
+        });
     }
 
 
@@ -180,21 +192,71 @@ public class DriverMainActivity extends AppCompatActivity implements DateFragmen
             @Override
             public void run() {
                 if (time.isAvailable) {
-                    Fragment fragment = getFragmentManager().findFragmentByTag(TIME_LIST_FRAGMENT_TAG);
-                    getFragmentManager().beginTransaction().remove(fragment).commit();
 
                     order.setTime(time.time);
                     order.setStatus(Globals.ACTIVE_ORDER_STATUS);
 
-                    pushDataOfOrderToFireStore();
-
-                    //SendSmsReminder();
-
+                    createAlertDialog();
                 }
             }
 
         });
 
+    }
+
+    private void createAlertDialog() {
+
+        final AlertDialog.Builder builder = new AlertDialog.Builder(DriverMainActivity.this);
+
+        LayoutInflater inflater = getLayoutInflater();
+        final View dialogView = inflater.inflate(R.layout.confirm_queue_dialog, null);
+
+        TextView dateDialogTv = dialogView.findViewById(R.id.date_dialog);
+        TextView timeDialogTv = dialogView.findViewById(R.id.time_dialog);
+        Button confirmDialogBtn = dialogView.findViewById(R.id.confirm_dialog);
+        Button editingDialogBtn = dialogView.findViewById(R.id.editing_dialog);
+
+        final AlertDialog alertDialog = builder.setView(dialogView).create();
+        alertDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+
+        dateDialogTv.setText(order.getDate());
+        timeDialogTv.setText(order.getTime());
+
+        confirmDialogBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                timingNotification();
+
+                pushDataOfOrderToFireStore();
+
+                Fragment fragment = getFragmentManager().findFragmentByTag(TIME_LIST_FRAGMENT_TAG);
+                getFragmentManager().beginTransaction().remove(fragment).commit();
+
+                progressBar.setVisibility(View.VISIBLE);
+                viewManager.clearScreen();
+
+                alertDialog.dismiss();
+                progressBar.setVisibility(View.GONE);
+
+            }
+        });
+
+        editingDialogBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                getFragmentManager().beginTransaction().replace(R.id.fragment_container, new DateFragment(), DATE_FRAGMENT_TAG)
+                        .addToBackStack(null).commit();
+
+                Fragment fragment = getFragmentManager().findFragmentByTag(TIME_LIST_FRAGMENT_TAG);
+                getFragmentManager().beginTransaction().remove(fragment).commit();
+
+                alertDialog.dismiss();
+
+            }
+        });
+        alertDialog.show();
     }
 
 
@@ -237,15 +299,13 @@ public class DriverMainActivity extends AppCompatActivity implements DateFragmen
 
         final Order order = new Order(orderId, date, time, uid, status);
 
-        final Order temp = OrdersQueue.getInstance().getActive();
-
-        if (OrdersQueue.getInstance().getSize() <= 0) {
+        if (!OrdersQueue.getInstance().isThereActive()) {
             orderRef.document(orderId) //make a new order
                     .set(order)
                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void aVoid) {
-                            Toast.makeText(DriverMainActivity.this, "order saved", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(DriverMainActivity.this, "ההזמנה נשמרה", Toast.LENGTH_SHORT).show();
                             OrdersQueue.getInstance().add(order);
 
                             dateOfOrder = OrdersQueue.getInstance().getDate();
@@ -258,12 +318,13 @@ public class DriverMainActivity extends AppCompatActivity implements DateFragmen
                     .addOnFailureListener(new OnFailureListener() {
                         @Override
                         public void onFailure(@NonNull Exception e) {
-                            Toast.makeText(DriverMainActivity.this, "Error!", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(DriverMainActivity.this, "תקלה!", Toast.LENGTH_SHORT).show();
                             Log.d(TAG, e.toString());
                         }
                     });
         } else {// when we update the order queue
 
+            final Order temp = OrdersQueue.getInstance().getActive();
             orderFlag = false;
 
             orderRef.document(temp.getOrderId())
@@ -279,12 +340,12 @@ public class DriverMainActivity extends AppCompatActivity implements DateFragmen
                             convertDate = GlobalUtils.convertDateToTimestamp(dateOfOrder, timeOfOrder);
                             afterGetOrderData(convertDate, orderFlag);
 
-                            Toast.makeText(DriverMainActivity.this, "The update is succeed", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(DriverMainActivity.this, "העדכון בוצע בהצלחה", Toast.LENGTH_SHORT).show();
                         }
                     }).addOnFailureListener(new OnFailureListener() {
                 @Override
                 public void onFailure(@NonNull Exception e) {
-                    Toast.makeText(DriverMainActivity.this, "Error!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(DriverMainActivity.this, "תקלה!", Toast.LENGTH_SHORT).show();
                     Log.d(TAG, e.toString());
                 }
             });
@@ -306,7 +367,9 @@ public class DriverMainActivity extends AppCompatActivity implements DateFragmen
                     timeOfOrder = OrdersQueue.getInstance().getTime();
 
                     convertDate = GlobalUtils.convertDateToTimestamp(dateOfOrder, timeOfOrder);
+
                     afterGetOrderData(convertDate, orderFlag);
+                    progressBar.setVisibility(View.GONE);
                 }
             }
         }).addOnFailureListener(new OnFailureListener() {
@@ -317,7 +380,7 @@ public class DriverMainActivity extends AppCompatActivity implements DateFragmen
         });
     }
 
-    private void afterGetOrderData(Long convertDate, boolean orderFlag) {
+    private void afterGetOrderData(long convertDate, boolean orderFlag) {
 
         String status = OrdersQueue.getInstance().getStatus();
         final Order temp = OrdersQueue.getInstance().getFirst();
@@ -325,42 +388,39 @@ public class DriverMainActivity extends AppCompatActivity implements DateFragmen
         totalTime = convertDate - currentTimeDate;
         hoursToLeft = TimeUnit.MILLISECONDS.toHours(totalTime);
 
+
         if (status != null) {// NO QUEUE
-            if (currentTimeDate <= convertDate) {// QUEUE IS PASSED OR NEW QUEUE
+            if (currentTimeDate <= convertDate) {// QUEUE OR NEW QUEUE
                 if (OrdersQueue.getInstance().getStatus().equals(Globals.ACTIVE_ORDER_STATUS)) {// QUEUE IS ACTIVE
                     if (hoursToLeft < 24) { // BETWEEN 24 HOURS
                         if (orderFlag) {// NEW QUEUE
 
                             countDownTimer().start();
                         } else {// UPDATE QUEUE
-
                             countDownTimer.cancel();
                             viewManager.updateOrder();
                             countDownTimer().start();
                         }
-
                     } else {// NOT BETWEEN 24 HOURS
-
                         countDownTimer.cancel();
                         viewManager.notBetween24Hours(temp);
                     }
-
                 } else {// QUEUE IS NOT ACTIVE
-
                     viewManager.noQueue();
-                    OrdersQueue.getInstance().removeOrder(temp.getOrderId());
+                    OrdersQueue.getInstance().clearQueue();
                 }
-            } else {// change Active to inActive in fire store //remove order from local
-                changeStatusFromFirestore();
+            } else {//remove order from local
+                OrdersQueue.getInstance().clearQueue();
             }
         } else {// No queue
-
             countDownTimer.cancel();
             viewManager.noQueue();
         }
     }
 
     private CountDownTimer countDownTimer() {
+
+        final Order temp = OrdersQueue.getInstance().getFirst();
 
         countDownTimer = new CountDownTimer(totalTime, 1000) {
             @Override
@@ -374,16 +434,16 @@ public class DriverMainActivity extends AppCompatActivity implements DateFragmen
 
                 secondsToLeft = TimeUnit.MILLISECONDS.toSeconds(millisUntilFinished);
 
-                viewManager.between24Hours(hoursToLeft, minutesToLeft, secondsToLeft);
+                viewManager.between24Hours(hoursToLeft, minutesToLeft, secondsToLeft, temp);
+
             }
 
             @Override
             public void onFinish() {
-
-                timeLeftTv.setVisibility(View.GONE);
-                timeLeftTv_1.setText("The queue arrived");
+                timeLeftTv_1.setText("התור שלך הגיע");
+                viewManager.noQueue();
                 changeStatusFromFirestore();
-
+                OrdersQueue.getInstance().clearQueue();
             }
         };
         return countDownTimer;
@@ -395,7 +455,7 @@ public class DriverMainActivity extends AppCompatActivity implements DateFragmen
             @Override
             public void onClick(View v) {
 
-                final String orderId = OrdersQueue.getInstance().getLast().getOrderId();
+                final String orderId = OrdersQueue.getInstance().getActive().getOrderId();
 
                 AlertDialog.Builder builder = new AlertDialog.Builder(DriverMainActivity.this);
                 builder.setMessage("האם לבטל את התור הזה?");
@@ -403,6 +463,7 @@ public class DriverMainActivity extends AppCompatActivity implements DateFragmen
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         deleteLastQueueFromFireStore(orderId);
+                        GlobalUtils.cleanUserDataFromMemory(DriverMainActivity.this);
                     }
                 });
                 builder.setNegativeButton("ביטול", new DialogInterface.OnClickListener() {
@@ -428,7 +489,7 @@ public class DriverMainActivity extends AppCompatActivity implements DateFragmen
                     public void onSuccess(Void aVoid) {
 
                         Log.d(TAG, "DocumentSnapshot successfully deleted!");
-                        OrdersQueue.getInstance().removeOrder(orderId);
+                        OrdersQueue.getInstance().clearQueue();
                         afterGetOrderData(convertDate, orderFlag);
                     }
                 }).addOnFailureListener(new OnFailureListener() {
@@ -465,7 +526,7 @@ public class DriverMainActivity extends AppCompatActivity implements DateFragmen
             public void onClick(View v) {
 
                 try {
-                    // Launch Waze to look for Hawaii:
+                    // Launch Waze to look for jerusalem:
                     String url = "https://waze.com/ul?q=31.794307, 35.187647&navigate=yes";
                     Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
                     startActivity(intent);
@@ -478,7 +539,7 @@ public class DriverMainActivity extends AppCompatActivity implements DateFragmen
         });
     }
 
-    private void changeStatusFromFirestore(){
+    private void changeStatusFromFirestore() {
 
         final Order temp = OrdersQueue.getInstance().getFirst();
         String statusAfterPull = Globals.INACTIVE_ORDER_STATUS;
@@ -487,30 +548,38 @@ public class DriverMainActivity extends AppCompatActivity implements DateFragmen
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
-                        OrdersQueue.getInstance().removeOrder(temp.getOrderId());
-                        Toast.makeText(DriverMainActivity.this, "The update is succeed", Toast.LENGTH_SHORT).show();
+                        OrdersQueue.getInstance().clearQueue();
                     }
                 }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
-                Toast.makeText(DriverMainActivity.this, "Error!", Toast.LENGTH_SHORT).show();
                 Log.d(TAG, e.toString());
             }
         });
 
     }
 
-//    public void SendSmsReminder() {
-//
-//        String massage = "להזכירך! התור לטיפול בתקלה בשעה: " + OrdersQueue.getInstance().getTime() + "\n" + "נא להגיע בזמן...";
-//        Long second = convertDate - 3600 * 1000;
-//
-//        Intent intent = new Intent(DriverMainActivity.this, AlarmReceiver.class);
-//        intent.putExtra("massage", massage);
-//        pendingIntent = PendingIntent.getBroadcast(DriverMainActivity.this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-//
-//        manager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-//        manager.setExact(AlarmManager.RTC_WAKEUP, second * 1000, pendingIntent);
-//        manager.setRepeating(AlarmManager.RTC_WAKEUP, second, 1000 * 60 * 20, pendingIntent);
-//    }
+    private void timingNotification() {
+
+        int milliSecond = 1000;
+        int second = 60;
+        int minutes = 30;
+
+        String date = order.getDate();
+        String time = order.getTime();
+
+        convertDate = GlobalUtils.convertDateToTimestamp(date, time);
+        currentTimeDate = GlobalUtils.getTimeStamp();
+        totalTime = convertDate - currentTimeDate;
+        totalTime -= milliSecond * second * minutes;
+
+        Intent intent = new Intent(DriverMainActivity.this, AlarmReceiver.class);
+
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this.getApplicationContext(), 100, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        alarmManager.setExact(AlarmManager.RTC_WAKEUP, currentTimeDate + totalTime, pendingIntent);
+
+//        totalTime -= 1000 * 60 * 5;
+//        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, currentTimeDate + totalTime, 0, pendingIntent);
+    }
 }

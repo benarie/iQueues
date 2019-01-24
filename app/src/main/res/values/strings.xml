@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">iQueues</string>
+    <string name="app_name">תורTaxi4</string>
     <string name="action_settings" translatable="false">Settings</string>
     <!-- -login screen view strings -->
     <string name="new_user" translatable="false">משתמש חדש לחץ כאן להירשם</string>
@@ -13,7 +13,7 @@
     <string name="signup" translatable="false"> להרשמה</string>
     <string name="mail" translatable="false"> אימייל</string>
     <string name="pword" translatable="false"> בחר סיסמה</string>
-    <string name="note" translatable="false">שעות קבלת קהל: \n בין השעות 17:00 - 08:00 \n אם ברצונך להזמין תור \n אנא לחץ על כפתור \n קבע תור</string>
+    <string name="note" translatable="false">שעות קבלת קהל: \n\n ימים: א - ה \n בין השעות 17:00 - 8:00</string>
     <string name="date" translatable="false">תאריך:</string>
     <string name="time" translatable="false">שעה:</string>
     <string name="verification" translatable="false">האימייל שלך מאושר\n לחץ להמשך</string>

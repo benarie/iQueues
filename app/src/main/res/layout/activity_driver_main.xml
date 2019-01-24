@@ -1,127 +1,217 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/fragment_container"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="#D6EDFB">
 
     <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/tool_bar_driver"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
-            android:theme="@style/ThemeOverlay.AppCompat.Dark" />
-    </RelativeLayout>
-
-    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginStart="10dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginEnd="10dp"
-        android:layout_marginBottom="10dp"
-        android:orientation="vertical"
-        android:padding="@dimen/padding">
-        <!--
-            <TextView
-                android:id="@+id/hello_text_view"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentTop="true"
-                android:layout_centerHorizontal="true"edited_btn
-                android:layout_gravity="center"
-                android:layout_marginBottom="5dp"
-                android:layout_marginTop="10dp"
-                android:text="שלום"
-                android:textSize="25sp" />-->
-
-        <TextView
-            android:id="@+id/time_text_output"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_centerHorizontal="true"
-            android:layout_gravity="center"
-            android:layout_marginTop="60dp"
-            android:layout_marginBottom="5dp"
-            android:text="זמן"
-            android:textSize="25sp" />
-
-        <TextView
-            android:id="@+id/name_text_output"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/time_text_output"
-            android:layout_centerHorizontal="true"
-            android:layout_gravity="center"
-            android:layout_marginTop="25dp"
-            android:layout_marginBottom="5dp"
-            android:text="שם"
-            android:textSize="25sp" />
+        android:background="#D6EDFB">
 
         <include
-            android:id="@+id/card"
-            layout="@layout/queue_cell"
+            android:id="@+id/toolbar"
+            layout="@layout/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/name_text_output"
-            android:layout_marginStart="10dp"
-            android:layout_marginTop="25dp"
-            android:layout_marginEnd="10dp"
-            android:layout_marginBottom="10dp" />
+            android:layout_height="wrap_content"/>
 
         <LinearLayout
+            android:id="@+id/name_time_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/card"
-            android:layout_centerHorizontal="true"
-            android:layout_marginStart="10dp"
-            android:layout_marginTop="-2dp"
-            android:layout_marginEnd="10dp"
-            android:layout_marginBottom="10dp"
+            android:layout_below="@id/toolbar"
+            android:layout_marginTop="10dp"
             android:orientation="horizontal">
 
-            <Button
-                android:id="@+id/delete_btn"
-                android:layout_width="0dp"
+            <TextView
+                android:id="@+id/time_text_output"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="end"
                 android:layout_weight="1"
-                android:text="בטל תור"
-                android:textSize="20sp"
+                android:text="זמן"
+                android:textAlignment="center"
+                android:textSize="25sp" />
+
+            <TextView
+                android:id="@+id/name_text_output"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="שם"
+                android:textAlignment="textStart"
+                android:textSize="25sp" />
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/no_queue_text_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/name_time_container"
+            android:layout_marginTop="50dp"
+            android:text="אין לך תור כרגע"
+            android:textAlignment="center"
+            android:textColor="@color/colorBlack"
+            android:textSize="30sp"
+            android:visibility="visible" />
+
+        <!--<include-->
+        <!--android:id="@+id/card"-->
+        <!--layout="@layout/queue_cell"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_below="@id/no_queue_text_view"-->
+        <!--android:layout_marginStart="10dp"-->
+        <!--android:layout_marginTop="50dp"-->
+        <!--android:layout_marginEnd="10dp"-->
+        <!--android:layout_marginBottom="10dp"-->
+        <!--android:visibility="visible" />-->
+
+        <TextView
+            android:id="@+id/first_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/no_queue_text_view"
+            android:layout_centerInParent="true"
+            android:layout_marginTop="40dp"
+            android:text="@string/note"
+            android:textAlignment="center"
+            android:textColor="#888"
+            android:textDirection="rtl"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:visibility="visible" />
+
+
+        <TextView
+            android:id="@+id/date_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/no_queue_text_view"
+            android:layout_centerInParent="true"
+            android:layout_gravity="center"
+            android:layout_marginTop="50dp"
+            android:text="@string/date"
+            android:textColor="@color/colorBlack"
+            android:textSize="20sp"
+            android:visibility="gone" />
+
+        <Space
+            android:layout_width="1dp"
+            android:layout_height="5dp" />
+
+        <TextView
+            android:id="@+id/time_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/date_text_view"
+            android:layout_centerInParent="true"
+            android:layout_gravity="center"
+            android:text="@string/time"
+            android:textColor="@color/colorBlack"
+            android:textDirection="anyRtl"
+            android:textSize="20sp"
+            android:visibility="gone" />
+
+        <ProgressBar
+            android:id="@+id/main_progress_bar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:indeterminate="true"
+            android:visibility="gone" />
+
+
+        <LinearLayout
+            android:id="@+id/button_container"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/first_text_view"
+            android:layout_centerInParent="true"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="25dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginBottom="25dp"
+            android:orientation="horizontal">
+
+            <ImageButton
+                android:id="@+id/delete_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"
+                android:layout_weight="1"
+                android:background="@drawable/buttonshape_2"
+                android:src="@drawable/bin_round"
                 android:visibility="gone" />
 
-            <Button
+            <ImageButton
                 android:id="@+id/change_btn"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"
                 android:layout_weight="1"
-                android:text="ערוך תור"
-                android:textSize="20sp"
+                android:background="@drawable/buttonshape_2"
+                android:src="@drawable/edit_round"
                 android:visibility="gone" />
 
             <Button
                 android:id="@+id/insert_queue_btn"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_below="@+id/recycler"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="60dp"
+                android:background="@drawable/buttonshape_3"
                 android:text="קבע תור"
+                android:textColor="#FFFFFF"
                 android:textSize="20sp"
                 android:visibility="visible" />
         </LinearLayout>
+
+        <TextView
+            android:id="@+id/time_left_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/button_container"
+            android:layout_centerInParent="true"
+            android:layout_gravity="center"
+            android:text="הזמן שנותר:"
+            android:textDirection="anyRtl"
+            android:textSize="20sp"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/time_left_text_view_1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/time_left_text_view"
+            android:layout_centerInParent="true"
+            android:layout_gravity="center"
+            android:text="00:00:00"
+            android:textDirection="anyRtl"
+            android:textSize="20sp"
+            android:visibility="gone" />
+
 
         <Button
             android:id="@+id/direction_btn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
-            android:text="סע"
+            android:layout_centerInParent="true"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginBottom="20dp"
+            android:background="@drawable/buttonshape_1"
+            android:drawableEnd="@drawable/waze"
+            android:paddingStart="100dp"
+            android:paddingEnd="100dp"
+            android:text="סע עכשיו"
+            android:textColor="#FFFFFF"
             android:textSize="20sp"
             android:visibility="gone" />
 
