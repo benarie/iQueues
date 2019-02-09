@@ -1,21 +1,47 @@
 <resources>
     <string name="app_name">תורTaxi4</string>
     <string name="action_settings" translatable="false">Settings</string>
-    <!-- -login screen view strings -->
     <string name="new_user" translatable="false">משתמש חדש לחץ כאן להירשם</string>
     <string name="existing_user" translatable="false">משתמש קיים לחץ כאן להתחבר</string>
     <string name="loginBtn" translatable="false">התחברות</string>
-    <!-- registration screen view strings+user info -->
-    <string name="name" translatable="false"> שם פרטי</string>
-    <string name="lastName" translatable="false"> שם משפחה</string>
+    <string name="name" translatable="false"> שם מלא</string>
     <string name="company" translatable="false"> בחר חברת מוניות</string>
     <string name="phone" translatable="false"> מספר פלאפון</string>
     <string name="signup" translatable="false"> להרשמה</string>
     <string name="mail" translatable="false"> אימייל</string>
-    <string name="pword" translatable="false"> בחר סיסמה</string>
-    <string name="note" translatable="false">שעות קבלת קהל: \n\n ימים: א - ה \n בין השעות 17:00 - 8:00</string>
+    <string name="pword" translatable="false">סיסמה</string>
+    <string name="note" translatable="false">שעות קבלת קהל: \n\n ימים: א - ה \n בין השעות: 17:00 - 8:00</string>
     <string name="date" translatable="false">תאריך:</string>
     <string name="time" translatable="false">שעה:</string>
     <string name="verification" translatable="false">האימייל שלך מאושר\n לחץ להמשך</string>
+    <string name="email" translatable="false">שלח אי-מייל</string>
+    <string name="hat" translatable="false">כובע</string>
+    <string name="user_mail" translatable="false">אימייל</string>
+    <string name="select_queue" translatable="false">קבע תור</string>
+    <string name="left_time" translatable="false">הזמן שנותר:</string>
+    <string name="timer" translatable="false">00:00:00</string>
+    <string name="destination" translatable="false">סע עכשיו</string>
+    <string name="no_queue" translatable="false">אין לך תור כרגע!</string>
+    <string name="user_name" translatable="false">שם</string>
+    <string name="times" translatable="false">זמן</string>
+    <string name="delet_queue" translatable="false">מחיקת תור</string>
+    <string name="edit_queue" translatable="false">עריכת תור</string>
+    <string name="after_verify" translatable="false">לאחר אימות המייל לחץ כאן</string>
+    <string name="confirm_verify" translatable="false">אישור</string>
+    <string name="not_received" translatable="false">לא קיבלת</string>
+    <string name="send_agin" translatable="false">שלח שוב</string>
+    <string name="log_out" translatable="false">log_out</string>
+    <string name="logo" translatable="false">logo</string>
+    <string name="select_time" translatable="false">בחר שעה</string>
+    <string name="unregistered" translatable="false">לא רשום? הרשמה</string>
+    <string name="forget_password" translatable="false">שכחתי סיסמא</string>
+    <string name="select_date" translatable="false">בחר תאריך</string>
+    <string name="return_main" translatable="false">ביטול</string>
+    <string name="confirm_queue_dialog" translatable="false">אישור</string>
+    <string name="queue_dialog" translatable="false">קבעת תור</string>
+    <string name="on_date" translatable="false">בתאריך:</string>
+    <string name="on_time" translatable="false">שעה:</string>
+    <string name="edit_queue_dialog" translatable="false">עריכה</string>
+
 
 </resources>

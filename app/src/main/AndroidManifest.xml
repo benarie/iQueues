@@ -3,6 +3,7 @@
     package="com.iQueues">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
         android:allowBackup="true"
@@ -24,7 +25,7 @@
         <activity android:name=".SignUpProcess" />
         <activity android:name=".DriverMainActivity" />
         <activity android:name=".TechnicianMainActivity"/>
-        <activity android:name=".VerifyPhoneActivity"/>
+        <activity android:name=".VerifyEmailActivity"/>
 
         <receiver android:name=".AlarmReceiver"/>
 

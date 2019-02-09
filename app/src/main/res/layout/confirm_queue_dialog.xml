@@ -12,7 +12,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="קבעת תור"
+        android:text="@string/queue_dialog"
         android:layout_marginTop="10dp"
         android:layout_marginBottom="10dp"
         android:textAlignment="center"
@@ -28,7 +28,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="בתאריך:"
+            android:text="@string/on_date"
             android:textAlignment="center"
             android:textColor="#0099CC"
             android:textSize="20sp"
@@ -52,7 +52,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="שעה:"
+            android:text="@string/on_time"
             android:textAlignment="center"
             android:textColor="#0099CC"
             android:textDirection="rtl"
@@ -79,7 +79,7 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:background="@drawable/buttonshape_5"
-        android:text="עריכה"
+        android:text="@string/edit_queue_dialog"
         android:textSize="20sp"
         android:textColor="#0099CC"/>
 
@@ -89,7 +89,7 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:background="@drawable/buttonshape_4"
-        android:text="אישור"
+        android:text="@string/confirm_queue_dialog"
         android:textSize="20sp"
         android:textColor="#FFFFFF"/>
     </LinearLayout>

@@ -8,12 +8,19 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import java.util.ArrayList;
-import java.util.List;
 
+/**
+ * The type Queue adapter.
+ */
 public class QueueAdapter extends RecyclerView.Adapter<QueueAdapter.QueueViewHolder> {
 
     private ArrayList<Order> orders;
 
+    /**
+     * Instantiates a new Queue adapter.
+     *
+     * @param orders the orders
+     */
     public QueueAdapter(ArrayList<Order> orders) {
         this.orders = orders;
     }
@@ -23,12 +30,26 @@ public class QueueAdapter extends RecyclerView.Adapter<QueueAdapter.QueueViewHol
         return orders.size();
     }
 
+    /**
+     * The type Queue view holder.
+     */
     public class QueueViewHolder extends RecyclerView.ViewHolder {
 
+        /**
+         * The Date tv.
+         */
         TextView dateTv;
+        /**
+         * The Time tv.
+         */
         TextView timeTv;
 
 
+        /**
+         * Instantiates a new Queue view holder.
+         *
+         * @param itemView the item view
+         */
         public QueueViewHolder(View itemView) {
             super(itemView);
             dateTv = itemView.findViewById(R.id.date_text_view);
@@ -47,12 +68,16 @@ public class QueueAdapter extends RecyclerView.Adapter<QueueAdapter.QueueViewHol
         return queueViewHolder;
     }
 
+    /**
+     * get the position of order
+     *
+     * @param holder
+     * @param position
+     */
     @Override
     public void onBindViewHolder(@NonNull QueueViewHolder holder, int position) {
 
         Order order = orders.get(position);
-
-
     }
 
     @Override

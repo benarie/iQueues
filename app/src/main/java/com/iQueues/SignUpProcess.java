@@ -36,12 +36,18 @@ import data.GlobalUtils;
 import data.Globals;
 
 
+/**
+ * The type Sign up process.
+ */
 public class SignUpProcess extends AppCompatActivity {
 
     private String TAG = "SignUpProcess";
 
     private EditText email, pWord, phone, hatNum, fullName;
     private ProgressDialog progressDialog;
+    /**
+     * The Sign up btn.
+     */
     Button signUpBtn;
 
     private String uFullName;
@@ -52,7 +58,14 @@ public class SignUpProcess extends AppCompatActivity {
     private String attribute;
     private AutoCompleteTextView taxiCompaniesTv;
 
+    /**
+     * The Auth.
+     */
     FirebaseAuth auth = FirebaseAuth.getInstance();
+    /**
+     * The User.
+     */
+    FirebaseUser user = auth.getCurrentUser();
 
 
     private FirebaseFirestore database = FirebaseFirestore.getInstance();
@@ -91,14 +104,16 @@ public class SignUpProcess extends AppCompatActivity {
                 progressDialog.setMessage("אנא המתן!");
                 progressDialog.show();
 
-                String uEmail = email.getText().toString().trim();
+                final String uEmail = email.getText().toString().trim();
                 String uPword = pWord.getText().toString().trim();
 
                 uFullName = fullName.getText().toString().trim();
                 uPhone = phone.getText().toString().trim();
                 uHat = hatNum.getText().toString().trim();
                 uCompany = taxiCompaniesTv.getText().toString().trim();
-
+                /**
+                 * Check name,email,password,phone and hat number if entered correctly
+                 */
                 if (uFullName.isEmpty()) {
                     fullName.setError("שדה השם ריק");
                     fullName.requestFocus();
@@ -115,11 +130,11 @@ public class SignUpProcess extends AppCompatActivity {
                     progressDialog.cancel();
                     return;
                 } else if (uPword.length() < 6) {
-                    pWord.setError("הסיסמה צריכה להיות מעל 6 תווים");
+                    pWord.setError("הסיסמה צריכה להיות בעלת 6 תווים או יותר");
                     pWord.requestFocus();
                     progressDialog.cancel();
                     return;
-                } else if (uPhone.length() < 10 || uPhone.isEmpty()) {
+                } else if (uPhone.length() < 10) {
                     pWord.setError("מספר הטלפון חייב להכיל 10 תווים");
                     pWord.requestFocus();
                     progressDialog.cancel();
@@ -138,7 +153,6 @@ public class SignUpProcess extends AppCompatActivity {
                         if (task.isSuccessful()) {
 
                             // Sign up success, update UI with the signed-in user's information
-
                             uid = auth.getCurrentUser().getUid();
 
                             //save name and uid by SharedPreferences
@@ -151,11 +165,7 @@ public class SignUpProcess extends AppCompatActivity {
 
                             pushUserDetailsToFireStore();
 
-                            Intent intent = new Intent(SignUpProcess.this, VerifyPhoneActivity.class);
-                            intent.putExtra("PHONE_NUMBER_TAG", uPhone);
-                            startActivity(intent);
-
-//                            sendVerificationEmail();
+                            sendVerificationEmail();
 
                         } else {
                             // If sign up fails, display a message to the user.
@@ -167,10 +177,13 @@ public class SignUpProcess extends AppCompatActivity {
             }
         });
 
-//        waitForVerification();
-
     }
 
+    /**
+     * update the full name of user in FirebaseUser
+     *
+     * @param user
+     */
     private void updateProfile(final FirebaseUser user) {
 
 
@@ -190,6 +203,9 @@ public class SignUpProcess extends AppCompatActivity {
 
     }
 
+    /**
+     * get Taxi Companies List from fire base
+     */
     private void getTaxiCompaniesList() {
 
         companiesRef.child("companies").addValueEventListener(new ValueEventListener() {
@@ -215,62 +231,36 @@ public class SignUpProcess extends AppCompatActivity {
         });
     }
 
-//    private void sendVerificationEmail() {
-//
-//        if (user != null) {
-//            user.sendEmailVerification().addOnCompleteListener(new OnCompleteListener<Void>() {
-//                @Override
-//                public void onComplete(@NonNull Task<Void> task) {
-//                    if (task.isSuccessful()) {
-//                        Toast.makeText(SignUpProcess.this, "Verification email sent to" + user.getEmail(), Toast.LENGTH_SHORT).show();
-//
-//                        signUpBtn.setVisibility(View.GONE);
-//                        afterVerifyingTv.setVisibility(View.VISIBLE);
-//                        verificationBtn.setVisibility(View.VISIBLE);
-//
-//                        progressDialog.dismiss();
-//
-//                    } else {
-//                        Log.e(TAG, "sendEmailVerification", task.getException());
-//                        Toast.makeText(SignUpProcess.this, "Failed to send verification email.", Toast.LENGTH_SHORT).show();
-//                    }
-//
-//                }
-//            });
-//        }
-//    }
+    /**
+     * send verification email.
+     */
+    private void sendVerificationEmail() {
 
-//    private void waitForVerification() {
-//        verificationBtn.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//
-//                user.reload();
-//                while (user.isEmailVerified()) {
-//
-//                    progressDialog.setMessage("Updating details Please wait...");
-//                    progressDialog.show();
-//
-//                    if (user.isEmailVerified()) {
-//
-//                        verificationBtn.setClickable(true);
-//                        Toast.makeText(SignUpProcess.this, "Sign up successful", Toast.LENGTH_SHORT).show();
-//
-//                        pushUserDetailsToFireStore();
-//
-//                        Intent intent = new Intent(SignUpProcess.this, DriverMainActivity.class);
-//                        startActivity(intent);
-//
-//                        progressDialog.dismiss();
-//
-//                        break;
-//                    }
-//                }
-//            }
-//        });
-//
-//    }
+        if (user != null) {
+            user.sendEmailVerification().addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                    if (task.isSuccessful()) {
+                        Toast.makeText(SignUpProcess.this, "המייל נשלח ל " + user.getEmail(), Toast.LENGTH_SHORT).show();
 
+                        Intent intent = new Intent(SignUpProcess.this, VerifyEmailActivity.class);
+                        startActivity(intent);
+                        progressDialog.dismiss();
+
+                    } else {
+                        Log.e(TAG, "sendEmailVerification", task.getException());
+                        Toast.makeText(SignUpProcess.this, "נכשל נסיון האימות.", Toast.LENGTH_SHORT).show();
+                    }
+
+                }
+            });
+        }
+    }
+
+
+    /**
+     * push User Details ToF ireStore
+     */
     private void pushUserDetailsToFireStore() {
 
         attribute = Globals.ATTRIBUTE;
@@ -294,5 +284,4 @@ public class SignUpProcess extends AppCompatActivity {
                     }
                 });
     }
-
 }

@@ -3,10 +3,14 @@ package data;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.iQueues.Order;
 
+/**
+ * The type View manager.
+ */
 public class ViewManager {
 
     private TextView timeTv;
@@ -15,6 +19,7 @@ public class ViewManager {
     private TextView timeLeftTv_1;
     private TextView timeLeftTv;
     private TextView firstTv;
+    private ProgressBar progressBar;
 
     private Button insertQueueBtn;
     private ImageButton deleteQueueBtn;
@@ -22,7 +27,22 @@ public class ViewManager {
     private Button directionBtn;
 
 
-    public ViewManager(TextView firstTv, TextView timeTv, TextView dateTv, TextView baseTv, TextView timeLeftTv_1, TextView timeLeftTv, Button insertQueueBtn, ImageButton deleteQueueBtn, ImageButton changeQueueBtn, Button directionBtn) {
+    /**
+     * Instantiates a new View manager.
+     *
+     * @param firstTv        the first tv
+     * @param timeTv         the time tv
+     * @param dateTv         the date tv
+     * @param baseTv         the base tv
+     * @param timeLeftTv_1   the time left tv 1
+     * @param timeLeftTv     the time left tv
+     * @param insertQueueBtn the insert queue btn
+     * @param deleteQueueBtn the delete queue btn
+     * @param changeQueueBtn the change queue btn
+     * @param directionBtn   the direction btn
+     * @param progressBar    the progress bar
+     */
+    public ViewManager(TextView firstTv, TextView timeTv, TextView dateTv, TextView baseTv, TextView timeLeftTv_1, TextView timeLeftTv, Button insertQueueBtn, ImageButton deleteQueueBtn, ImageButton changeQueueBtn, Button directionBtn, ProgressBar progressBar) {
         this.firstTv = firstTv;
         this.timeTv = timeTv;
         this.dateTv = dateTv;
@@ -33,8 +53,12 @@ public class ViewManager {
         this.deleteQueueBtn = deleteQueueBtn;
         this.changeQueueBtn = changeQueueBtn;
         this.directionBtn = directionBtn;
+        this.progressBar = progressBar;
     }
 
+    /**
+     * No queue.
+     */
     public void noQueue() {
 
         firstTv.setVisibility(View.VISIBLE);
@@ -46,11 +70,18 @@ public class ViewManager {
         timeTv.setVisibility(View.GONE);
 
         insertQueueBtn.setVisibility(View.VISIBLE);
+        insertQueueBtn.setClickable(true);
         changeQueueBtn.setVisibility(View.GONE);
         deleteQueueBtn.setVisibility(View.GONE);
         directionBtn.setVisibility(View.GONE);
+
     }
 
+    /**
+     * Not between 24 hours.
+     *
+     * @param temp the temp
+     */
     public void notBetween24Hours(Order temp) {
 
         firstTv.setVisibility(View.INVISIBLE);
@@ -67,8 +98,17 @@ public class ViewManager {
         changeQueueBtn.setVisibility(View.VISIBLE);
         deleteQueueBtn.setVisibility(View.VISIBLE);
         directionBtn.setVisibility(View.VISIBLE);
+        progressBar.setVisibility(View.GONE);
     }
 
+    /**
+     * Between 24 hours.
+     *
+     * @param hoursToLeft   the hours to left
+     * @param minutesToLeft the minutes to left
+     * @param secondsToLeft the seconds to left
+     * @param temp          the temp
+     */
     public void between24Hours(Long hoursToLeft, Long minutesToLeft, Long secondsToLeft, Order temp) {
 
         timeLeftTv.setVisibility(View.VISIBLE);
@@ -82,6 +122,7 @@ public class ViewManager {
         timeLeftTv.setVisibility(View.VISIBLE);
         dateTv.setText(temp.getDate());
         timeTv.setText(temp.getTime());
+        progressBar.setVisibility(View.GONE);
 
         insertQueueBtn.setVisibility(View.GONE);
         changeQueueBtn.setVisibility(View.VISIBLE);
@@ -89,12 +130,19 @@ public class ViewManager {
         directionBtn.setVisibility(View.VISIBLE);
     }
 
+    /**
+     * Update order.
+     */
     public void updateOrder() {
 
+        dateTv.setText("");
+        timeTv.setText("");
         timeLeftTv_1.setText("");
-
     }
 
+    /**
+     * Clear screen.
+     */
     public void clearScreen() {
 
         firstTv.setVisibility(View.GONE);
@@ -108,6 +156,5 @@ public class ViewManager {
         changeQueueBtn.setVisibility(View.GONE);
         deleteQueueBtn.setVisibility(View.GONE);
         directionBtn.setVisibility(View.GONE);
-
     }
 }

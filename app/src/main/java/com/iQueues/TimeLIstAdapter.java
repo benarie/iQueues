@@ -9,12 +9,20 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
+/**
+ * The type Time list adapter.
+ */
 public class TimeLIstAdapter extends BaseAdapter {
 
     private ArrayList<TimeListFragment.Time> times;
     private Context context;
-    private Long hoursToLeft;
 
+    /**
+     * Instantiates a new Time list adapter.
+     *
+     * @param times   the times
+     * @param context the context
+     */
     public TimeLIstAdapter(ArrayList<TimeListFragment.Time> times, Context context) {
         this.times = times;
         this.context = context;

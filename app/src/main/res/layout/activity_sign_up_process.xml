@@ -15,12 +15,12 @@
 
 <ScrollView
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="0dp"
     android:layout_weight="1">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:orientation="vertical">
    
 
@@ -32,7 +32,7 @@
         android:layout_marginTop="100dp"
         android:layout_marginBottom="5dp"
         android:ems="10"
-        android:hint="שם מלא"
+        android:hint="@string/name"
         android:inputType="textPersonName"
         android:textAlignment="center" />
 
@@ -44,7 +44,7 @@
         android:layout_margin="5dp"
         android:layout_marginTop="25dp"
         android:ems="10"
-        android:hint="אימייל"
+        android:hint="@string/user_mail"
         android:inputType="textEmailAddress"
         android:textAlignment="center" />
 
@@ -57,7 +57,7 @@
         android:layout_marginTop="25dp"
         android:ems="10"
         android:gravity="end"
-        android:hint="סיסמה"
+        android:hint="@string/pword"
         android:inputType="textPassword"
         android:textAlignment="center" />
 
@@ -69,7 +69,7 @@
         android:layout_margin="5dp"
         android:ems="10"
         android:gravity="end"
-        android:hint="מספר טלפון"
+        android:hint="@string/phone"
         android:inputType="phone"
         android:textAlignment="center" />
 
@@ -79,7 +79,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_margin="5dp"
-        android:hint="בחר חברת מוניות"
+        android:hint="@string/company"
         android:inputType="textAutoComplete"
         android:textAlignment="center" />
 
@@ -90,7 +90,7 @@
         android:layout_gravity="center"
         android:layout_margin="5dp"
         android:ems="10"
-        android:hint="מספר כובע"
+        android:hint="@string/hat"
         android:inputType="number"
         android:textAlignment="center"
         android:textDirection="rtl" />
@@ -102,7 +102,7 @@
         android:layout_gravity="center"
         android:layout_margin="50dp"
         android:background="@drawable/buttonshape_2"
-        android:text="שלח קוד ב SMS"
+        android:text="@string/email"
         android:textColor="#0099CC"
         android:textSize="20sp" />
 

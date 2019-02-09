@@ -2,7 +2,10 @@ package com.iQueues;
 
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -22,13 +25,15 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
+
+import java.util.Objects;
 
 import data.GlobalUtils;
 import data.Globals;
 
-//import com.google.android.gms.signin.SignIn;
-
+/**
+ * The type Sign in process.
+ */
 public class SignInProcess extends AppCompatActivity {
 
     private String TAG = "SignUpProcess";
@@ -42,12 +47,6 @@ public class SignInProcess extends AppCompatActivity {
     private String pWord;
 
     private FirebaseAuth auth = FirebaseAuth.getInstance();
-    FirebaseUser user = auth.getCurrentUser();
-
-//    private FirebaseFirestore database = FirebaseFirestore.getInstance();
-//    private CollectionReference userRef = database.collection("users");
-//
-//    UserDetails userDetails;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,29 +56,29 @@ public class SignInProcess extends AppCompatActivity {
         Toolbar myToolbar = findViewById(R.id.sign_in_toolbar);
         myToolbar.setTitle("");
         setSupportActionBar(myToolbar);
-
+        /**
+         * Initialization of components
+         */
         progressDialog = new ProgressDialog(SignInProcess.this);
-
-        if (GlobalUtils.getStringFromLocalStorage(this, Globals.UID_LOCAL_STORAGE_KEY) != null) {
-
-            uid = GlobalUtils.getStringFromLocalStorage(this, Globals.UID_LOCAL_STORAGE_KEY);
-            //pullDataOfUserFromFireStore(uid);
-            goToMainScreen();
-        }
-
         loginEmail = findViewById(R.id.login_email);
         loginPword = findViewById(R.id.login_Pword);
-        TextView forgetPassword = findViewById(R.id.forget_password);
 
+        TextView forgetPassword = findViewById(R.id.forget_password);
         Button logInBtn = findViewById(R.id.login_btn);
+
         logInBtn.setOnClickListener(new View.OnClickListener() {
+            /**
+             * @param v
+             */
             @Override
             public void onClick(View v) {
 
                 email = loginEmail.getText().toString().trim();
                 pWord = loginPword.getText().toString().trim();
 
-
+                /**
+                 * Check email and password if entered correctly
+                 */
                 progressDialog.setMessage("מתחבר אנא המתן...");
                 progressDialog.show();
 
@@ -97,38 +96,40 @@ public class SignInProcess extends AppCompatActivity {
                     return;
                 }
 
+                /**
+                 * The steps for signing in a user with a password are similar to the steps for creating a new account.
+                 * When a user signs in to the app, passing the user's email address and password to signInWithEmailAndPassword:
+                 * If sign-in succeeded, The sign-in is then approved and the customer is sent to the main activity.
+                 */
                 auth.signInWithEmailAndPassword(email, pWord).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
+                            if (isConnected()) {
+                                Log.d(TAG, "signIn With Email:success");
+                                Toast.makeText(SignInProcess.this, "התחברות בוצעה בהצלחה!", Toast.LENGTH_SHORT).show();
 
-                            Log.d(TAG, "signIn With Email:success");
+                                uid = Objects.requireNonNull(auth.getCurrentUser()).getUid();
+                                name = auth.getCurrentUser().getDisplayName();
+                                //save name and uid by SharedPreferences
+                                GlobalUtils.setStringToLocalStorage(SignInProcess.this, Globals.UID_LOCAL_STORAGE_KEY, uid);
+                                GlobalUtils.setStringToLocalStorage(SignInProcess.this, Globals.FULL_NAME_LOCAL_STORAGE_KEY, name);
 
-                            Toast.makeText(SignInProcess.this, "ההתחברות בוצעה בהצלחה!", Toast.LENGTH_SHORT).show();
-
-                            uid = auth.getCurrentUser().getUid();
-                            name = auth.getCurrentUser().getDisplayName();
-
-//                            pullDataOfUserFromFireStore(uid);
-
-                            GlobalUtils.setStringToLocalStorage(SignInProcess.this, Globals.UID_LOCAL_STORAGE_KEY, uid);
-                            GlobalUtils.setStringToLocalStorage(SignInProcess.this, Globals.FULL_NAME_LOCAL_STORAGE_KEY, name);
-
-                            goToMainScreen();
-
+                                goToMainScreen();
+                            } else {
+                                Toast.makeText(SignInProcess.this, "אין חיבור לאינטרנט", Toast.LENGTH_SHORT).show();
+                            }
                         } else {
 
                             Toast.makeText(SignInProcess.this, "אנא בדוק אימייל וסיסמא.", Toast.LENGTH_SHORT).show();
-
                         }
                         progressDialog.dismiss();
                     }
                 });
             }
         });
-
+        // make text clickable
         String text = "שכחתי סיסמא";
-
         SpannableString spannableString = new SpannableString(text);
         ClickableSpan clickableSpan = new ClickableSpan() {
             @Override
@@ -143,19 +144,40 @@ public class SignInProcess extends AppCompatActivity {
         forgetPassword.setText(spannableString);
         forgetPassword.setMovementMethod(LinkMovementMethod.getInstance());
 
-
+        /**
+         * sign Up Btn
+         */
         Button signUpBtn = findViewById(R.id.sign_in_btn);
         signUpBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                Intent intent = new Intent(SignInProcess.this, SignUpProcess.class);
-                startActivity(intent);
+                if (isConnected()) {
+                    Intent intent = new Intent(SignInProcess.this, SignUpProcess.class);
+                    startActivity(intent);
+                } else {
+                    Toast.makeText(SignInProcess.this, "אין חיבור לאינטרנט", Toast.LENGTH_SHORT).show();
+                }
             }
         });
 
     }
 
+    /**
+     * Insert to main activity automatically when the uid not null
+     */
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        if (GlobalUtils.getStringFromLocalStorage(this, Globals.UID_LOCAL_STORAGE_KEY) != null && isConnected()) {
+            goToMainScreen();
+        }
+    }
+
+    /**
+     * change Password request.
+     * send email by fire store to change the password.
+     */
     private void changePassword() {
 
         email = loginEmail.getText().toString().trim();
@@ -177,25 +199,30 @@ public class SignInProcess extends AppCompatActivity {
                 });
     }
 
+    /**
+     * go to the main activity
+     */
     private void goToMainScreen() {
 
         Intent intent = new Intent(SignInProcess.this, DriverMainActivity.class);
         startActivity(intent);
-
     }
 
-//    private void pullDataOfUserFromFireStore(String uid) {
-//
-//        userRef.document(uid).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-//            @Override
-//            public void onSuccess(DocumentSnapshot snapshot) {
-//                UserDetails.getInstance().add(snapshot.toObject(UserDetails.class));
-//                userDetails = snapshot.toObject(UserDetails.class);
-//
-//            }
-//        });
-//
-//    }
+    /**
+     * @return is network Connected.
+     */
+    private boolean isConnected() {
+        Context context = getApplicationContext();
+        ConnectivityManager cm =
+                (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
 
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        return activeNetwork != null &&
+                activeNetwork.isConnectedOrConnecting();
+    }
 
 }
+
+
+
+

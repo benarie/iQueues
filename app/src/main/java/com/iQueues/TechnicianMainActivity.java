@@ -11,8 +11,14 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
+/**
+ * The type Technician main activity.
+ */
 public class TechnicianMainActivity extends AppCompatActivity {
 
+    /**
+     * The Drawer layout.
+     */
     DrawerLayout drawerLayout;
 
     @Override

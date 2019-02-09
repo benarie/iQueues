@@ -21,7 +21,7 @@
         android:layout_marginTop="100dp"
         android:layout_marginBottom="10dp"
         android:ems="10"
-        android:hint="אימייל"
+        android:hint="@string/user_mail"
         android:inputType="textEmailAddress"
         android:textAlignment="center" />
 
@@ -34,7 +34,7 @@
         android:layout_marginBottom="10dp"
         android:ems="10"
         android:gravity="end"
-        android:hint="סיסמה"
+        android:hint="@string/pword"
         android:inputType="textPassword"
 
         android:textAlignment="center" />
@@ -59,7 +59,7 @@
         android:layout_gravity="center"
         android:layout_marginTop="10dp"
         android:background="@drawable/buttonshape_2"
-        android:text="לא רשום? הרשמה"
+        android:text="@string/unregistered"
         android:textColor="@color/colorApp"
         android:textSize="20sp"
         android:textStyle="bold" />
@@ -70,9 +70,9 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_marginTop="10dp"
-        android:text="שכחתי סיסמא"
+        android:text="@string/forget_password"
         android:textColor="@color/colorApp"
-        android:textSize="15dp"/>
+        android:textSize="15sp"/>
 
 
 </LinearLayout>

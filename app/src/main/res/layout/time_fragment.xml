@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
-        android:text="בחר שעה"
+        android:text="@string/select_time"
         android:textAlignment="center"
         android:textColor="@color/colorBlack"
         android:textSize="20sp" />

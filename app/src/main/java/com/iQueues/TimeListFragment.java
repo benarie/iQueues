@@ -3,11 +3,9 @@ package com.iQueues;
 import android.app.Activity;
 import android.app.ListFragment;
 import android.content.Context;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.annotation.RequiresApi;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,21 +21,31 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
 
 import data.GlobalUtils;
 
 
+/**
+ * The type Time list fragment.
+ */
 public class TimeListFragment extends ListFragment {
 
 
     private ProgressBar progressBar;
     private String date;
-    private Long currentTimeDate;
+    private long currentTimeDate;
 
 
+    /**
+     * The Tag.
+     */
     String TAG = "TimeListFragment";
+    /**
+     * The constant DATA_RECEIVE.
+     */
     final static String DATA_RECEIVE = "data_receive";
 
 
@@ -47,6 +55,9 @@ public class TimeListFragment extends ListFragment {
     private ArrayList<TimeListFragment.Time> times = new ArrayList<>();
 
 
+    /**
+     * Instantiates a new Time list fragment.
+     */
     public TimeListFragment() {
 
         times.add(new TimeListFragment.Time("08:00 - 08:30"));
@@ -70,35 +81,67 @@ public class TimeListFragment extends ListFragment {
         times.add(new TimeListFragment.Time("16:30 - 17:00"));
 
         currentTimeDate = GlobalUtils.getTimeStamp();
-
-
     }
 
-    public class Time {
+    /**
+     * The type Time.
+     */
+    public static class Time {
+        /**
+         * The Time.
+         */
         String time;
+        /**
+         * The Is available.
+         */
         boolean isAvailable = true;
 
-        private Time(String time) {
+        /**
+         * Instantiates a new Time.
+         *
+         * @param time the time
+         */
+        Time(String time) {
             this.time = time;
         }
 
+        /**
+         * Gets time.
+         *
+         * @return the time
+         */
         String getTime() {
             return time;
         }
 
+        /**
+         * Sets time.
+         *
+         * @param time the time
+         */
         public void setTime(String time) {
             this.time = time;
         }
-
     }
 
 
+    /**
+     * The interface On time list fragment listener.
+     */
     public interface OnTimeListFragmentListener {
 
+        /**
+         * On list item clicked.
+         *
+         * @param time the time
+         */
         void onListItemClicked(TimeListFragment.Time time);
 
     }
 
+    /**
+     * The Callback.
+     */
     OnTimeListFragmentListener callback;
 
     @Override
@@ -128,53 +171,58 @@ public class TimeListFragment extends ListFragment {
         }
 
         getAvailableTimesFromFireStore(date);
-        getAvailableTimesFromTimeList(date);
-
     }
 
-    private void getAvailableTimesFromTimeList(String date) {
-
-        for (TimeListFragment.Time time : times) {
-
-            String timeOfOrder = time.getTime();
-            Long convertDate = GlobalUtils.convertDateToTimestamp(date, timeOfOrder);
-
-            if (currentTimeDate >= convertDate) {// if the time passed
-                if (time.isAvailable)
-                    time.isAvailable = false;
-            }
-        }
-    }
-
+    /**
+     * call fire store to check which times can be used.
+     * after that add success and fail listeners.
+     *
+     * @param date
+     */
     private void getAvailableTimesFromFireStore(final String date) {
-        /* call firebase here to check which times can be used.
-        after that add success and fail listeners.
-        don't forget to remove the loading spinner inside the listeners :) */
 
         orderRef.whereEqualTo("date", date)
                 .get()
                 .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                    @RequiresApi(api = Build.VERSION_CODES.M)
+
                     @Override
                     public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                         List<DocumentSnapshot> documentsList = queryDocumentSnapshots.getDocuments();
                         ArrayList<String> notAvailableTImes = new ArrayList<>();
+                        long fridayConvertTime = GlobalUtils.convertDateToTimestamp(date, "12:30");
 
                         for (DocumentSnapshot document : documentsList) {
                             notAvailableTImes.add(document.getString("time"));
                         }
+                        //sort the time list from fire store
                         Collections.sort(notAvailableTImes);
 
-                        for (TimeListFragment.Time time : times) {
+                        for (Time time : times) {
                             for (String notAvailableTIme : notAvailableTImes) {
-                                if (time.getTime().equals(notAvailableTIme)) {
+                                if (time.getTime().equals(notAvailableTIme)) { // if time is selected
                                     time.isAvailable = false;
                                 }
-                                // if the time of day passed
-                                getAvailableTimesFromTimeList(date);
+                            }
+                            //convert to time stamp from string
+                            String timeOfOrder = time.getTime();
+                            long convertDate = GlobalUtils.convertDateToTimestamp(date, timeOfOrder);
+
+                            Calendar calendar = Calendar.getInstance();
+                            calendar.setTimeInMillis(convertDate);
+
+                            int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
+
+                            if (currentTimeDate >= convertDate) {// if the time of day passed
+                                time.isAvailable = false;
+                            } else if (dayOfWeek == Calendar.FRIDAY) {// if the day is friday
+                                if (convertDate >= fridayConvertTime) {// after 12:00 isAvailable = false
+                                    time.isAvailable = false;
+                                }
+                            } else if (dayOfWeek == Calendar.SATURDAY) {// if the day is saturday
+                                time.isAvailable = false;
                             }
                         }
-                        TimeLIstAdapter timeLIstAdapter = new TimeLIstAdapter(times, getContext());
+                        TimeLIstAdapter timeLIstAdapter = new TimeLIstAdapter(times, getActivity());
                         setListAdapter(timeLIstAdapter);
 
                         progressBar.setVisibility(View.GONE);
@@ -188,6 +236,14 @@ public class TimeListFragment extends ListFragment {
     }
 
 
+    /**
+     * inflate the time list
+     *
+     * @param inflater
+     * @param container
+     * @param savedInstanceState
+     * @return
+     */
     @Override
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -196,6 +252,14 @@ public class TimeListFragment extends ListFragment {
 
     }
 
+    /**
+     * call the callback from main activity
+     *
+     * @param l
+     * @param v
+     * @param position
+     * @param id
+     */
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
         super.onListItemClick(l, v, position, id);
