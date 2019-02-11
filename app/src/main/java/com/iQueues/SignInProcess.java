@@ -68,7 +68,7 @@ public class SignInProcess extends AppCompatActivity {
 
         logInBtn.setOnClickListener(new View.OnClickListener() {
             /**
-             * @param v
+             * @param v v
              */
             @Override
             public void onClick(View v) {

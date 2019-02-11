@@ -528,7 +528,6 @@ public class DriverMainActivity extends AppCompatActivity implements DateFragmen
              */
             @Override
             public void onFinish() {
-                timeLeftTv_1.setText("התור שלך הגיע");
                 changeStatusFromFireStore();
                 OrdersQueue.getInstance().clearQueue();
                 viewManager.noQueue();
@@ -556,14 +555,17 @@ public class DriverMainActivity extends AppCompatActivity implements DateFragmen
                 if (OrdersQueue.getInstance().getStatus().equals(Globals.ACTIVE_ORDER_STATUS)) { // QUEUE IS ACTIVE
                     if (hoursToLeft < 24) { // BETWEEN 24 HOURS
                         if (orderFlag) {// NEW QUEUE
+
                             countDownTimer().start();
                         } else {// UPDATE QUEUE
-                            countDownTimer().cancel();
+
+                            countDownTimer.cancel();
                             viewManager.updateOrder();
                             countDownTimer().start();
                         }
                     } else {// NOT BETWEEN 24 HOURS
-                        countDownTimer().cancel();
+
+                        countDownTimer.cancel();
                         viewManager.notBetween24Hours(temp);
                     }
                 } else {// QUEUE IS NOT ACTIVE
@@ -572,11 +574,13 @@ public class DriverMainActivity extends AppCompatActivity implements DateFragmen
                     OrdersQueue.getInstance().clearQueue();
                 }
             } else {//remove order from local
+
                 changeStatusFromFireStore();
                 OrdersQueue.getInstance().clearQueue();
                 viewManager.noQueue();
             }
         } else {// No queue
+
             countDownTimer.cancel();
             viewManager.noQueue();
         }

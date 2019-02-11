@@ -32,12 +32,14 @@ public class VerifyEmailActivity extends AppCompatActivity {
      * The Verification email btn.
      */
     Button verificationEmailBtn;
-    private TextView verifyTv;
 
     /**
      * The FirebaseAuth Instance.
      */
     FirebaseAuth auth = FirebaseAuth.getInstance();
+    /**
+     * The User.
+     */
     FirebaseUser user = auth.getCurrentUser();
 
     @Override
@@ -50,7 +52,6 @@ public class VerifyEmailActivity extends AppCompatActivity {
         setSupportActionBar(myToolbar);
 
         verificationEmailBtn = findViewById(R.id.verify_email_btn);
-        verifyTv = findViewById(R.id.verify_text_view);
         TextView senAgain = findViewById(R.id.send_again);
 
 
