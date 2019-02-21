@@ -79,6 +79,8 @@ public class DriverMainActivity extends AppCompatActivity implements DateFragmen
      * The First tv.
      */
     TextView firstTv;
+
+    TextView waitTv;
     /**
      * The Insert queue btn.
      */
@@ -148,14 +150,12 @@ public class DriverMainActivity extends AppCompatActivity implements DateFragmen
     Order order = new Order();
 
     /**
-     * @param savedInstanceState
-     *
-     * initialize the parameters.
-     * call to  insertQueueBtn onClick
-     * call to logoutFromMainActivity().
-     * call to deleteQueueOnClick().
-     * call to changeQueueOnClick().
-     * call to  navigationOnClick().
+     * @param savedInstanceState initialize the parameters.
+     *                           call to  insertQueueBtn onClick
+     *                           call to logoutFromMainActivity().
+     *                           call to deleteQueueOnClick().
+     *                           call to changeQueueOnClick().
+     *                           call to  navigationOnClick().
      */
 
     @Override
@@ -172,6 +172,7 @@ public class DriverMainActivity extends AppCompatActivity implements DateFragmen
         timeLeftTv_1 = findViewById(R.id.time_left_text_view_1);
         timeLeftTv = findViewById(R.id.time_left_text_view);
         firstTv = findViewById(R.id.first_text_view);
+        waitTv = findViewById(R.id.wait_text_view);
 
         changeQueueBtn = findViewById(R.id.change_btn);
         deleteQueueBtn = findViewById(R.id.delete_btn);
@@ -179,12 +180,9 @@ public class DriverMainActivity extends AppCompatActivity implements DateFragmen
         directionBtn = findViewById(R.id.direction_btn);
         powerBtn = findViewById(R.id.btn_power);
         progressBar = findViewById(R.id.main_progress_bar);
-        viewManager = new ViewManager(firstTv, timeTv, dateTv, baseTv, timeLeftTv_1, timeLeftTv, insertQueueBtn, deleteQueueBtn, changeQueueBtn, directionBtn, progressBar);
+        viewManager = new ViewManager(firstTv, timeTv, dateTv, baseTv, timeLeftTv_1, timeLeftTv, insertQueueBtn, deleteQueueBtn, changeQueueBtn, directionBtn, progressBar, waitTv);
 
         currentTimeDate = GlobalUtils.getTimeStamp();
-
-        String uid = GlobalUtils.getStringFromLocalStorage(DriverMainActivity.this, Globals.UID_LOCAL_STORAGE_KEY);
-        pullDataOfOrderFromFireStore(uid);
 
         insertQueueBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -228,14 +226,12 @@ public class DriverMainActivity extends AppCompatActivity implements DateFragmen
     /**
      * clear the stack and return backwards
      */
+
+
     @Override
     public void onBackPressed() {
+        super.onBackPressed();
 
-        if (getFragmentManager().getBackStackEntryCount() > 0) {
-            getFragmentManager().popBackStack();
-        } else {
-            super.onBackPressed();
-        }
     }
 
     /**
@@ -367,6 +363,9 @@ public class DriverMainActivity extends AppCompatActivity implements DateFragmen
     protected void onStart() {
         super.onStart();
 
+        String uid = GlobalUtils.getStringFromLocalStorage(DriverMainActivity.this, Globals.UID_LOCAL_STORAGE_KEY);
+        pullDataOfOrderFromFireStore(uid);
+
         getUserDetails();
         checkTime();
     }
@@ -473,12 +472,15 @@ public class DriverMainActivity extends AppCompatActivity implements DateFragmen
     private void pullDataOfOrderFromFireStore(String uid) {
 
         progressBar.setVisibility(View.VISIBLE);
-
+        waitTv.setVisibility(View.VISIBLE);
         String status = Globals.ACTIVE_ORDER_STATUS;
         orderRef.whereEqualTo("uid", uid).whereEqualTo("status", status).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
             public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                 List<DocumentSnapshot> list = queryDocumentSnapshots.getDocuments();
+                if (list.size() <= 0) {
+                    afterGetOrderData(convertDate, orderFlag);
+                }
                 for (DocumentSnapshot single : list) {
                     OrdersQueue.getInstance().add(single.toObject(Order.class));
                     order = single.toObject(Order.class);
@@ -505,9 +507,12 @@ public class DriverMainActivity extends AppCompatActivity implements DateFragmen
      *
      * @return the timer
      */
-    private CountDownTimer countDownTimer() {
+    private CountDownTimer createCountDownTimer() {
 
         final Order temp = OrdersQueue.getInstance().getFirst();
+        if (temp == null) {
+            return null;
+        }
         countDownTimer = new CountDownTimer(totalTime, 1000) {
             @Override
             public void onTick(long millisUntilFinished) {
@@ -541,7 +546,7 @@ public class DriverMainActivity extends AppCompatActivity implements DateFragmen
      * Loads the corresponding view according to the queue
      *
      * @param convertDate convert date and time to time stamp
-     * @param orderFlag Determines if the queue is new or up-to-date
+     * @param orderFlag   Determines if the queue is new or up-to-date
      */
     private void afterGetOrderData(long convertDate, boolean orderFlag) {
 
@@ -556,16 +561,22 @@ public class DriverMainActivity extends AppCompatActivity implements DateFragmen
                     if (hoursToLeft < 24) { // BETWEEN 24 HOURS
                         if (orderFlag) {// NEW QUEUE
 
-                            countDownTimer().start();
+                            createCountDownTimer().start();
                         } else {// UPDATE QUEUE
-
-                            countDownTimer.cancel();
+                            if (countDownTimer == null) {
+                                createCountDownTimer().cancel();
+                            } else {
+                                countDownTimer.cancel();
+                            }
                             viewManager.updateOrder();
-                            countDownTimer().start();
+                            createCountDownTimer().start();
                         }
                     } else {// NOT BETWEEN 24 HOURS
-
-                        countDownTimer.cancel();
+                        if (countDownTimer == null) {
+                            createCountDownTimer().cancel();
+                        } else {
+                            countDownTimer.cancel();
+                        }
                         viewManager.notBetween24Hours(temp);
                     }
                 } else {// QUEUE IS NOT ACTIVE
@@ -576,12 +587,13 @@ public class DriverMainActivity extends AppCompatActivity implements DateFragmen
             } else {//remove order from local
 
                 changeStatusFromFireStore();
-                OrdersQueue.getInstance().clearQueue();
-                viewManager.noQueue();
             }
         } else {// No queue
-
-            countDownTimer.cancel();
+            if (countDownTimer == null) {
+                createCountDownTimer();
+            } else {
+                countDownTimer.cancel();
+            }
             viewManager.noQueue();
         }
     }
@@ -607,6 +619,9 @@ public class DriverMainActivity extends AppCompatActivity implements DateFragmen
                 Log.d(TAG, e.toString());
             }
         });
+
+        OrdersQueue.getInstance().clearQueue();
+        viewManager.noQueue();
 
     }
 ////////////////////////////////// Functions that are responsible for the buttons ////////////////////////////////
