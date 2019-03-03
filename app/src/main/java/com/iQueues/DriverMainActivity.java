@@ -468,7 +468,7 @@ public class DriverMainActivity extends AppCompatActivity implements DateFragmen
     /**
      * pull Data Of Order From Fire Store
      *
-     * @param uid pull data buy uid
+     * @param uid pull data by uid
      */
     private void pullDataOfOrderFromFireStore(String uid) {
 

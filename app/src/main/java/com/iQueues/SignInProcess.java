@@ -48,6 +48,9 @@ public class SignInProcess extends AppCompatActivity {
 
     private FirebaseAuth auth = FirebaseAuth.getInstance();
 
+    /**
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

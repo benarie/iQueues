@@ -45,7 +45,7 @@ public class VerifyEmailActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.verification_code);
+        setContentView(R.layout.verification_email);
 
         Toolbar myToolbar = findViewById(R.id.verification_toolbar);
         myToolbar.setTitle("");
