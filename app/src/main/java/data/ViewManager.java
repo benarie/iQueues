@@ -29,8 +29,7 @@ public class ViewManager {
 
     /**
      * Instantiates a new View manager.
-     *
-     * @param firstTv        the first tv
+     *  @param firstTv        the first tv
      * @param timeTv         the time tv
      * @param dateTv         the date tv
      * @param baseTv         the base tv
@@ -41,8 +40,9 @@ public class ViewManager {
      * @param changeQueueBtn the change queue btn
      * @param directionBtn   the direction btn
      * @param progressBar    the progress bar
+     * @param waitTv
      */
-    public ViewManager(TextView firstTv, TextView timeTv, TextView dateTv, TextView baseTv, TextView timeLeftTv_1, TextView timeLeftTv, Button insertQueueBtn, ImageButton deleteQueueBtn, ImageButton changeQueueBtn, Button directionBtn, ProgressBar progressBar) {
+    public ViewManager(TextView firstTv, TextView timeTv, TextView dateTv, TextView baseTv, TextView timeLeftTv_1, TextView timeLeftTv, Button insertQueueBtn, ImageButton deleteQueueBtn, ImageButton changeQueueBtn, Button directionBtn, ProgressBar progressBar, TextView waitTv) {
         this.firstTv = firstTv;
         this.timeTv = timeTv;
         this.dateTv = dateTv;
