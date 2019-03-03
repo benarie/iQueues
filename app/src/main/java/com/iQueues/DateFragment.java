@@ -68,9 +68,9 @@ public class DateFragment extends Fragment {
      * Check if work hours are over in friday (after 12:00)
      * pic date
      *
-     * @param inflater to inflate the view
-     * @param container contain the view
-     * @param savedInstanceState saved Instance State off view
+     * @param inflater
+     * @param container
+     * @param savedInstanceState
      * @return viewGroup
      */
     @Nullable

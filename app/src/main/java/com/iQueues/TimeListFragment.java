@@ -239,10 +239,10 @@ public class TimeListFragment extends ListFragment {
     /**
      * inflate the time list
      *
-     * @param inflater inflate the list
-     * @param container contain the list
-     * @param savedInstanceState saved Instance State
-     * @return the list
+     * @param inflater
+     * @param container
+     * @param savedInstanceState
+     * @return
      */
     @Override
 
@@ -255,10 +255,10 @@ public class TimeListFragment extends ListFragment {
     /**
      * call the callback from main activity
      *
-     * @param l ListView
-     * @param v View
-     * @param position position
-     * @param id id
+     * @param l
+     * @param v
+     * @param position
+     * @param id
      */
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {

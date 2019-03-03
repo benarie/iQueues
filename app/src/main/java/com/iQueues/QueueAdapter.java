@@ -71,8 +71,8 @@ public class QueueAdapter extends RecyclerView.Adapter<QueueAdapter.QueueViewHol
     /**
      * get the position of order
      *
-     * @param holder holder
-     * @param position position
+     * @param holder
+     * @param position
      */
     @Override
     public void onBindViewHolder(@NonNull QueueViewHolder holder, int position) {

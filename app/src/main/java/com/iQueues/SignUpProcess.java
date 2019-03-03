@@ -31,7 +31,6 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
-import java.util.Objects;
 
 import data.GlobalUtils;
 import data.Globals;
@@ -56,6 +55,7 @@ public class SignUpProcess extends AppCompatActivity {
     private String uHat;
     private String uCompany;
     private String uid;
+    private String attribute;
     private AutoCompleteTextView taxiCompaniesTv;
 
     /**
@@ -153,13 +153,13 @@ public class SignUpProcess extends AppCompatActivity {
                         if (task.isSuccessful()) {
 
                             // Sign up success, update UI with the signed-in user's information
-                            if (uid != null) uid = Objects.requireNonNull(auth.getCurrentUser()).getUid();
+                            uid = auth.getCurrentUser().getUid();
 
                             //save name and uid by SharedPreferences
                             GlobalUtils.setStringToLocalStorage(SignUpProcess.this, Globals.UID_LOCAL_STORAGE_KEY, uid);
                             GlobalUtils.setStringToLocalStorage(SignUpProcess.this, Globals.FULL_NAME_LOCAL_STORAGE_KEY, uFullName);
 
-                            FirebaseUser user = Objects.requireNonNull(task.getResult()).getUser();
+                            FirebaseUser user = task.getResult().getUser();
 
                             updateProfile(user);
 
@@ -182,7 +182,7 @@ public class SignUpProcess extends AppCompatActivity {
     /**
      * update the full name of user in FirebaseUser
      *
-     * @param user  FirebaseUser user.
+     * @param user
      */
     private void updateProfile(final FirebaseUser user) {
 
@@ -263,7 +263,7 @@ public class SignUpProcess extends AppCompatActivity {
      */
     private void pushUserDetailsToFireStore() {
 
-        String attribute = Globals.ATTRIBUTE;
+        attribute = Globals.ATTRIBUTE;
 
         //creates an object which contains all above strings.
         UserDetails userDetails = UserDetails.getInstance();
