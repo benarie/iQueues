@@ -34,7 +34,8 @@
                 android:layout_weight="1"
                 android:text="@string/times"
                 android:textAlignment="center"
-                android:textSize="25sp" />
+                android:textSize="25sp"
+                android:visibility="invisible"/>
 
             <TextView
                 android:id="@+id/name_text_output"
@@ -43,7 +44,8 @@
                 android:layout_weight="1"
                 android:text="@string/user_name"
                 android:textAlignment="textStart"
-                android:textSize="25sp" />
+                android:textSize="25sp"
+                android:visibility="invisible"/>
 
         </LinearLayout>
 
@@ -57,7 +59,19 @@
             android:textAlignment="center"
             android:textColor="@color/colorBlack"
             android:textSize="30sp"
-            android:visibility="visible" />
+            android:visibility="invisible" />
+
+        <TextView
+            android:id="@+id/wait_text_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/name_time_container"
+            android:layout_marginTop="50dp"
+            android:text="@string/please_wait"
+            android:textAlignment="center"
+            android:textColor="@color/colorBlack"
+            android:textSize="30sp"
+            android:visibility="invisible" />
 
         <TextView
             android:id="@+id/first_text_view"
@@ -72,7 +86,7 @@
             android:textDirection="rtl"
             android:textSize="20sp"
             android:textStyle="bold"
-            android:visibility="visible" />
+            android:visibility="invisible" />
 
 
         <TextView
@@ -160,7 +174,7 @@
                 android:text="@string/select_queue"
                 android:textColor="#FFFFFF"
                 android:textSize="20sp"
-                android:visibility="visible" />
+                android:visibility="invisible" />
         </LinearLayout>
 
         <TextView
