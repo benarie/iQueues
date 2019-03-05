@@ -20,6 +20,7 @@ public class ViewManager {
     private TextView timeLeftTv;
     private TextView firstTv;
     private ProgressBar progressBar;
+    private TextView waitTv;
 
     private Button insertQueueBtn;
     private ImageButton deleteQueueBtn;
@@ -40,7 +41,7 @@ public class ViewManager {
      * @param changeQueueBtn the change queue btn
      * @param directionBtn   the direction btn
      * @param progressBar    the progress bar
-     * @param waitTv
+     * @param waitTv         the wait tv
      */
     public ViewManager(TextView firstTv, TextView timeTv, TextView dateTv, TextView baseTv, TextView timeLeftTv_1, TextView timeLeftTv, Button insertQueueBtn, ImageButton deleteQueueBtn, ImageButton changeQueueBtn, Button directionBtn, ProgressBar progressBar, TextView waitTv) {
         this.firstTv = firstTv;
@@ -54,6 +55,7 @@ public class ViewManager {
         this.changeQueueBtn = changeQueueBtn;
         this.directionBtn = directionBtn;
         this.progressBar = progressBar;
+        this.waitTv = waitTv;
     }
 
     /**
@@ -68,6 +70,7 @@ public class ViewManager {
         baseTv.setText("אין לך תור כרגע!");
         dateTv.setVisibility(View.GONE);
         timeTv.setVisibility(View.GONE);
+        waitTv.setVisibility(View.GONE);
 
         insertQueueBtn.setVisibility(View.VISIBLE);
         insertQueueBtn.setClickable(true);
@@ -93,6 +96,7 @@ public class ViewManager {
         timeTv.setVisibility(View.VISIBLE);
         dateTv.setText(temp.getDate());
         timeTv.setText(temp.getTime());
+        waitTv.setVisibility(View.GONE);
 
         insertQueueBtn.setVisibility(View.GONE);
         changeQueueBtn.setVisibility(View.VISIBLE);
@@ -123,6 +127,7 @@ public class ViewManager {
         dateTv.setText(temp.getDate());
         timeTv.setText(temp.getTime());
         progressBar.setVisibility(View.GONE);
+        waitTv.setVisibility(View.GONE);
 
         insertQueueBtn.setVisibility(View.GONE);
         changeQueueBtn.setVisibility(View.VISIBLE);
@@ -138,6 +143,7 @@ public class ViewManager {
         dateTv.setText("");
         timeTv.setText("");
         timeLeftTv_1.setText("");
+        waitTv.setVisibility(View.GONE);
     }
 
     /**
@@ -151,6 +157,7 @@ public class ViewManager {
         baseTv.setVisibility(View.GONE);
         dateTv.setVisibility(View.GONE);
         timeTv.setVisibility(View.GONE);
+        waitTv.setVisibility(View.GONE);
 
         insertQueueBtn.setVisibility(View.GONE);
         changeQueueBtn.setVisibility(View.GONE);

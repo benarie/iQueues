@@ -42,6 +42,7 @@
     <string name="on_date" translatable="false">בתאריך:</string>
     <string name="on_time" translatable="false">שעה:</string>
     <string name="edit_queue_dialog" translatable="false">עריכה</string>
+    <string name="please_wait">אנא המתן...</string>
 
 
 </resources>
